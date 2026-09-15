@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>تست اتصال</title>
+    <style>
+        body {
+            font-family: Tahoma, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #f0f2f5;
+            margin: 0;
+        }
+        .box {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+        }
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        #status {
+            font-size: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .loading {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        #details {
+            font-size: 13px;
+            color: #666;
+            text-align: right;
+            direction: ltr;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            word-break: break-all;
+            white-space: pre-wrap;
+        }
+        button {
+            padding: 10px 20px;
+            background: #0088cc;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>🔌 تست اتصال به Supabase</h1>
+        <div id="status" class="loading">در حال بررسی...</div>
+        <div id="details"></div>
+        <button onclick="location.reload()">🔄 تلاش مجدد</button>
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+        const SUPABASE_URL = 'https://mjmzpbhflctxrkrkzebw.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qbXpwYmhmbGN0eHJrcmt6ZWJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5NzA3ODAsImV4cCI6MjEwNDU0Njc4MH0.AtV8I1RsdPG_I7hIMNlM489wjse6k4Jz0pEfRbQpYY4';
+
+        const statusEl = document.getElementById('status');
+        const detailsEl = document.getElementById('details');
+
+        function showStatus(type, text, details = '') {
+            statusEl.className = type;
+            statusEl.textContent = text;
+            detailsEl.textContent = details;
+        }
+
+        async function testConnection() {
+            try {
+                // قدم ۱: ساخت کلاینت
+                showStatus('loading', '⏳ در حال ساخت کلاینت...');
+                const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+                // قدم ۲: تست خواندن جدول
+                showStatus('loading', '⏳ در حال خواندن جدول messages...');
+                const { data, error } = await supabase
+                    .from('messages')
+                    .select('*')
+                    .limit(1);
+
+                if (error) {
+                    showStatus('error', '❌ اتصال برقرار است ولی خطا داد', 
+                        'خطا: ' + error.message + '\nکد: ' + (error.code || 'ندارد') + '\nجزئیات: ' + (error.details || 'ندارد'));
+                    return;
+                }
+
+                // قدم ۳: تست نوشتن
+                showStatus('loading', '⏳ در حال تست نوشتن...');
+                const { data: insertData, error: insertError } = await supabase
+                    .from('messages')
+                    .insert({
+                        content: 'تست اتصال ✅',
+                        user_id: 'test-' + Date.now()
+                    })
+                    .select();
+
+                if (insertError) {
+                    showStatus('error', '❌ خواندن کار کرد ولی نوشتن نه', 
+                        'خطا: ' + insertError.message + '\nکد: ' + (insertError.code || 'ندارد'));
+                    return;
+                }
+
+                // همه چیز اوکی است
+                showStatus('success', '✅ وصل است! همه چیز کار می‌کند', 
+                    'تعداد پیام‌های خوانده شده: ' + (data ? data.length : 0) + '\nپیام تست ارسال شد: ' + (insertData ? 'بله' : 'خیر'));
+
+            } catch (e) {
+                showStatus('error', '❌ خطای غیرمنتظره', 'پیام: ' + e.message);
+            }
+        }
+
+        testConnection();
+    </script>
+</body>
+</html>

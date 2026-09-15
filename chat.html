@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>نکسوم | Nexom</title>
+<link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/livekit-client/dist/livekit-client.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;font-family:'Vazirmatn',Tahoma,sans-serif;background:#05061a;overflow:hidden;color:#fff;transition:font-family .3s}
+body.lang-en{font-family:'Segoe UI',Tahoma,sans-serif}
+:root{--p:#00d4ff;--pu:#7b3ff2;--bd:rgba(0,212,255,.4);--card:rgba(15,20,60,.5);--card2:rgba(15,20,60,.7);--mut:#8b9dc3}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(2px 2px at 20% 30%,#fff,transparent),radial-gradient(1px 1px at 60% 70%,#fff,transparent),radial-gradient(1px 1px at 50% 50%,#fff,transparent),radial-gradient(2px 2px at 80% 10%,#fff,transparent),radial-gradient(1px 1px at 90% 60%,#fff,transparent);background-size:200% 200%;opacity:.5;pointer-events:none;z-index:0;animation:tw 4s ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:.5}50%{opacity:.8}}
+.page{position:fixed;inset:0;display:none;flex-direction:column;padding:14px 14px 95px;overflow-y:auto;z-index:1;background:radial-gradient(circle at 20% 10%,rgba(123,63,242,.3),transparent 40%),radial-gradient(circle at 80% 20%,rgba(0,212,255,.25),transparent 40%),#05061a}
+.page.active{display:flex}
+.page::-webkit-scrollbar{width:4px}
+.page::-webkit-scrollbar-thumb{background:rgba(0,212,255,.3);border-radius:2px}
+.top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-shrink:0;position:relative;z-index:2}
+.icon-btn{width:44px;height:44px;border-radius:50%;background:rgba(0,212,255,.1);border:2px solid var(--bd);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--p);font-size:18px;box-shadow:0 0 20px rgba(0,212,255,.3);backdrop-filter:blur(10px);flex-shrink:0}
+.icon-btn:active{transform:scale(.95)}
+.icon-btn svg{width:20px;height:20px;fill:currentColor}
+.app-title{text-align:center;flex:1}
+.app-title h1{font-size:23px;font-weight:800;background:linear-gradient(135deg,#00d4ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:flex;align-items:center;justify-content:center;gap:6px}
+.app-title p{font-size:11px;color:var(--mut);margin-top:2px}
+.welcome-card{background:linear-gradient(135deg,rgba(0,212,255,.15),rgba(123,63,242,.15));border:2px solid var(--bd);border-radius:20px;padding:16px;display:flex;align-items:center;gap:14px;margin-bottom:14px;box-shadow:0 0 25px rgba(0,212,255,.2);backdrop-filter:blur(10px);flex-shrink:0}
+.welcome-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#00d4ff,#7b3ff2);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;box-shadow:0 0 20px rgba(0,212,255,.6);cursor:pointer;background-size:cover;background-position:center}
+.welcome-text{flex:1}
+.welcome-text h2{font-size:15px;font-weight:700;margin-bottom:4px}
+.welcome-text p{font-size:12px;color:#c7d2fe}
+.quick-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;flex-shrink:0}
+.quick-btn{background:var(--card);border:2px solid var(--bd);border-radius:16px;padding:12px 4px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;color:#fff;box-shadow:0 0 15px rgba(0,212,255,.15);backdrop-filter:blur(10px);font-family:inherit}
+.quick-btn:active{transform:translateY(-3px)}
+.quick-icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px}
+.quick-icon.g{background:linear-gradient(135deg,#00d4ff,#4f7fff)}
+.quick-icon.ch{background:linear-gradient(135deg,#7b3ff2,#a855f7)}
+.quick-icon.ct{background:linear-gradient(135deg,#0088cc,#00d4ff)}
+.quick-icon.cv{background:linear-gradient(135deg,#a855f7,#ec4899)}
+.quick-icon.lb{background:linear-gradient(135deg,#22c55e,#16a34a)}
+.quick-icon.bot{background:linear-gradient(135deg,#f59e0b,#f97316)}
+.quick-icon.pay{background:linear-gradient(135deg,#06b6d4,#0891b2)}
+.quick-icon.edu{background:linear-gradient(135deg,#ec4899,#db2777)}
+.quick-label{font-size:10.5px;font-weight:600;text-align:center;color:#e0e7ff}
+.features-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;flex-shrink:0}
+.feature-card{background:var(--card);border:2px solid var(--bd);border-radius:16px;padding:12px;display:flex;align-items:center;gap:10px;backdrop-filter:blur(10px)}
+.feature-icon{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.feature-icon.sec{background:linear-gradient(135deg,#00d4ff,#0088cc)}
+.feature-icon.spd{background:linear-gradient(135deg,#7b3ff2,#a855f7)}
+.feature-icon.cld{background:linear-gradient(135deg,#00d4ff,#4f7fff)}
+.feature-icon.fre{background:linear-gradient(135deg,#a855f7,#ec4899)}
+.feature-text{flex:1;min-width:0}
+.feature-text h4{font-size:12px;font-weight:700;margin-bottom:2px}
+.feature-text p{font-size:10px;color:var(--mut);line-height:1.4}
+.stories-bar{padding:10px 12px;background:var(--card2);border:2px solid var(--bd);border-radius:16px;margin-bottom:14px;overflow-x:auto;white-space:nowrap;display:flex;gap:10px;scrollbar-width:none;backdrop-filter:blur(10px);flex-shrink:0}
+.stories-bar::-webkit-scrollbar{display:none}
+.story-item{display:inline-flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;flex-shrink:0;width:64px}
+.story-avatar{width:56px;height:56px;border-radius:50%;position:relative;padding:2.5px;background:#1a1f40;border:2px solid var(--bd)}
+.story-avatar.has-story{background:linear-gradient(135deg,#f97316,#ef4444,#ec4899,#7b3ff2)}
+.story-avatar.add-story{background:linear-gradient(135deg,#00d4ff,#7b3ff2)}
+.story-avatar img{width:100%;height:100%;border-radius:50%;object-fit:cover;border:2px solid #05061a}
+.story-avatar .plus{position:absolute;bottom:-2px;right:-2px;width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#00d4ff,#7b3ff2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;border:2.5px solid #05061a}
+.story-name{font-size:10px;color:#e0e7ff;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:100%;font-weight:600}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(5,6,26,.96);backdrop-filter:blur(20px);border-top:2px solid var(--bd);padding:8px 8px max(8px,env(safe-area-inset-bottom));display:flex;justify-content:space-around;align-items:center;z-index:100}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;color:var(--mut);padding:6px 4px;border-radius:12px;background:transparent;border:none;font-family:inherit}
+.nav-item.active{color:var(--p)}
+.nav-item svg{width:20px;height:20px;fill:currentColor}
+.nav-item span{font-size:10px;font-weight:600}
+.nav-item.center{flex:0 0 auto}
+.center-circle{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#00d4ff,#7b3ff2);display:flex;align-items:center;justify-content:center;margin-top:-28px;box-shadow:0 0 30px rgba(0,212,255,.7);border:3px solid rgba(5,6,26,.9);font-size:26px}
+.tabs{display:flex;gap:6px;margin-bottom:14px;background:var(--card);border:2px solid var(--bd);border-radius:14px;padding:4px;flex-shrink:0}
+.tab{flex:1;padding:10px;border-radius:10px;text-align:center;font-size:12px;font-weight:600;color:var(--mut);cursor:pointer;background:transparent;border:none;font-family:inherit}
+.tab.active{background:linear-gradient(135deg,rgba(0,212,255,.3),rgba(123,63,242,.3));color:#fff}
+.action-buttons{display:flex;gap:6px;margin-bottom:12px;flex-shrink:0}
+.action-btn{flex:1;padding:10px 6px;background:var(--card);border:2px solid var(--bd);border-radius:12px;color:var(--p);font-family:inherit;font-size:11px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px}
+.action-btn svg{width:18px;height:18px;fill:currentColor}
+.list-container{flex:1;overflow-y:auto;padding-bottom:20px}
+.list-item{padding:12px 14px;background:var(--card);border:2px solid var(--bd);border-radius:14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;backdrop-filter:blur(10px);position:relative}
+.list-item:active{background:rgba(0,212,255,.15)}
+.list-item.unread{background:linear-gradient(135deg,rgba(0,212,255,.12),rgba(123,63,242,.08));border-color:rgba(0,212,255,.6)}
+.list-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#00d4ff,#7b3ff2);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0;background-size:cover;background-position:center;position:relative}
+.list-info{flex:1;min-width:0}
+.list-name{font-size:13.5px;font-weight:600;margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.list-sub{font-size:11px;color:var(--mut);direction:ltr;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.list-last-msg{font-size:12px;color:#a5b4fc;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:3px;font-weight:500}
+.list-last-msg.mine-prefix{color:var(--mut)}
+.list-time{font-size:10.5px;color:var(--mut);position:absolute;top:12px;left:14px;font-weight:600}
+[dir="ltr"] .list-time{left:auto;right:14px}
+.list-time.unread-time{color:var(--p)}
+.unread-badge{position:absolute;bottom:12px;left:14px;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 0 10px rgba(34,197,94,.6);direction:ltr}
+[dir="ltr"] .unread-badge{left:auto;right:14px}
+.unread-badge.muted{background:linear-gradient(135deg,#8b9dc3,#64748b);box-shadow:none}
+.empty-state{text-align:center;padding:60px 20px;color:var(--mut)}
+.empty-state .icon{font-size:56px;margin-bottom:14px;opacity:.4}
+.empty-state h3{font-size:14px;font-weight:700;color:#a5b4fc;margin-bottom:8px}
+.chat-room{display:none;flex-direction:column;position:fixed;inset:0;z-index:200;padding:10px;background:radial-gradient(circle at 20% 10%,rgba(123,63,242,.3),transparent 40%),#05061a}
+.chat-room.active{display:flex}
+.chat-header{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--card2);border:2px solid var(--bd);border-radius:14px;margin-bottom:10px;flex-shrink:0}
+.back-btn{width:36px;height:36px;border-radius:50%;background:rgba(0,212,255,.15);border:2px solid var(--bd);color:var(--p);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:inherit}
+.room-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#00d4ff,#7b3ff2);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0;background-size:cover;background-position:center;cursor:pointer}
+.room-info{flex:1;min-width:0;cursor:pointer}
+.room-name{font-size:14px;font-weight:700;margin-bottom:2px}
+.room-sub{font-size:11px;color:var(--mut);direction:ltr;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.messages-area{flex:1;overflow-y:auto;padding:8px 0;display:flex;flex-direction:column;gap:6px}
+.messages-area::-webkit-scrollbar{width:4px}
+.messages-area::-webkit-scrollbar-thumb{background:rgba(0,212,255,.3);border-radius:2px}
+.msg{max-width:78%;padding:9px 13px;border-radius:16px;font-size:14px;line-height:1.5;word-wrap:break-word;animation:mIn .3s;position:relative}
+@keyframes mIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.msg.other{align-self:flex-start;background:var(--card2);border:1.5px solid var(--bd);border-bottom-right-radius:4px}
+.msg.mine{align-self:flex-end;background:linear-gradient(135deg,rgba(0,212,255,.3),rgba(123,63,242,.3));border:1.5px solid rgba(0,212,255,.5);border-bottom-left-radius:4px}
+.msg-sender{font-size:11px;font-weight:700;color:var(--p);margin-bottom:3px;direction:ltr;text-align:right}
+.msg-actions{position:absolute;top:5px;left:5px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--mut);cursor:pointer;opacity:.6}
+[dir="ltr"] .msg-actions{left:auto;right:5px}
+.reply-preview{background:rgba(0,212,255,.1);border-right:3px solid var(--p);border-radius:8px;padding:5px 9px;margin-bottom:5px;font-size:11.5px;cursor:pointer;overflow:hidden}
+.reply-name{font-weight:700;color:var(--p);font-size:10.5px;direction:ltr;text-align:right;margin-bottom:2px}
+.reply-text{color:var(--mut);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.msg-edited{font-size:10px;color:var(--mut);margin-top:3px;font-style:italic}
+.voice-wrap{display:flex;align-items:center;gap:10px;min-width:180px}
+.voice-play{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#00d4ff,#7b3ff2);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.voice-wave{flex:1;height:26px;display:flex;align-items:center;gap:2px}
+.voice-wave span{width:3px;background:var(--p);border-radius:2px;opacity:.6}
+.voice-dur{font-size:11.5px;color:var(--mut);direction:ltr;font-weight:600}
+.img-msg{max-width:260px;border-radius:12px;overflow:hidden;cursor:pointer;border:1.5px solid var(--bd)}
+.img-msg img{width:100%;height:auto;display:block}
+.file-msg{display:flex;align-items:center;gap:10px;min-width:200px}
+.file-icon{width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,#00d4ff,#7b3ff2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.file-info{flex:1;min-width:0}
+.file-name{font-size:12.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:2px}
+.file-size{font-size:11px;color:var(--mut);direction:ltr}
+.file-dl{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#00d4ff,#7b3ff2);color:#fff;display:flex;align-items:center;justify-content:center;text-decoration:none;flex-shrink:0}
+.reply-bar{display:none;align-items:center;gap:10px;padding:8px 14px;background:var(--card2);border:2px solid var(--bd);border-radius:12px;margin-bottom:8px}
+.reply-bar.show{display:flex}
+.reply-bar-info{flex:1;min-width:0}
+.reply-bar-name{font-size:11px;font-weight:700;color:var(--p);margin-bottom:2px;direction:ltr;text-align:right}
+.reply-bar-text{font-size:11.5px;color:var(--mut);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.reply-close{width:28px;height:28px;border-radius:50%;background:rgba(0,212,255,.15);border:none;color:var(--mut);cursor:pointer;font-family:inherit}
+.input-area{display:flex;gap:6px;padding-top:8px;flex-shrink:0;align-items:center}
+.input-area .attach{width:42px;height:42px;border-radius:50%;background:var(--card2);border:2px solid var(--bd);color:var(--p);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:inherit}
+.msg-input{flex:1;padding:12px 16px;background:var(--card2);border:2px solid var(--bd);border-radius:24px;color:#fff;font-family:inherit;font-size:14px;outline:none;min-width:0}
+.msg-input:focus{border-color:var(--p)}
+.send-btn{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#00d4ff,#7b3ff2);border:none;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:inherit}
+.rec-bar{display:none;align-items:center;gap:10px;padding:10px 14px;background:rgba(239,68,68,.15);border:2px solid rgba(239,68,68,.4);border-radius:12px;margin-top:8px}
+.rec-bar.show{display:flex}
+.rec-dot{width:10px;height:10px;background:#ef4444;border-radius:50%;animation:bl 1s infinite}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:.3}}
+.rec-time{font-size:14px;font-weight:700;color:#ef4444;direction:ltr}
+.rec-text{flex:1;font-size:12px;color:#fca5a5}
+.rec-btn{padding:6px 14px;border:none;border-radius:16px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:700}
+.rec-cancel{background:rgba(0,0,0,.3);color:#fff}
+.rec-send{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff}
+.attach-menu{position:fixed;bottom:80px;right:14px;background:#0a0e28;border:2px solid var(--bd);border-radius:14px;padding:6px;display:none;flex-direction:column;gap:4px;z-index:500;min-width:190px}
+[dir="ltr"] .attach-menu{right:auto;left:14px}
+.attach-menu.show{display:flex}
+.menu-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;cursor:pointer;font-family:inherit;font-size:13.5px;color:#fff;border:none;background:transparent;width:100%;text-align:right}
+[dir="ltr"] .menu-item{text-align:left}
+.menu-item:hover{background:rgba(0,212,255,.15)}
+.menu-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.menu-icon.img{background:linear-gradient(135deg,#00d4ff,#7b3ff2)}
+.menu-icon.fl{background:linear-gradient(135deg,#22c55e,#16a34a)}
+.menu-icon.vc{background:linear-gradient(135deg,#ef4444,#f97316)}
+.msg-menu{position:fixed;background:#0a0e28;border:2px solid var(--bd);border-radius:12px;padding:6px;display:none;flex-direction:column;gap:2px;z-index:5000;min-width:160px}
+.msg-menu.show{display:flex}
+.msg-menu-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;cursor:pointer;font-family:inherit;font-size:13.5px;color:#fff;border:none;background:transparent;width:100%;text-align:right}
+[dir="ltr"] .msg-menu-item{text-align:left}
+.msg-menu-item:hover{background:rgba(0,212,255,.15)}
+.msg-menu-item.reply{color:var(--p)}
+.msg-menu-item.delete{color:#ef4444}
+.modal-overlay{position:fixed;inset:0;background:rgba(5,6,26,.8);backdrop-filter:blur(6px);display:none;justify-content:center;align-items:center;z-index:1000;padding:16px;overflow-y:auto}
+.modal-overlay.show{display:flex}
+.modal{background:#0a0e28;border:2px solid var(--bd);border-radius:20px;padding:22px;width:100%;max-width:420px;max-height:90vh;overflow-y:auto}
+.modal h3{font-size:16px;font-weight:700;margin-bottom:6px}
+.modal p{font-size:12px;color:var(--mut);margin-bottom:16px}
+.modal label{display:block;font-size:12px;color:#c7d2fe;margin-bottom:6px;font-weight:600}
+.modal input,.modal textarea{width:100%;padding:11px 14px;background:rgba(0,212,255,.05);border:2px solid var(--bd);border-radius:12px;color:#fff;font-family:inherit;font-size:14px;outline:none;margin-bottom:12px}
+.modal input:focus,.modal textarea:focus{border-color:var(--p)}
+.modal textarea{resize:vertical;min-height:60px}
+.modal-btns{display:flex;gap:8px;margin-top:8px}
+.modal-btns button{flex:1;padding:11px;border:none;border-radius:12px;font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
+.btn-cancel{background:rgba(0,212,255,.1);color:#c7d2fe}
+.btn-primary{background:linear-gradient(135deg,#00d4ff,#7b3ff2);color:#fff}
+.story-viewer{position:fixed;inset:0;background:#000;z-index:3000;display:none;flex-direction:column}
+.story-viewer.show{display:flex}
+.story-prog{position:absolute;top:12px;left:12px;right:12px;height:3px;background:rgba(255,255,255,.3);border-radius:3px;z-index:10;overflow:hidden}
+.story-prog-bar{height:100%;background:linear-gradient(90deg,#00d4ff,#a855f7);border-radius:3px;width:0%;transition:width .1s linear}
+.story-head{position:absolute;top:24px;left:16px;right:16px;z-index:10;display:flex;align-items:center;gap:10px;color:#fff}
+.story-head-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#00d4ff,#7b3ff2);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;background-size:cover;background-position:center}
+.story-head-info{flex:1}
+.story-head-name{font-size:13px;font-weight:600;direction:ltr;text-align:right}
+.story-head-time{font-size:11px;opacity:.8}
+.story-close{background:rgba(0,0,0,.5);color:#fff;border:none;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:18px;font-family:inherit}
+.story-media{flex:1;display:flex;align-items:center;justify-content:center;position:relative}
+.story-media img,.story-media video{max-width:100%;max-height:100%;object-fit:contain}
+.story-cap{position:absolute;bottom:40px;left:20px;right:20px;color:#fff;font-size:14px;text-align:center;background:rgba(0,0,0,.5);padding:10px 16px;border-radius:10px}
+.story-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.5);color:#fff;border:none;width:42px;height:42px;border-radius:50%;cursor:pointer;font-size:20px;z-index:10;font-family:inherit}
+.story-prev{left:12px}
+.story-next{right:12px}
+.story-preview{width:100%;max-height:220px;border-radius:12px;overflow:hidden;margin-bottom:12px;background:rgba(0,212,255,.05);display:flex;align-items:center;justify-content:center;border:2px dashed var(--bd)}
+.story-preview.empty{height:130px;color:var(--mut);font-size:13px}
+.story-preview img,.story-preview video{max-width:100%;max-height:220px;border-radius:12px}
+.contacts-picker{max-height:180px;overflow-y:auto;border:2px solid var(--bd);border-radius:12px;padding:6px;margin-bottom:12px;background:rgba(0,212,255,.03)}
+.contact-chk{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer;margin-bottom:3px;background:rgba(0,212,255,.05);border:1.5px solid transparent}
+.contact-chk.selected{background:rgba(0,212,255,.2);border-color:var(--p)}
+.contact-chk input{width:16px;height:16px;accent-color:var(--p);flex-shrink:0}
+.chk-avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#00d4ff,#7b3ff2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;background-size:cover;background-position:center}
+.chk-info{flex:1;min-width:0}
+.chk-name{font-size:12.5px;font-weight:600;margin-bottom:1px}
+.chk-email{font-size:10.5px;color:var(--mut);direction:ltr;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.selected-count{font-size:11.5px;color:var(--p);font-weight:600;text-align:center;margin-bottom:10px;min-height:16px}
+.search-inp{width:100%;padding:10px 14px;border:2px solid var(--bd);background:rgba(0,212,255,.05);border-radius:10px;font-size:13px;outline:none;font-family:inherit;color:#fff;margin-bottom:8px}
+.lang-btn{background:rgba(0,212,255,.15);color:var(--p);border:2px solid var(--bd);border-radius:8px;padding:5px 9px;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0}
+.pay-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.pay-card{background:var(--card);border:2px solid var(--bd);border-radius:16px;padding:16px 12px;cursor:pointer;text-align:center;backdrop-filter:blur(10px);transition:all .3s;text-decoration:none;color:#fff;display:block}
+.pay-card:active{transform:translateY(-3px);box-shadow:0 0 25px rgba(0,212,255,.4)}
+.pay-icon{font-size:32px;margin-bottom:8px}
+.pay-title{font-size:13px;font-weight:700}
+.edu-class{background:var(--card);border:2px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:10px;cursor:pointer;backdrop-filter:blur(10px)}
+.edu-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.edu-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#ec4899,#db2777);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.edu-name{flex:1;font-size:14px;font-weight:700}
+.edu-info{font-size:11.5px;color:var(--mut);line-height:1.5}
+.edu-enter-btn:active{transform:scale(.97)}
+.bot-card{background:var(--card);border:2px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:10px;backdrop-filter:blur(10px)}
+.bot-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.bot-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#f59e0b,#f97316);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.bot-name{flex:1;font-size:14px;font-weight:700}
+.bot-desc{font-size:11.5px;color:var(--mut);line-height:1.5;margin-bottom:8px}
+.bot-actions{display:flex;gap:6px}
+.bot-actions button{flex:1;padding:8px;border:none;border-radius:8px;font-family:inherit;font-size:11.5px;font-weight:600;cursor:pointer}
+.bot-start{background:linear-gradient(135deg,#00d4ff,#7b3ff2);color:#fff}
+.bot-del{background:rgba(239,68,68,.2);color:#fca5a5}
+.operator-card{background:var(--card);border:2px solid var(--bd);border-radius:16px;padding:20px;display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;text-decoration:none;color:#fff;transition:all .3s;backdrop-filter:blur(10px)}
+.operator-card:active{transform:translateY(-3px);box-shadow:0 0 25px rgba(0,212,255,.4)}
+.operator-logo{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800}
+.operator-logo.mci{background:linear-gradient(135deg,#00d4ff,#0088cc)}
+.operator-logo.irancell{background:linear-gradient(135deg,#fbbf24,#f59e0b)}
+.operator-logo.rightel{background:linear-gradient(135deg,#a855f7,#7b3ff2)}
+.operator-name{font-size:14px;font-weight:700}
+.operator-desc{font-size:11px;color:var(--mut)}
+.msg-meta{display:flex;align-items:center;justify-content:flex-end;gap:3px;margin-top:3px;font-size:11px;direction:ltr}
+.msg-check{font-weight:700;display:inline-block;letter-spacing:-2px}
+.msg-check.sent{color:#8b9dc3;opacity:.8}
+.msg-check.read{color:#22c55e;text-shadow:0 0 6px rgba(34,197,94,.5)}
+.msg.deleted{opacity:.6;font-style:italic}
+.msg-deleted-txt{font-size:12.5px;color:var(--mut);font-style:italic;display:flex;align-items:center;gap:6px}
+.status-text{font-size:11px;color:var(--p);font-style:italic;display:flex;align-items:center;gap:4px;animation:fadeIn .3s}
+.status-text.rec{color:#ef4444}
+.status-text.up{color:#f59e0b}
+.status-online{display:inline-block;width:8px;height:8px;border-radius:50%;background:#22c55e;margin-left:4px;box-shadow:0 0 6px rgba(34,197,94,.8);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.typing-dots{display:inline-flex;gap:2px;align-items:center}
+.typing-dots span{width:3px;height:3px;border-radius:50%;background:var(--p);animation:td 1.4s infinite}
+.typing-dots span:nth-child(2){animation-delay:.2s}
+.typing-dots span:nth-child(3){animation-delay:.4s}
+@keyframes td{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+.list-item-status{font-size:10.5px;color:var(--p);direction:ltr;text-align:right;margin-top:2px;font-style:italic}
+.profile-card{text-align:center;padding:24px 16px;background:linear-gradient(135deg,rgba(0,212,255,.1),rgba(123,63,242,.1));border:2px solid var(--bd);border-radius:20px;margin-bottom:14px;backdrop-filter:blur(10px)}
+.profile-avatar-wrap{position:relative;display:inline-block;margin-bottom:12px}
+.profile-avatar{width:110px;height:110px;border-radius:50%;background:linear-gradient(135deg,#00d4ff,#7b3ff2);display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:800;border:4px solid rgba(0,212,255,.3);box-shadow:0 0 30px rgba(0,212,255,.5);background-size:cover;background-position:center}
+.profile-avatar-edit{position:absolute;bottom:5px;right:5px;width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#00d4ff,#7b3ff2);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;border:3px solid #05061a}
+.profile-name{font-size:20px;font-weight:800;margin-bottom:4px}
+.profile-username{font-size:13px;color:var(--p);direction:ltr;margin-bottom:10px;font-weight:600}
+.profile-bio{font-size:12.5px;color:var(--mut);line-height:1.6;padding:0 20px}
+.profile-info{display:flex;flex-direction:column;gap:8px}
+.profile-info-item{background:var(--card);border:2px solid var(--bd);border-radius:14px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;backdrop-filter:blur(10px)}
+.profile-info-label{font-size:12px;color:var(--p);font-weight:600}
+.profile-info-value{font-size:12.5px;color:#e0e7ff;direction:ltr;font-weight:500}
+.settings-section{margin-bottom:20px}
+.settings-section h3{font-size:13px;font-weight:700;color:var(--p);margin-bottom:10px;padding:0 4px}
+.settings-item{background:var(--card);border:2px solid var(--bd);border-radius:14px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;backdrop-filter:blur(10px);transition:background .2s}
+.settings-item:active{background:rgba(0,212,255,.15)}
+.settings-icon{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#00d4ff,#7b3ff2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.settings-info{flex:1;min-width:0}
+.settings-title{font-size:13.5px;font-weight:600;margin-bottom:2px}
+.settings-desc{font-size:11px;color:var(--mut)}
+.settings-arrow{font-size:20px;color:var(--mut);flex-shrink:0;transform:scaleX(-1)}
+[dir="ltr"] .settings-arrow{transform:none}
+.settings-select{background:rgba(0,212,255,.1);border:2px solid var(--bd);border-radius:10px;padding:6px 10px;font-family:inherit;font-size:12px;color:var(--p);cursor:pointer;outline:none;flex-shrink:0}
+.settings-select option{background:#0a0e28;color:#fff}
+.session-card{background:rgba(0,212,255,.05);border:2px solid var(--bd);border-radius:12px;padding:12px;margin-bottom:8px}
+.session-header{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.session-icon{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#00d4ff,#7b3ff2);display:flex;align-items:center;justify-content:center;font-size:18px}
+.session-info{flex:1;min-width:0}
+.session-device{font-size:13px;font-weight:600;margin-bottom:2px}
+.session-time{font-size:11px;color:var(--mut)}
+.session-current{font-size:10px;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;padding:2px 8px;border-radius:8px;font-weight:700}
+.call-modal{position:fixed;inset:0;background:linear-gradient(135deg,#05061a,#0a0e28);z-index:5000;display:none;flex-direction:column;padding:20px;color:#fff}
+.call-modal.show{display:flex}
+.call-header{text-align:center;margin-bottom:20px}
+.call-title{font-size:20px;font-weight:800;margin-bottom:6px}
+.call-sub{font-size:13px;color:var(--mut)}
+.call-participants{flex:1;display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;align-content:start;overflow-y:auto;padding:10px 0}
+.participant{background:rgba(15,20,60,.6);border:2px solid var(--bd);border-radius:16px;padding:16px 8px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px;backdrop-filter:blur(10px);transition:all .2s}
+.participant.speaking{border-color:#22c55e;box-shadow:0 0 20px rgba(34,197,94,.5);transform:scale(1.02)}
+.participant-avatar{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#00d4ff,#7b3ff2);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;position:relative}
+.participant-muted{position:absolute;bottom:-4px;right:-4px;width:22px;height:22px;border-radius:50%;background:#ef4444;display:flex;align-items:center;justify-content:center;font-size:11px;border:2px solid #05061a}
+.participant-name{font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;direction:ltr}
+.call-controls{display:flex;gap:12px;justify-content:center;padding:16px 0;flex-wrap:wrap}
+.call-btn{width:60px;height:60px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:22px;transition:all .2s;font-family:inherit}
+.call-btn.mic{background:linear-gradient(135deg,#00d4ff,#7b3ff2);color:#fff}
+.call-btn.mic.muted{background:#ef4444}
+.call-btn.end{background:#ef4444;color:#fff;width:70px;height:70px;font-size:26px}
+.call-btn:active{transform:scale(.92)}
+.call-status{text-align:center;font-size:12px;color:var(--mut);padding:8px;min-height:20px}
+.call-start-btn{background:linear-gradient(135deg,#22c55e,#16a34a)!important;color:#fff!important;border:none!important;margin-right:auto}
+
+/* ========== کلاس مجازی ========== */
+.virtual-class{position:fixed;inset:0;background:#05061a;z-index:4000;display:none;flex-direction:column;color:#fff}
+.virtual-class.show{display:flex}
+.vc-header{display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(15,20,60,.85);border-bottom:2px solid var(--bd);flex-shrink:0}
+.vc-header h3{flex:1;font-size:14px;font-weight:700;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vc-close{width:38px;height:38px;border-radius:50%;background:rgba(239,68,68,.2);border:none;color:#fca5a5;font-size:18px;cursor:pointer;font-family:inherit}
+.vc-live-badge{font-size:10px;background:linear-gradient(135deg,#ef4444,#dc2626);padding:3px 8px;border-radius:8px;font-weight:700;display:flex;align-items:center;gap:4px}
+.vc-live-dot{width:6px;height:6px;background:#fff;border-radius:50%;animation:bl 1s infinite}
+.vc-tabs{display:flex;background:rgba(15,20,60,.7);border-bottom:2px solid var(--bd);flex-shrink:0}
+.vc-tab{flex:1;padding:12px 6px;background:transparent;border:none;color:var(--mut);font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;display:flex;align-items:center;justify-content:center;gap:5px}
+.vc-tab.active{color:var(--p);border-bottom-color:var(--p);background:rgba(0,212,255,.08)}
+.vc-body{flex:1;position:relative;overflow:hidden}
+.vc-panel{position:absolute;inset:0;display:none;flex-direction:column;padding:10px}
+.vc-panel.active{display:flex}
+#vc-board-wrap{flex:1;background:#0a0e28;border:2px solid var(--bd);border-radius:14px;position:relative;overflow:hidden}
+#whiteboard{display:block;width:100%;height:100%;cursor:crosshair;touch-action:none;position:relative;z-index:2}
+#whiteboard.readonly{cursor:default}
+.vc-board-tools{display:flex;gap:6px;padding-top:8px;flex-wrap:wrap;align-items:center}
+.vc-tool-btn{background:var(--card2);border:2px solid var(--bd);color:#fff;font-family:inherit;font-size:12px;padding:8px 12px;border-radius:10px;cursor:pointer;display:flex;align-items:center;gap:5px}
+.vc-tool-btn.active{background:linear-gradient(135deg,#00d4ff,#7b3ff2);border-color:transparent}
+.vc-tool-btn.danger{background:rgba(239,68,68,.2);border-color:rgba(239,68,68,.4);color:#fca5a5}
+.vc-tool-btn.upload{background:linear-gradient(135deg,#22c55e,#16a34a);border-color:transparent;color:#fff}
+#vc-color{width:40px;height:36px;border:2px solid var(--bd);border-radius:10px;background:transparent;cursor:pointer;padding:2px}
+.vc-lock-note{font-size:11px;color:var(--mut);padding:6px 10px;background:rgba(139,157,195,.1);border-radius:8px;text-align:center}
+.vc-image-layer{position:absolute;inset:0;pointer-events:none;z-index:1}
+.vc-board-img{position:absolute;pointer-events:auto;cursor:move;border-radius:8px;box-shadow:0 4px 15px rgba(0,0,0,.5);user-select:none;touch-action:none;border:2px solid transparent;transition:border-color .2s}
+.vc-board-img:hover{border-color:var(--p)}
+.vc-board-img.selected{border-color:var(--p);box-shadow:0 0 0 3px rgba(0,212,255,.4),0 4px 15px rgba(0,0,0,.5)}
+.vc-board-img .vc-img-resize{position:absolute;bottom:-8px;right:-8px;width:20px;height:20px;border-radius:50%;background:var(--p);border:2px solid #fff;cursor:nwse-resize;display:none;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:700}
+.vc-board-img.selected .vc-img-resize{display:flex}
+.vc-board-img .vc-img-delete{position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;background:#ef4444;border:2px solid #fff;cursor:pointer;display:none;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700}
+.vc-board-img.selected .vc-img-delete{display:flex}
+#vc-messages{flex:1;overflow-y:auto;padding:8px;background:#0a0e28;border:2px solid var(--bd);border-radius:14px;display:flex;flex-direction:column;gap:6px}
+.vc-msg{max-width:80%;padding:8px 12px;border-radius:12px;font-size:13.5px;line-height:1.5;word-wrap:break-word}
+.vc-msg.mine{align-self:flex-start;background:linear-gradient(135deg,rgba(0,212,255,.3),rgba(123,63,242,.3));border:1.5px solid rgba(0,212,255,.5)}
+.vc-msg.other{align-self:flex-end;background:var(--card2);border:1.5px solid var(--bd)}
+.vc-msg-sender{font-size:10.5px;font-weight:700;color:var(--p);margin-bottom:3px;direction:ltr;text-align:right}
+.vc-msg-time{font-size:9.5px;color:var(--mut);margin-top:3px;direction:ltr}
+.vc-chat-input-row{display:flex;gap:6px;padding-top:8px}
+.vc-chat-input{flex:1;padding:12px 14px;background:var(--card2);border:2px solid var(--bd);border-radius:24px;color:#fff;font-family:inherit;font-size:14px;outline:none}
+.vc-chat-input:focus{border-color:var(--p)}
+.vc-send-btn{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#00d4ff,#7b3ff2);border:none;color:#fff;font-size:18px;cursor:pointer;flex-shrink:0}
+#vc-students-list{flex:1;overflow-y:auto;padding:4px}
+.vc-student{display:flex;align-items:center;gap:10px;padding:12px;background:var(--card2);border:2px solid var(--bd);border-radius:14px;margin-bottom:8px}
+.vc-student-av{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#00d4ff,#7b3ff2);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;position:relative;flex-shrink:0}
+.vc-student-av.muted::after{content:'🔇';position:absolute;bottom:-3px;right:-3px;font-size:14px;background:#ef4444;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid #05061a}
+.vc-student-info{flex:1;min-width:0}
+.vc-student-name{font-size:13.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vc-student-role{font-size:10.5px;color:var(--mut)}
+.vc-student-actions{display:flex;gap:6px}
+.vc-student-btn{padding:6px 10px;border:none;border-radius:8px;font-family:inherit;font-size:11px;font-weight:600;cursor:pointer;color:#fff}
+.vc-mute-btn{background:linear-gradient(135deg,#ef4444,#dc2626)}
+.vc-unmute-btn{background:linear-gradient(135deg,#22c55e,#16a34a)}
+.vc-empty-vc{text-align:center;padding:50px 20px;color:var(--mut);font-size:13px}
+.vc-footer{display:flex;gap:8px;padding:10px 14px;background:rgba(15,20,60,.85);border-top:2px solid var(--bd);justify-content:center;flex-shrink:0}
+.vc-ctrl{width:54px;height:54px;border-radius:50%;border:none;cursor:pointer;font-size:22px;display:flex;align-items:center;justify-content:center;font-family:inherit}
+.vc-ctrl.mic{background:linear-gradient(135deg,#00d4ff,#7b3ff2);color:#fff}
+.vc-ctrl.mic.muted{background:#ef4444}
+.vc-ctrl.leave{background:#ef4444;color:#fff;width:64px;height:64px;font-size:26px}
+.vc-enter-card{background:linear-gradient(135deg,rgba(0,212,255,.12),rgba(123,63,242,.12));border:2px solid var(--bd);border-radius:16px;padding:18px;margin-bottom:14px;text-align:center}
+.vc-enter-card h3{font-size:15px;margin-bottom:8px;color:var(--p)}
+.vc-enter-card p{font-size:12px;color:var(--mut);margin-bottom:14px;line-height:1.6}
+.vc-enter-btn{width:100%;padding:14px;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;border:none;border-radius:12px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 15px rgba(34,197,94,.4)}
+.vc-status-live{display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;color:#22c55e;margin-top:10px}
+
+/* ===== جستجوی سراسری ===== */
+.search-modal{position:fixed;inset:0;background:rgba(5,6,26,.92);backdrop-filter:blur(10px);z-index:2500;display:none;flex-direction:column;padding:14px}
+.search-modal.show{display:flex}
+.search-header{display:flex;gap:10px;margin-bottom:14px;flex-shrink:0}
+.search-header input{flex:1;padding:14px 18px;background:var(--card2);border:2px solid var(--bd);border-radius:24px;color:#fff;font-family:inherit;font-size:15px;outline:none}
+.search-header input:focus{border-color:var(--p);box-shadow:0 0 20px rgba(0,212,255,.3)}
+.search-header .close-search{width:48px;height:48px;border-radius:50%;background:rgba(239,68,68,.15);border:2px solid rgba(239,68,68,.4);color:#fca5a5;font-size:20px;cursor:pointer;flex-shrink:0;font-family:inherit}
+.search-tabs{display:flex;gap:6px;margin-bottom:14px;background:var(--card);border:2px solid var(--bd);border-radius:14px;padding:4px;flex-shrink:0}
+.search-tab{flex:1;padding:10px;border-radius:10px;text-align:center;font-size:12.5px;font-weight:600;color:var(--mut);cursor:pointer;background:transparent;border:none;font-family:inherit;transition:all .2s}
+.search-tab.active{background:linear-gradient(135deg,rgba(0,212,255,.3),rgba(123,63,242,.3));color:#fff}
+.search-results{flex:1;overflow-y:auto;padding-bottom:20px}
+.search-results::-webkit-scrollbar{width:4px}
+.search-results::-webkit-scrollbar-thumb{background:rgba(0,212,255,.3);border-radius:2px}
+.search-result-item{padding:14px;background:var(--card);border:2px solid var(--bd);border-radius:14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;backdrop-filter:blur(10px);transition:all .2s}
+.search-result-item:hover{background:rgba(0,212,255,.1);transform:translateX(-3px)}
+.search-result-item.joined{opacity:.7;border-color:rgba(34,197,94,.5)}
+.search-result-avatar{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;background:linear-gradient(135deg,#00d4ff,#7b3ff2)}
+.search-result-avatar.group{background:linear-gradient(135deg,#7b3ff2,#a855f7)}
+.search-result-avatar.channel{background:linear-gradient(135deg,#00d4ff,#0088cc)}
+.search-result-info{flex:1;min-width:0}
+.search-result-name{font-size:14.5px;font-weight:700;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.search-result-type{font-size:10px;padding:2px 8px;border-radius:8px;font-weight:700;flex-shrink:0}
+.search-result-type.group{background:rgba(123,63,242,.3);color:#c4b5fd}
+.search-result-type.channel{background:rgba(0,212,255,.2);color:var(--p)}
+.search-result-desc{font-size:12px;color:var(--mut);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.search-result-meta{font-size:10.5px;color:var(--p);margin-top:3px}
+.search-result-btn{padding:8px 14px;border:none;border-radius:10px;font-family:inherit;font-size:11.5px;font-weight:700;cursor:pointer;flex-shrink:0;color:#fff;transition:all .2s}
+.search-result-btn.join{background:linear-gradient(135deg,#22c55e,#16a34a)}
+.search-result-btn.open{background:linear-gradient(135deg,#00d4ff,#7b3ff2)}
+.search-result-btn.joined{background:rgba(34,197,94,.2);color:#86efac;cursor:default}
+.search-empty{text-align:center;padding:60px 20px;color:var(--mut)}
+.search-empty .icon{font-size:56px;margin-bottom:14px;opacity:.4}
+.search-empty h3{font-size:14px;font-weight:700;color:#a5b4fc;margin-bottom:8px}
+.privacy-picker{display:flex;gap:8px;margin-bottom:14px}
+.privacy-option{flex:1;padding:14px 10px;background:var(--card);border:2px solid var(--bd);border-radius:14px;cursor:pointer;text-align:center;transition:all .25s;font-family:inherit;color:#fff}
+.privacy-option:hover{background:rgba(0,212,255,.1)}
+.privacy-option.selected{background:linear-gradient(135deg,rgba(0,212,255,.25),rgba(123,63,242,.25));border-color:var(--p);box-shadow:0 0 20px rgba(0,212,255,.3)}
+.privacy-icon{font-size:28px;margin-bottom:6px;display:block}
+.privacy-title{font-size:13px;font-weight:700;margin-bottom:3px}
+.privacy-desc{font-size:10.5px;color:var(--mut);line-height:1.4}
+</style>
+</head>
+<body>
+<div class="page active" id="page-home">
+<div class="top-bar">
+<button class="icon-btn" onclick="showNotif()"><svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg></button>
+<div class="app-title"><h1><span data-i18n="appName">نکسوم</span> <span>⚡</span></h1><p data-i18n="appTagline">سوپر اپلیکیشن</p></div>
+<button class="lang-btn" onclick="toggleLang()"><span id="lang-lbl">EN</span></button>
+</div>
+<div class="welcome-card">
+<div class="welcome-avatar" id="home-avatar" onclick="openMyProfile()">⚡</div>
+<div class="welcome-text"><h2 id="home-greeting" data-i18n="welcome">سلام!</h2><p data-i18n="welcomeSub">به نکسوم خوش آمدید</p></div>
+</div>
+<div class="quick-actions">
+<button class="quick-btn" onclick="goTab('group')"><div class="quick-icon g">👥</div><div class="quick-label" data-i18n="groups">گروه‌ها</div></button>
+<button class="quick-btn" onclick="goTab('channel')"><div class="quick-icon ch">📢</div><div class="quick-label" data-i18n="channels">کانال‌ها</div></button>
+<button class="quick-btn" onclick="goTab('private')"><div class="quick-icon ct">👤</div><div class="quick-label" data-i18n="contacts">مخاطبین</div></button>
+<button class="quick-btn" onclick="goTab('private')"><div class="quick-icon cv">💬</div><div class="quick-label" data-i18n="chats">گفتگوها</div></button>
+</div>
+<div class="quick-actions">
+<button class="quick-btn" onclick="showPage('library')"><div class="quick-icon lb">🎬</div><div class="quick-label" data-i18n="library">کتابخانه</div></button>
+<button class="quick-btn" onclick="showPage('bots')"><div class="quick-icon bot">🤖</div><div class="quick-label" data-i18n="bots">ربات‌ها</div></button>
+<button class="quick-btn" onclick="showPage('payments')"><div class="quick-icon pay">💰</div><div class="quick-label" data-i18n="financeShort">مالی</div></button>
+<button class="quick-btn" onclick="showPage('education')"><div class="quick-icon edu">📚</div><div class="quick-label" data-i18n="education">آموزش</div></button>
+</div>
+<div class="features-grid">
+<div class="feature-card"><div class="feature-icon sec">🔒</div><div class="feature-text"><h4 data-i18n="secTitle">امنیت بالا</h4><p data-i18n="secSub">با رمزنگاری پیشرفته</p></div></div>
+<div class="feature-card"><div class="feature-icon spd">⚡</div><div class="feature-text"><h4 data-i18n="spdTitle">سرعت بالا</h4><p data-i18n="spdSub">ارسال و دریافت سریع</p></div></div>
+<div class="feature-card"><div class="feature-icon cld">☁️</div><div class="feature-text"><h4 data-i18n="cldTitle">فضای ابری</h4><p data-i18n="cldSub">دسترسی از همه جا</p></div></div>
+<div class="feature-card"><div class="feature-icon fre">⭐</div><div class="feature-text"><h4 data-i18n="freTitle">رایگان</h4><p data-i18n="freSub">بدون هزینه، همیشه</p></div></div>
+</div>
+</div>
+
+<div class="page" id="page-chats">
+<div class="top-bar">
+<button class="icon-btn" onclick="showPage('home')"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
+<div class="app-title"><h1 data-i18n="chats">گفتگوها</h1><p id="my-email-lbl">...</p></div>
+<button class="icon-btn" onclick="openGlobalSearch()" title="جستجوی سراسری"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></button>
+<button class="icon-btn" onclick="logout()"><svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg></button>
+</div>
+<div class="stories-bar" id="stories-bar"></div>
+<div class="action-buttons">
+<button class="action-btn" onclick="openNewContact()"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span data-i18n="newContact">مخاطب</span></button>
+<button class="action-btn" onclick="openNewGroup('group')"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg><span data-i18n="newGroup">گروه</span></button>
+<button class="action-btn" onclick="openNewGroup('channel')"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 12h-2v-2h2v2zm0-4h-2V6h2v4z"/></svg><span data-i18n="newChannel">کانال</span></button>
+</div>
+<div class="tabs">
+<button class="tab active" data-tab="private" onclick="switchTab('private')" data-i18n="privateTab">خصوصی</button>
+<button class="tab" data-tab="group" onclick="switchTab('group')" data-i18n="groups">گروه‌ها</button>
+<button class="tab" data-tab="channel" onclick="switchTab('channel')" data-i18n="channels">کانال‌ها</button>
+</div>
+<div class="list-container" id="list-container"></div>
+</div>
+
+<div class="page" id="page-library">
+<div class="top-bar">
+<button class="icon-btn" onclick="showPage('home')"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
+<div class="app-title"><h1>🎬 <span data-i18n="library">کتابخانه</span></h1><p data-i18n="librarySub">ویدیوها و محتوا</p></div>
+<button class="icon-btn" onclick="openLibModal()"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button>
+</div>
+<div id="lib-list"></div>
+</div>
+
+<div class="page" id="page-bots">
+<div class="top-bar">
+<button class="icon-btn" onclick="showPage('home')"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
+<div class="app-title"><h1>🤖 <span data-i18n="bots">ربات‌ها</span></h1><p data-i18n="botsSub">پاسخ خودکار</p></div>
+<button class="icon-btn" onclick="openBotModal()"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button>
+</div>
+<div id="bots-list"></div>
+</div>
+
+<div class="page" id="page-payments">
+<div class="top-bar">
+<button class="icon-btn" onclick="showPage('home')"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
+<div class="app-title"><h1>💰 <span data-i18n="finance">خدمات مالی</span></h1><p data-i18n="financeSub">شارژ، بسته، پرداخت</p></div>
+<div style="width:44px"></div>
+</div>
+<div class="welcome-card"><div class="welcome-avatar">💰</div><div class="welcome-text"><h2 data-i18n="wallet">کیف پول</h2><p><span data-i18n="balance">موجودی</span>: <b id="wallet-bal">۰ تومان</b></p></div></div>
+<h3 style="font-size:14px;margin:14px 0 10px;color:var(--p)" data-i18n="chargeSection">📱 شارژ و بسته اینترنت</h3>
+<div class="pay-grid">
+<a href="https://shop.mci.ir/" target="_blank" rel="noopener" class="operator-card"><div class="operator-logo mci">M</div><div class="operator-name" data-i18n="mci">همراه اول</div><div class="operator-desc" data-i18n="chargeDesc">شارژ / بسته اینترنت</div></a>
+<a href="https://shop.irancell.ir/" target="_blank" rel="noopener" class="operator-card"><div class="operator-logo irancell">I</div><div class="operator-name" data-i18n="irancell">ایرانسل</div><div class="operator-desc" data-i18n="chargeDesc">شارژ / بسته اینترنت</div></a>
+<a href="https://shop.rightel.ir/" target="_blank" rel="noopener" class="operator-card"><div class="operator-logo rightel">R</div><div class="operator-name" data-i18n="rightel">رایتل</div><div class="operator-desc" data-i18n="chargeDesc">شارژ / بسته اینترنت</div></a>
+<a href="https://shad.ir/" target="_blank" rel="noopener" class="operator-card"><div class="operator-logo mci">📞</div><div class="operator-name" data-i18n="otherOperators">سایر اپراتورها</div><div class="operator-desc" data-i18n="servicePortal">سامانه خدمات</div></a>
+</div>
+<h3 style="font-size:14px;margin:14px 0 10px;color:var(--p)" data-i18n="otherServices">🧾 خدمات دیگر</h3>
+<div class="pay-grid">
+<a href="https://www.tavanir.org.ir/" target="_blank" rel="noopener" class="pay-card"><div class="pay-icon">💡</div><div class="pay-title" data-i18n="payElectricity">پرداخت برق</div></a>
+<a href="https://www.nigc.ir/" target="_blank" rel="noopener" class="pay-card"><div class="pay-icon">🔥</div><div class="pay-title" data-i18n="payGas">پرداخت گاز</div></a>
+<a href="https://www.abfa.ir/" target="_blank" rel="noopener" class="pay-card"><div class="pay-icon">💧</div><div class="pay-title" data-i18n="payWater">پرداخت آب</div></a>
+<a href="https://epay.bankmellat.ir/" target="_blank" rel="noopener" class="pay-card"><div class="pay-icon">📞</div><div class="pay-title" data-i18n="payPhone">پرداخت تلفن</div></a>
+</div>
+</div>
+
+<div class="page" id="page-education">
+<div class="top-bar">
+<button class="icon-btn" onclick="showPage('home')"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
+<div class="app-title"><h1>📚 <span data-i18n="education">آموزش</span></h1><p data-i18n="classes">کلاس‌ها</p></div>
+<button class="icon-btn" onclick="openEduModal()"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button>
+</div>
+<div style="display:flex;gap:8px;margin-bottom:12px">
+<button class="action-btn" style="flex:1" onclick="openEduJoin()"><span style="font-size:18px">🔑</span><span data-i18n="joinWithCode">ورود با کد</span></button>
+<button class="action-btn" style="flex:1" onclick="openEduModal()"><span style="font-size:18px">➕</span><span data-i18n="createClass">ساخت کلاس</span></button>
+</div>
+<div id="edu-list"></div>
+</div>
+
+<div class="page" id="page-class-panel">
+<div class="top-bar">
+<button class="icon-btn" onclick="closeClassPanel()"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
+<div class="app-title"><h1 id="cp-title">📚 <span data-i18n="classes">کلاس</span></h1><p id="cp-sub" data-i18n="classPanel">پنل مدیریت</p></div>
+<div style="width:44px"></div>
+</div>
+<div class="welcome-card" id="cp-code-card" style="margin-bottom:12px">
+<div class="welcome-avatar" style="font-size:22px">🔑</div>
+<div class="welcome-text"><h2 data-i18n="classCode">کد کلاس</h2><p style="font-size:18px;font-weight:900;letter-spacing:6px;direction:ltr;color:var(--p)" id="cp-code">------</p></div>
+<button class="lang-btn" onclick="copyCpCode()" data-i18n="copy">کپی</button>
+</div>
+<div class="tabs" style="margin-bottom:12px">
+<button class="tab active" data-cp="videos" onclick="switchCpTab('videos')" data-i18n="videos">🎬 ویدیوها</button>
+<button class="tab" data-cp="members" onclick="switchCpTab('members')" data-i18n="members">👥 اعضا</button>
+<button class="tab vc-tab-icon" data-cp="virtual" onclick="switchCpTab('virtual')">🎥 کلاس مجازی</button>
+</div>
+<div id="cp-videos">
+<button class="btn-primary" id="cp-add-video-btn" style="width:100%;padding:11px;border-radius:12px;margin-bottom:12px;font-family:inherit;font-weight:700;cursor:pointer" onclick="openAddVideoModal()" data-i18n="addVideo">➕ افزودن ویدیو</button>
+<div id="cp-videos-list"></div>
+</div>
+<div id="cp-members" style="display:none">
+<div id="cp-members-list"></div>
+</div>
+<div id="cp-virtual" style="display:none">
+<div class="vc-enter-card">
+<h3>🎥 کلاس مجازی</h3>
+<p id="vc-enter-desc">یک جلسه زنده با صدا، چت و تخته سفید برگزار کن</p>
+<button class="vc-enter-btn" onclick="enterVirtualClass()">🚀 ورود به کلاس مجازی</button>
+<div class="vc-status-live" id="vc-live-status" style="display:none">
+<span class="vc-live-dot"></span>
+<span>کلاس در حال برگزاری...</span>
+</div>
+</div>
+<div id="vc-active-rooms" style="margin-top:14px"></div>
+</div>
+</div>
+
+<div class="chat-room" id="chat-room">
+<div class="chat-header">
+<button class="back-btn" onclick="closeRoom()">→</button>
+<div class="room-avatar" id="room-avatar">?</div>
+<div class="room-info" id="room-info-click">
+<div class="room-name" id="room-name"></div>
+<div class="room-sub" id="room-sub"></div>
+<div id="chat-status" style="min-height:14px;margin-top:2px"></div>
+</div>
+<button class="back-btn call-start-btn" id="call-start-btn" style="display:none" onclick="startCallFromChat()">📞</button>
+</div>
+<div class="messages-area" id="messages-area"></div>
+<div class="reply-bar" id="reply-bar">
+<span style="color:var(--p);font-size:18px">↩</span>
+<div class="reply-bar-info"><div class="reply-bar-name" id="reply-bar-name"></div><div class="reply-bar-text" id="reply-bar-text"></div></div>
+<button class="reply-close" id="reply-close">✕</button>
+</div>
+<div class="input-area" id="input-area">
+<button class="attach" id="attach-btn">📎</button>
+<input type="text" class="msg-input" id="msg-input" placeholder="پیام..." data-i18n-ph="msgPlaceholder">
+<button class="send-btn" id="send-btn">➤</button>
+</div>
+<div class="rec-bar" id="rec-bar">
+<div class="rec-dot"></div>
+<div class="rec-time" id="rec-time">0:00</div>
+<div class="rec-text" data-i18n="recording">در حال ضبط...</div>
+<button class="rec-btn rec-cancel" id="rec-cancel" data-i18n="cancel">لغو</button>
+<button class="rec-btn rec-send" id="rec-send" data-i18n="send">ارسال</button>
+</div>
+</div>
+
+<div class="attach-menu" id="attach-menu">
+<button class="menu-item" onclick="pickImage()"><span class="menu-icon img">🖼️</span><span data-i18n="sendImage">ارسال عکس</span></button>
+<button class="menu-item" onclick="pickFile()"><span class="menu-icon fl">📄</span><span data-i18n="sendFile">ارسال فایل</span></button>
+<button class="menu-item" onclick="startRec()"><span class="menu-icon vc">🎤</span><span data-i18n="sendVoice">ضبط ویس</span></button>
+</div>
+
+<input type="file" id="file-img" accept="image/*" style="display:none">
+<input type="file" id="file-doc" style="display:none">
+<input type="file" id="file-story" accept="image/*,video/*" style="display:none">
+<input type="file" id="file-lib" accept="video/*,image/*" style="display:none">
+
+<div class="story-viewer" id="story-viewer">
+<div class="story-prog"><div class="story-prog-bar" id="story-prog-bar"></div></div>
+<div class="story-head"><div class="story-head-av" id="story-head-av"></div><div class="story-head-info"><div class="story-head-name" id="story-head-name"></div><div class="story-head-time" id="story-head-time"></div></div><button class="story-close" onclick="closeStory()">✕</button></div>
+<button class="story-nav story-prev" onclick="prevStory()">‹</button>
+<button class="story-nav story-next" onclick="nextStory()">›</button>
+<div class="story-media" id="story-media"></div>
+<div class="story-cap" id="story-cap" style="display:none"></div>
+</div>
+
+<div class="modal-overlay" id="contact-modal"><div class="modal"><h3 data-i18n="newContactTitle">👤 مخاطب جدید</h3><p data-i18n="newContactDesc">ایمیل مخاطب را وارد کن</p><input type="email" id="contact-email" placeholder="friend@example.com"><div class="modal-btns"><button class="btn-cancel" onclick="closeModal('contact-modal')" data-i18n="cancel">انصراف</button><button class="btn-primary" id="contact-add" data-i18n="add">افزودن</button></div></div></div>
+
+<div class="modal-overlay" id="group-modal"><div class="modal"><h3 id="group-title" data-i18n="newGroupTitle">گروه جدید</h3><p data-i18n="newGroupDesc">اطلاعات را وارد کن</p>
+<label>🔒 نوع دسترسی</label>
+<div class="privacy-picker">
+  <button class="privacy-option selected" data-privacy="public" onclick="setGroupPrivacy('public')">
+    <span class="privacy-icon">🌐</span>
+    <div class="privacy-title">عمومی</div>
+    <div class="privacy-desc">در جستجو دیده می‌شود</div>
+  </button>
+  <button class="privacy-option" data-privacy="private" onclick="setGroupPrivacy('private')">
+    <span class="privacy-icon">🔒</span>
+    <div class="privacy-title">خصوصی</div>
+    <div class="privacy-desc">فقط با دعوت</div>
+  </button>
+</div>
+<label data-i18n="nameLbl">نام</label><input type="text" id="group-name"><label data-i18n="descLbl">توضیحات</label><textarea id="group-desc"></textarea><label data-i18n="selectMembers">انتخاب اعضا</label><input type="text" class="search-inp" id="search-contacts" placeholder="جستجو..." data-i18n-ph="searchPlaceholder"><div class="contacts-picker" id="contacts-picker"></div><div class="selected-count" id="selected-count"></div><div class="modal-btns"><button class="btn-cancel" onclick="closeModal('group-modal')" data-i18n="cancel">انصراف</button><button class="btn-primary" id="group-create" data-i18n="create">ساخت</button></div></div></div>
+
+<div class="modal-overlay" id="story-modal"><div class="modal"><h3 data-i18n="newStoryTitle">📸 استوری جدید</h3><p data-i18n="newStoryDesc">عکس یا ویدیو انتخاب کن</p><div class="story-preview empty" id="story-preview" data-i18n="nothingSelected">چیزی انتخاب نشده</div><button class="btn-primary" style="width:100%;padding:11px;border-radius:12px;margin-bottom:12px;font-family:inherit;font-weight:700;cursor:pointer" onclick="document.getElementById('file-story').click()" data-i18n="pickFile">📷 انتخاب فایل</button><label data-i18n="captionLbl">کپشن</label><input type="text" id="story-cap-inp"><div class="modal-btns"><button class="btn-cancel" onclick="closeModal('story-modal')" data-i18n="cancel">انصراف</button><button class="btn-primary" id="story-pub" data-i18n="publish">انتشار</button></div></div></div>
+
+<div class="modal-overlay" id="stories-list-modal"><div class="modal"><h3 data-i18n="storiesListTitle">📸 استوری‌ها</h3><p data-i18n="pickUser">یک کاربر انتخاب کن</p><div id="stories-list-content" style="max-height:60vh;overflow-y:auto;margin-bottom:12px"></div><div class="modal-btns"><button class="btn-cancel" onclick="closeModal('stories-list-modal')" data-i18n="close">بستن</button><button class="btn-primary" onclick="closeModal('stories-list-modal');openStoryModal()" data-i18n="addStory">افزودن استوری</button></div></div></div>
+
+<div class="modal-overlay" id="edit-modal"><div class="modal"><h3 data-i18n="editMsgTitle">✏️ ویرایش پیام</h3><p data-i18n="editMsgDesc">متن جدید را وارد کن</p><input type="text" id="edit-inp"><div class="modal-btns"><button class="btn-cancel" onclick="closeModal('edit-modal')" data-i18n="cancel">انصراف</button><button class="btn-primary" id="edit-save" data-i18n="save">ذخیره</button></div></div></div>
+
+<div class="modal-overlay" id="lib-modal"><div class="modal"><h3 data-i18n="libAddTitle">🎬 افزودن به کتابخانه</h3><label data-i18n="titleLbl">عنوان</label><input type="text" id="lib-title"><label data-i18n="descLbl">توضیحات</label><textarea id="lib-desc"></textarea><div class="story-preview empty" id="lib-preview" data-i18n="nothingSelected">چیزی انتخاب نشده</div><button class="btn-primary" style="width:100%;padding:11px;border-radius:12px;margin-bottom:12px;font-family:inherit;font-weight:700;cursor:pointer" onclick="document.getElementById('file-lib').click()" data-i18n="pickFile">📷 انتخاب فایل</button><div class="modal-btns"><button class="btn-cancel" onclick="closeModal('lib-modal')" data-i18n="cancel">انصراف</button><button class="btn-primary" id="lib-pub" data-i18n="add">افزودن</button></div></div></div>
+
+<div class="modal-overlay" id="bot-modal"><div class="modal"><h3 data-i18n="botNewTitle">🤖 ربات جدید</h3><label data-i18n="nameLbl">نام</label><input type="text" id="bot-name"><label data-i18n="descLbl">توضیحات</label><textarea id="bot-desc"></textarea><label data-i18n="autoReplyLbl">پاسخ خودکار</label><textarea id="bot-reply"></textarea><div class="modal-btns"><button class="btn-cancel" onclick="closeModal('bot-modal')" data-i18n="cancel">انصراف</button><button class="btn-primary" id="bot-create" data-i18n="create">ساخت</button></div></div></div>
+
+<div class="modal-overlay" id="edu-modal"><div class="modal"><h3 data-i18n="newClassTitle">📚 کلاس جدید</h3><label data-i18n="classNameLbl">نام کلاس</label><input type="text" id="edu-name"><label data-i18n="descLbl">توضیحات</label><textarea id="edu-desc"></textarea><div class="modal-btns"><button class="btn-cancel" onclick="closeModal('edu-modal')" data-i18n="cancel">انصراف</button><button class="btn-primary" id="edu-create" data-i18n="create">ساخت</button></div></div></div>
+
+<div class="modal-overlay" id="edu-join-modal"><div class="modal"><h3 data-i18n="joinTitle">🔑 ورود به کلاس</h3><p data-i18n="joinDesc">کد ۶ رقمی که معلم داده رو وارد کن</p><input type="text" id="edu-join-code" maxlength="6" inputmode="numeric" pattern="[0-9]*" placeholder="123456" style="text-align:center;font-size:24px;letter-spacing:8px;font-weight:800;direction:ltr"><div class="modal-btns"><button class="btn-cancel" onclick="closeModal('edu-join-modal')" data-i18n="cancel">انصراف</button><button class="btn-primary" id="edu-join-btn" data-i18n="enter">ورود</button></div></div></div>
+
+<div class="modal-overlay" id="edu-code-modal"><div class="modal"><h3 data-i18n="classCreated">✅ کلاس ساخته شد!</h3><p data-i18n="giveCodeDesc">این کد رو به دانش‌آموزان بده:</p><div style="background:linear-gradient(135deg,rgba(0,212,255,.2),rgba(123,63,242,.2));border:2px dashed var(--p);border-radius:14px;padding:18px;text-align:center;font-size:34px;font-weight:900;letter-spacing:10px;direction:ltr;color:var(--p);margin:14px 0" id="edu-show-code">------</div><button class="btn-primary" style="width:100%;padding:11px;border-radius:12px;font-family:inherit;font-weight:700;cursor:pointer;margin-bottom:8px" onclick="copyEduCode()" data-i18n="copyCode">📋 کپی کد</button><div class="modal-btns"><button class="btn-primary" onclick="closeModal('edu-code-modal');loadEdu()" data-i18n="ok">باشه</button></div></div></div>
+
+<div class="modal-overlay" id="add-video-modal"><div class="modal"><h3 data-i18n="addVideoTitle">🎬 افزودن ویدیو</h3>
+<div class="tabs" style="margin-bottom:12px">
+<button class="tab active" data-vmode="upload" onclick="switchVideoMode('upload')" data-i18n="uploadFromDevice">📤 آپلود از دستگاه</button>
+<button class="tab" data-vmode="link" onclick="switchVideoMode('link')" data-i18n="linkTab">🔗 لینک</button>
+</div>
+<label data-i18n="videoTitleLbl">عنوان ویدیو</label>
+<input type="text" id="v-title" placeholder="مثلاً: جلسه ۱ - مقدمه" data-i18n-ph="videoTitlePh">
+<label data-i18n="descOptional">توضیحات (اختیاری)</label>
+<textarea id="v-desc" placeholder="توضیح کوتاه..." data-i18n-ph="descPh"></textarea>
+<div id="v-upload-section">
+<div class="story-preview empty" id="v-preview" style="height:180px" data-i18n="nothingSelected">ویدیویی انتخاب نشده</div>
+<input type="file" id="v-file" accept="video/*" style="display:none">
+<button class="btn-primary" style="width:100%;padding:11px;border-radius:12px;margin-bottom:12px;font-family:inherit;font-weight:700;cursor:pointer" onclick="document.getElementById('v-file').click()" data-i18n="pickVideo">📹 انتخاب ویدیو از دستگاه</button>
+<p style="font-size:11px;color:var(--mut);margin-top:-6px;margin-bottom:12px" data-i18n="maxSize">حداکثر حجم: ۵۰ مگابایت</p>
+<div id="v-upload-progress" style="display:none;margin-bottom:12px">
+<div style="background:rgba(0,212,255,.1);border-radius:10px;height:8px;overflow:hidden;margin-bottom:6px">
+<div id="v-progress-bar" style="height:100%;background:linear-gradient(90deg,#00d4ff,#7b3ff2);width:0%;transition:width .3s"></div>
+</div>
+<div style="font-size:11px;color:var(--p);text-align:center" id="v-progress-text">۰٪</div>
+</div>
+</div>
+<div id="v-link-section" style="display:none">
+<label data-i18n="videoUrlLbl">لینک ویدیو (URL)</label>
+<input type="url" id="v-url" placeholder="https://..." style="direction:ltr">
+<p style="font-size:11px;color:var(--mut);margin-top:-6px;margin-bottom:12px" data-i18n="linkHint">میتونی از یوتیوب، آپارات یا هر لینک mp4 استفاده کنی</p>
+</div>
+<div class="modal-btns"><button class="btn-cancel" onclick="closeModal('add-video-modal')" data-i18n="cancel">انصراف</button><button class="btn-primary" id="v-add-btn" data-i18n="add">افزودن</button></div></div></div>
+
+<div class="msg-menu" id="msg-menu"></div>
+
+<div class="search-modal" id="search-modal">
+  <div class="search-header">
+    <input type="text" id="search-input" placeholder="جستجوی گروه یا کانال..." oninput="doGlobalSearch()">
+    <button class="close-search" onclick="closeGlobalSearch()">✕</button>
+  </div>
+  <div class="search-tabs">
+    <button class="search-tab active" data-search="all" onclick="switchSearchTab('all')">🌐 همه</button>
+    <button class="search-tab" data-search="group" onclick="switchSearchTab('group')">👥 گروه‌ها</button>
+    <button class="search-tab" data-search="channel" onclick="switchSearchTab('channel')">📢 کانال‌ها</button>
+  </div>
+  <div class="search-results" id="search-results">
+    <div class="search-empty">
+      <div class="icon">🔍</div>
+      <h3>جستجو کن...</h3>
+      <p style="font-size:12px;margin-top:8px">نام گروه یا کانال رو تایپ کن</p>
+    </div>
+  </div>
+</div>
+
+<div class="virtual-class" id="virtual-class">
+  <div class="vc-header">
+    <button class="vc-close" onclick="exitVirtualClass()">✕</button>
+    <h3 id="vc-title">کلاس مجازی</h3>
+    <div class="vc-live-badge"><span class="vc-live-dot"></span> LIVE</div>
+  </div>
+  <div class="vc-tabs">
+    <button class="vc-tab active" data-vc="board" onclick="switchVcTab('board')">📝 تخته</button>
+    <button class="vc-tab" data-vc="chat" onclick="switchVcTab('chat')">💬 چت</button>
+    <button class="vc-tab" data-vc="students" onclick="switchVcTab('students')">👥 حاضرین</button>
+  </div>
+  <div class="vc-body">
+    <div class="vc-panel active" id="vc-board">
+      <div id="vc-board-wrap">
+        <canvas id="whiteboard"></canvas>
+        <div class="vc-image-layer" id="vc-image-layer"></div>
+      </div>
+      <input type="file" id="vc-board-file" accept="image/*" style="display:none">
+      <div class="vc-board-tools" id="vc-board-tools">
+        <button class="vc-tool-btn active" data-tool="pen" onclick="setVcTool('pen')">✏️ قلم</button>
+        <button class="vc-tool-btn" data-tool="eraser" onclick="setVcTool('eraser')">🧹 پاک‌کن</button>
+        <input type="color" id="vc-color" value="#00d4ff" title="رنگ">
+        <button class="vc-tool-btn upload" onclick="document.getElementById('vc-board-file').click()">🖼️ عکس</button>
+        <button class="vc-tool-btn danger" onclick="clearBoard()">🗑️ پاک کردن</button>
+        <span class="vc-lock-note" id="vc-lock-note" style="display:none">👁 فقط معلم می‌تواند بنویسد</span>
+      </div>
+    </div>
+    <div class="vc-panel" id="vc-chat">
+      <div id="vc-messages"></div>
+      <div class="vc-chat-input-row">
+        <input type="text" class="vc-chat-input" id="vc-chat-input" placeholder="پیام به کلاس...">
+        <button class="vc-send-btn" onclick="sendVcChat()">➤</button>
+      </div>
+    </div>
+    <div class="vc-panel" id="vc-students"><div id="vc-students-list"></div></div>
+  </div>
+  <div class="vc-footer">
+    <button class="vc-ctrl mic" id="vc-mic-btn" onclick="toggleVcMic()">🎤</button>
+    <button class="vc-ctrl leave" onclick="exitVirtualClass()">📞</button>
+  </div>
+  <button id="vc-unlock-audio" onclick="unlockVcAudio()" style="display:none;position:absolute;bottom:90px;left:50%;transform:translateX(-50%);z-index:9999;padding:14px 28px;border-radius:30px;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;border:none;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 20px rgba(34,197,94,.6);animation:bl 1.5s infinite">🔊 برای شنیدن صدا کلیک کن</button>
+</div>
+
+<div class="page" id="page-profile">
+<div class="top-bar">
+<button class="icon-btn" onclick="closeProfile()"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
+<div class="app-title"><h1 data-i18n="profile">پروفایل</h1><p id="profile-email-lbl">...</p></div>
+<button class="icon-btn" id="profile-edit-btn" onclick="openEditProfile()"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button>
+</div>
+<div class="profile-card">
+<div class="profile-avatar-wrap">
+<div class="profile-avatar" id="profile-avatar">?</div>
+<div class="profile-avatar-edit" onclick="document.getElementById('avatar-file').click()">📷</div>
+</div>
+<h2 class="profile-name" id="profile-name">...</h2>
+<p class="profile-username" id="profile-username">@...</p>
+<p class="profile-bio" id="profile-bio">—</p>
+</div>
+<div class="profile-info">
+<div class="profile-info-item"><span class="profile-info-label" data-i18n="phoneLbl">📱 شماره تماس</span><span class="profile-info-value" id="profile-phone">—</span></div>
+<div class="profile-info-item"><span class="profile-info-label" data-i18n="emailLbl">✉️ ایمیل</span><span class="profile-info-value" id="profile-email-txt">—</span></div>
+</div>
+<input type="file" id="avatar-file" accept="image/*" style="display:none">
+</div>
+
+<div class="page" id="page-settings">
+<div class="top-bar">
+<button class="icon-btn" onclick="showPage('home')"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
+<div class="app-title"><h1 data-i18n="settings">تنظیمات</h1></div>
+<div style="width:44px"></div>
+</div>
+<div class="settings-section">
+<h3 data-i18n="accountSection">👤 حساب کاربری</h3>
+<div class="settings-item" onclick="openMyProfile()">
+<div class="settings-icon">👤</div>
+<div class="settings-info"><div class="settings-title" data-i18n="profile">پروفایل</div><div class="settings-desc" data-i18n="profileDesc">نام، عکس، بیوگرافی</div></div>
+<div class="settings-arrow">‹</div>
+</div>
+</div>
+<div class="settings-section">
+<h3 data-i18n="languageSection">🌐 زبان</h3>
+<div class="settings-item">
+<div class="settings-icon">🌐</div>
+<div class="settings-info"><div class="settings-title" data-i18n="language">زبان</div><div class="settings-desc" data-i18n="languageDesc">فارسی یا انگلیسی</div></div>
+<select class="settings-select" id="lang-select" onchange="changeLang(this.value)"><option value="fa">فارسی</option><option value="en">English</option></select>
+</div>
+</div>
+<div class="settings-section">
+<h3 data-i18n="securitySection">🔒 امنیت</h3>
+<div class="settings-item" onclick="openTwoFA()">
+<div class="settings-icon">🔐</div>
+<div class="settings-info"><div class="settings-title" data-i18n="twoFA">رمز دو مرحله‌ای</div><div class="settings-desc" id="twofa-status" data-i18n="twoFADesc">محافظت بیشتر از حساب</div></div>
+<div class="settings-arrow">‹</div>
+</div>
+<div class="settings-item" onclick="showSessions()">
+<div class="settings-icon">📱</div>
+<div class="settings-info"><div class="settings-title" data-i18n="activeSessions">نشست‌های فعال</div><div class="settings-desc" data-i18n="activeSessionsDesc">دستگاه‌های متصل</div></div>
+<div class="settings-arrow">‹</div>
+</div>
+<div class="settings-item" onclick="changePassword()">
+<div class="settings-icon">🔑</div>
+<div class="settings-info"><div class="settings-title" data-i18n="changePassword">تغییر رمز عبور</div><div class="settings-desc" data-i18n="changePasswordDesc">رمز جدید تنظیم کن</div></div>
+<div class="settings-arrow">‹</div>
+</div>
+</div>
+<div class="settings-section">
+<h3 data-i18n="aboutSection">ℹ️ درباره</h3>
+<div class="settings-item" onclick="alert('نکسوم - نسخه ۱.۰\nساخته شده توسط استودیو MMA')">
+<div class="settings-icon">📱</div>
+<div class="settings-info"><div class="settings-title" data-i18n="appVersion">نسخه برنامه</div><div class="settings-desc">1.0.0</div></div>
+<div class="settings-arrow">‹</div>
+</div>
+<div class="settings-item" onclick="logout()">
+<div class="settings-icon" style="background:linear-gradient(135deg,#ef4444,#dc2626)">🚪</div>
+<div class="settings-info"><div class="settings-title" style="color:#ef4444" data-i18n="logoutBtn">خروج از حساب</div><div class="settings-desc" data-i18n="logoutDesc">خارج شدن از این دستگاه</div></div>
+<div class="settings-arrow">‹</div>
+</div>
+</div>
+</div>
+
+<div class="modal-overlay" id="edit-profile-modal">
+<div class="modal">
+<h3 data-i18n="editProfileTitle">✏️ ویرایش پروفایل</h3>
+<label data-i18n="nameLbl">نام</label>
+<input type="text" id="ep-name" placeholder="مثلاً: سبحان">
+<label data-i18n="usernameLbl">نام کاربری</label>
+<input type="text" id="ep-username" placeholder="sobhann" style="direction:ltr">
+<p style="font-size:10px;color:var(--mut);margin-top:-6px;margin-bottom:12px" data-i18n="usernameHint">فقط حروف انگلیسی، اعداد و _ (بدون @)</p>
+<label data-i18n="bioLbl">درباره من</label>
+<textarea id="ep-bio" placeholder="یه توضیح کوتاه..."></textarea>
+<label data-i18n="phoneLbl2">شماره تماس (اختیاری)</label>
+<input type="tel" id="ep-phone" placeholder="09123456789" style="direction:ltr">
+<div class="modal-btns"><button class="btn-cancel" onclick="closeModal('edit-profile-modal')" data-i18n="cancel">انصراف</button><button class="btn-primary" id="ep-save" data-i18n="save">ذخیره</button></div>
+</div>
+</div>
+
+<div class="modal-overlay" id="view-profile-modal">
+<div class="modal">
+<div style="text-align:center;margin-bottom:14px">
+<div class="profile-avatar" id="vp-avatar" style="width:80px;height:80px;font-size:32px;margin:0 auto 12px">?</div>
+<h3 id="vp-name" style="margin-bottom:4px">...</h3>
+<p id="vp-username" style="font-size:12px;color:var(--p);margin-bottom:10px">@...</p>
+<p id="vp-bio" style="font-size:12px;color:var(--mut);line-height:1.5">—</p>
+</div>
+<div class="modal-btns"><button class="btn-primary" id="vp-chat-btn" data-i18n="startChat">شروع گفتگو</button><button class="btn-cancel" onclick="closeModal('view-profile-modal')" data-i18n="close">بستن</button></div>
+</div>
+</div>
+
+<div class="modal-overlay" id="twofa-modal">
+<div class="modal">
+<h3 data-i18n="twoFATitle">🔐 رمز دو مرحله‌ای</h3>
+<p data-i18n="twoFADesc2">با فعال‌سازی، هنگام ورود یک کد ۶ رقمی به ایمیلت فرستاده می‌شود.</p>
+<div id="twofa-step1"><button class="btn-primary" style="width:100%;padding:12px;border-radius:12px;font-family:inherit;font-weight:700;cursor:pointer;margin-bottom:10px" id="twofa-enable-btn" data-i18n="twoFAEnable">فعال‌سازی</button></div>
+<div id="twofa-step2" style="display:none">
+<label data-i18n="twoFACodeLbl">کد ۶ رقمی</label>
+<input type="text" id="twofa-code-inp" maxlength="6" inputmode="numeric" placeholder="123456" style="text-align:center;font-size:20px;letter-spacing:6px;direction:ltr">
+<p style="font-size:11px;color:var(--mut);text-align:center;margin-top:-6px;margin-bottom:12px" id="twofa-hint"></p>
+<button class="btn-primary" style="width:100%;padding:12px;border-radius:12px;font-family:inherit;font-weight:700;cursor:pointer" id="twofa-verify-btn" data-i18n="verify">تأیید</button>
+</div>
+<div class="modal-btns" style="margin-top:8px"><button class="btn-cancel" onclick="closeModal('twofa-modal')" data-i18n="cancel">انصراف</button></div>
+</div>
+</div>
+
+<div class="modal-overlay" id="sessions-modal">
+<div class="modal">
+<h3 data-i18n="sessionsTitle">📱 نشست‌های فعال</h3>
+<p data-i18n="sessionsDesc">دستگاه‌هایی که با حساب تو لاگین کردن:</p>
+<div id="sessions-list" style="max-height:50vh;overflow-y:auto;margin-bottom:12px"></div>
+<div class="modal-btns"><button class="btn-cancel" style="background:rgba(239,68,68,.2);color:#fca5a5" onclick="logoutAll()" data-i18n="logoutAll">خروج از همه</button><button class="btn-primary" onclick="closeModal('sessions-modal')" data-i18n="close">بستن</button></div>
+</div>
+</div>
+
+<div class="modal-overlay" id="password-modal">
+<div class="modal">
+<h3 data-i18n="changePasswordTitle">🔑 تغییر رمز عبور</h3>
+<label data-i18n="newPassword">رمز جدید</label>
+<input type="password" id="new-password" placeholder="••••••••">
+<label data-i18n="confirmPassword">تکرار رمز جدید</label>
+<input type="password" id="confirm-password" placeholder="••••••••">
+<div class="modal-btns"><button class="btn-cancel" onclick="closeModal('password-modal')" data-i18n="cancel">انصراف</button><button class="btn-primary" id="password-save" data-i18n="save">ذخیره</button></div>
+</div>
+</div>
+
+<div class="call-modal" id="call-modal">
+<div class="call-header"><div class="call-title" id="call-title">📞 تماس</div><div class="call-sub" id="call-sub">در حال اتصال...</div></div>
+<div class="call-participants" id="call-participants"></div>
+<div class="call-status" id="call-status"></div>
+<div class="call-controls"><button class="call-btn mic" id="call-mic-btn">🎤</button><button class="call-btn end" id="call-end-btn">📞</button></div>
+</div>
+
+<div class="bottom-nav">
+<button class="nav-item active" id="nav-home" onclick="showPage('home')"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span data-i18n="home">خانه</span></button>
+<button class="nav-item" id="nav-chats" onclick="showPage('chats')"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg><span data-i18n="chats">چت‌ها</span></button>
+<button class="nav-item center" onclick="showPage('chats')"><div class="center-circle">⚡</div></button>
+<button class="nav-item" id="nav-library" onclick="showPage('library')"><svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8 12.5v-9l6 4.5-6 4.5z"/></svg><span data-i18n="library">کتابخانه</span></button>
+<button class="nav-item" id="nav-more" onclick="showPage('settings')"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg><span data-i18n="settings">تنظیمات</span></button>
+</div>
+<script type="module">
+import{createClient}from'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+const SB='https://sgjrwmnfvrpjtshlabva.supabase.co';
+const AK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNnanJ3bW5mdnJwanRzaGxhYnZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkwNTYwNzcsImV4cCI6MjEwNDYzMjA3N30._BOp-ONPTEbaM2mnGdJbdvjN-7qqA87zvannrOv02Eo';
+const sb=createClient(SB,AK);
+const{data:{session}}=await sb.auth.getSession();
+if(!session?.user?.email){location.href='index.html'}
+const myEmail=session.user.email;
+document.getElementById('my-email-lbl').textContent=myEmail;
+const esc=s=>{const d=document.createElement('div');d.textContent=s||'';return d.innerHTML};
+const ini=s=>(s||'?').charAt(0).toUpperCase();
+const fmtT=s=>{const m=Math.floor(s/60),ss=Math.floor(s%60);return`${m}:${ss.toString().padStart(2,'0')}`};
+const fmtSz=b=>{if(!b)return'0 B';if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';if(b<1073741824)return(b/1048576).toFixed(1)+' MB';return(b/1073741824).toFixed(2)+' GB'};
+const ago=d=>{const s=Math.floor((Date.now()-d.getTime())/1000),m=Math.floor(s/60),h=Math.floor(m/60),dd=Math.floor(h/24);if(s<60)return t('justNow');if(m<60)return m+' '+t('minAgo');if(h<24)return h+' '+t('hrAgo');return dd+' '+t('dayAgo')};
+const shortTime=d=>{const now=new Date();const date=new Date(d);const diff=Math.floor((now-date.getTime())/1000);const isToday=now.toDateString()===date.toDateString();const yesterday=new Date(now);yesterday.setDate(yesterday.getDate()-1);const isYesterday=yesterday.toDateString()===date.toDateString();if(diff<60)return lang==='fa'?'الان':'now';if(isToday){const hh=date.getHours(),mm=date.getMinutes();return (hh<10?'0':'')+hh+':'+(mm<10?'0':'')+mm}if(isYesterday)return lang==='fa'?'دیروز':'yesterday';if(diff<7*86400){const days=['یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه','شنبه'];if(lang==='fa')return days[date.getDay()];return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][date.getDay()]}return (date.getMonth()+1)+'/'+date.getDate()};
+const previewMsg=m=>{if(!m)return '';if(m.deleted_for_all)return '🚫 '+(lang==='fa'?'پیام حذف شد':'Message deleted');if(m.message_type==='voice')return '🎤 '+(lang==='fa'?'پیام صوتی':'Voice message');if(m.message_type==='image')return '🖼️ '+(lang==='fa'?'عکس':'Photo');if(m.message_type==='file')return '📄 '+(m.file_name||'فایل');return m.content||''};
+const I18N={fa:{appName:'نکسوم',appTagline:'سوپر اپلیکیشن',welcome:'سلام!',welcomeSub:'به نکسوم خوش آمدید',groups:'گروه‌ها',channels:'کانال‌ها',contacts:'مخاطبین',chats:'گفتگوها',library:'کتابخانه',bots:'ربات‌ها',finance:'خدمات مالی',financeShort:'مالی',education:'آموزش',home:'خانه',more:'بیشتر',privateTab:'خصوصی',secTitle:'امنیت بالا',secSub:'با رمزنگاری پیشرفته',spdTitle:'سرعت بالا',spdSub:'ارسال و دریافت سریع',cldTitle:'فضای ابری',cldSub:'دسترسی از همه جا',freTitle:'رایگان',freSub:'بدون هزینه، همیشه',librarySub:'ویدیوها و محتوا',botsSub:'پاسخ خودکار',financeSub:'شارژ، بسته، پرداخت',classes:'کلاس‌ها',classPanel:'پنل مدیریت',wallet:'کیف پول',balance:'موجودی',chargeSection:'📱 شارژ و بسته اینترنت',mci:'همراه اول',irancell:'ایرانسل',rightel:'رایتل',otherOperators:'سایر اپراتورها',chargeDesc:'شارژ / بسته اینترنت',servicePortal:'سامانه خدمات',otherServices:'🧾 خدمات دیگر',payElectricity:'پرداخت برق',payGas:'پرداخت گاز',payWater:'پرداخت آب',payPhone:'پرداخت تلفن',newContact:'مخاطب',newGroup:'گروه',newChannel:'کانال',joinWithCode:'ورود با کد',createClass:'ساخت کلاس',newContactTitle:'👤 مخاطب جدید',newContactDesc:'ایمیل مخاطب را وارد کن',newGroupTitle:'گروه جدید',newGroupDesc:'اطلاعات را وارد کن',nameLbl:'نام',descLbl:'توضیحات',selectMembers:'انتخاب اعضا',searchPlaceholder:'جستجو...',newStoryTitle:'📸 استوری جدید',newStoryDesc:'عکس یا ویدیو انتخاب کن',nothingSelected:'چیزی انتخاب نشده',pickFile:'📷 انتخاب فایل',captionLbl:'کپشن',publish:'انتشار',storiesListTitle:'📸 استوری‌ها',pickUser:'یک کاربر انتخاب کن',close:'بستن',addStory:'افزودن استوری',editMsgTitle:'✏️ ویرایش پیام',editMsgDesc:'متن جدید را وارد کن',libAddTitle:'🎬 افزودن به کتابخانه',titleLbl:'عنوان',botNewTitle:'🤖 ربات جدید',autoReplyLbl:'پاسخ خودکار',newClassTitle:'📚 کلاس جدید',classNameLbl:'نام کلاس',joinTitle:'🔑 ورود به کلاس',joinDesc:'کد ۶ رقمی که معلم داده رو وارد کن',enter:'ورود',classCreated:'✅ کلاس ساخته شد!',giveCodeDesc:'این کد رو به دانش‌آموزان بده:',copyCode:'📋 کپی کد',addVideoTitle:'🎬 افزودن ویدیو',uploadFromDevice:'📤 آپلود از دستگاه',linkTab:'🔗 لینک',videoTitleLbl:'عنوان ویدیو',videoTitlePh:'مثلاً: جلسه ۱ - مقدمه',descOptional:'توضیحات (اختیاری)',descPh:'توضیح کوتاه...',pickVideo:'📹 انتخاب ویدیو از دستگاه',maxSize:'حداکثر حجم: ۵۰ مگابایت',videoUrlLbl:'لینک ویدیو (URL)',linkHint:'میتونی از یوتیوب، آپارات یا هر لینک mp4 استفاده کنی',msgPlaceholder:'پیام...',sendImage:'ارسال عکس',sendFile:'ارسال فایل',sendVoice:'ضبط ویس',recording:'در حال ضبط...',send:'ارسال',cancel:'انصراف',save:'ذخیره',delete:'حذف',add:'افزودن',create:'ساخت',ok:'باشه',copy:'کپی',videos:'🎬 ویدیوها',members:'👥 اعضا',addVideo:'➕ افزودن ویدیو',classCode:'کد کلاس',loading:'در حال بارگذاری...',noClasses:'هنوز کلاسی نیست',noContacts:'هنوز مخاطبی نداری',error:'خطا',teacher:'معلم',student:'دانش‌آموز',emptyChat:'هنوز پیامی نیست',emptyVideo:'هنوز ویدیویی نیست',emptyMembers:'هنوز دانش‌آموزی نیست',logoutConfirm:'خارج می‌شوی؟',justNow:'الان',minAgo:'دقیقه پیش',hrAgo:'ساعت پیش',dayAgo:'روز پیش',you:'شما',replyLabel:'پاسخ',editLabel:'✏️ ویرایش',voiceMsg:'🎤 ویس',imageMsg:'🖼️ عکس',fileMsg:'📄 فایل',edited:'ویرایش شده',invalidEmail:'ایمیل معتبر نیست',cantChatSelf:'نمی‌تونی با خودت چت کنی!',onlyTeacher:'فقط معلم می‌تونه ویدیو اضافه کنه',deleteVideo:'این ویدیو حذف شود؟',deleteStudent:'این دانش‌آموز از کلاس حذف شود؟',copySuccess:'کد کپی شد',profile:'پروفایل',editProfileTitle:'✏️ ویرایش پروفایل',usernameLbl:'نام کاربری',usernameHint:'فقط حروف انگلیسی، اعداد و _ (بدون @)',bioLbl:'درباره من',phoneLbl:'📱 شماره تماس',phoneLbl2:'شماره تماس (اختیاری)',emailLbl:'✉️ ایمیل',startChat:'شروع گفتگو',noBio:'درباره من چیزی ننوشتی',settings:'تنظیمات',accountSection:'👤 حساب کاربری',profileDesc:'نام، عکس، بیوگرافی',languageSection:'🌐 زبان',language:'زبان',languageDesc:'فارسی یا انگلیسی',securitySection:'🔒 امنیت',twoFA:'رمز دو مرحله‌ای',twoFADesc:'محافظت بیشتر از حساب',twoFATitle:'🔐 رمز دو مرحله‌ای',twoFADesc2:'با فعال‌سازی، هنگام ورود یک کد ۶ رقمی به ایمیلت فرستاده می‌شود.',twoFAEnable:'فعال‌سازی',twoFACodeLbl:'کد ۶ رقمی',verify:'تأیید',activeSessions:'نشست‌های فعال',activeSessionsDesc:'دستگاه‌های متصل',sessionsTitle:'📱 نشست‌های فعال',sessionsDesc:'دستگاه‌هایی که با حساب تو لاگین کردن:',logoutAll:'خروج از همه',changePassword:'تغییر رمز عبور',changePasswordDesc:'رمز جدید تنظیم کن',changePasswordTitle:'🔑 تغییر رمز عبور',newPassword:'رمز جدید',confirmPassword:'تکرار رمز جدید',aboutSection:'ℹ️ درباره',appVersion:'نسخه برنامه',logoutBtn:'خروج از حساب',logoutDesc:'خارج شدن از این دستگاه',callStart:'شروع تماس',callGroup:'تماس گروهی',callPrivate:'تماس خصوصی',callConnecting:'در حال اتصال...',callConnected:'متصل شد',callError:'خطا در تماس',deleteForAll:'حذف برای همه',deleteForMe:'حذف فقط برای من',deletedMsg:'این پیام حذف شد',deleteConfirmAll:'OK = حذف برای همه، Cancel = حذف فقط برای من',deleteConfirmMe:'این پیام برای تو حذف شود؟',typing:'در حال نوشتن...',recordingVoice:'در حال ضبط ویس...',uploadingFile:'در حال ارسال فایل...',online:'آنلاین',lastSeen:'آخرین بازدید',onlineCount:'آنلاین',youPrefix:'شما: '},en:{appName:'Nexom',appTagline:'Super App',welcome:'Hello!',welcomeSub:'Welcome to Nexom',groups:'Groups',channels:'Channels',contacts:'Contacts',chats:'Chats',library:'Library',bots:'Bots',finance:'Finance',financeShort:'Finance',education:'Education',home:'Home',more:'More',privateTab:'Private',secTitle:'High Security',secSub:'Advanced encryption',spdTitle:'High Speed',spdSub:'Fast send & receive',cldTitle:'Cloud Space',cldSub:'Access anywhere',freTitle:'Free',freSub:'No cost, always',librarySub:'Videos & content',botsSub:'Auto reply',financeSub:'Top-up, packages, payments',classes:'Classes',classPanel:'Admin Panel',wallet:'Wallet',balance:'Balance',chargeSection:'📱 Top-up & Internet',mci:'MCI',irancell:'Irancell',rightel:'Rightel',otherOperators:'Other operators',chargeDesc:'Top-up / Internet',servicePortal:'Service portal',otherServices:'🧾 Other Services',payElectricity:'Pay Electricity',payGas:'Pay Gas',payWater:'Pay Water',payPhone:'Pay Phone',newContact:'Contact',newGroup:'Group',newChannel:'Channel',joinWithCode:'Join with Code',createClass:'Create Class',newContactTitle:'👤 New Contact',newContactDesc:'Enter the contact email',newGroupTitle:'New Group',newGroupDesc:'Enter the information',nameLbl:'Name',descLbl:'Description',selectMembers:'Select members',searchPlaceholder:'Search...',newStoryTitle:'📸 New Story',newStoryDesc:'Pick an image or video',nothingSelected:'Nothing selected',pickFile:'📷 Pick a file',captionLbl:'Caption',publish:'Publish',storiesListTitle:'📸 Stories',pickUser:'Pick a user',close:'Close',addStory:'Add Story',editMsgTitle:'✏️ Edit Message',editMsgDesc:'Enter new text',libAddTitle:'🎬 Add to Library',titleLbl:'Title',botNewTitle:'🤖 New Bot',autoReplyLbl:'Auto reply',newClassTitle:'📚 New Class',classNameLbl:'Class Name',joinTitle:'🔑 Join Class',joinDesc:'Enter the 6-digit code from your teacher',enter:'Enter',classCreated:'✅ Class Created!',giveCodeDesc:'Give this code to students:',copyCode:'📋 Copy Code',addVideoTitle:'🎬 Add Video',uploadFromDevice:'📤 Upload from device',linkTab:'🔗 Link',videoTitleLbl:'Video title',videoTitlePh:'E.g. Session 1 - Intro',descOptional:'Description (optional)',descPh:'Short description...',pickVideo:'📹 Pick video from device',maxSize:'Max size: 50 MB',videoUrlLbl:'Video URL',linkHint:'You can use YouTube, Aparat or any mp4 link',msgPlaceholder:'Message...',sendImage:'Send image',sendFile:'Send file',sendVoice:'Record voice',recording:'Recording...',send:'Send',cancel:'Cancel',save:'Save',delete:'Delete',add:'Add',create:'Create',ok:'OK',copy:'Copy',videos:'🎬 Videos',members:'👥 Members',addVideo:'➕ Add Video',classCode:'Class Code',loading:'Loading...',noClasses:'No classes yet',noContacts:'No contacts yet',error:'Error',teacher:'Teacher',student:'Student',emptyChat:'No messages yet',emptyVideo:'No videos yet',emptyMembers:'No students yet',logoutConfirm:'Log out?',justNow:'Just now',minAgo:'min ago',hrAgo:'hr ago',dayAgo:'day ago',you:'You',replyLabel:'Reply',editLabel:'✏️ Edit',voiceMsg:'🎤 Voice',imageMsg:'🖼️ Image',fileMsg:'📄 File',edited:'edited',invalidEmail:'Invalid email',cantChatSelf:"You can't chat with yourself!",onlyTeacher:'Only the teacher can add videos',deleteVideo:'Delete this video?',deleteStudent:'Remove this student from class?',copySuccess:'Code copied',profile:'Profile',editProfileTitle:'✏️ Edit Profile',usernameLbl:'Username',usernameHint:'Only a-z, 0-9, _ (no @)',bioLbl:'About me',phoneLbl:'📱 Phone',phoneLbl2:'Phone (optional)',emailLbl:'✉️ Email',startChat:'Start Chat',noBio:'No bio yet',settings:'Settings',accountSection:'👤 Account',profileDesc:'Name, photo, bio',languageSection:'🌐 Language',language:'Language',languageDesc:'Persian or English',securitySection:'🔒 Security',twoFA:'Two-Factor Auth',twoFADesc:'Extra account protection',twoFATitle:'🔐 Two-Factor Auth',twoFADesc2:'When enabled, a 6-digit code is sent to your email on login.',twoFAEnable:'Enable',twoFACodeLbl:'6-digit code',verify:'Verify',activeSessions:'Active Sessions',activeSessionsDesc:'Connected devices',sessionsTitle:'📱 Active Sessions',sessionsDesc:'Devices logged into your account:',logoutAll:'Log out all',changePassword:'Change Password',changePasswordDesc:'Set a new password',changePasswordTitle:'🔑 Change Password',newPassword:'New password',confirmPassword:'Confirm new password',aboutSection:'ℹ️ About',appVersion:'App Version',logoutBtn:'Log out',logoutDesc:'Sign out from this device',callStart:'Start Call',callGroup:'Group Call',callPrivate:'Private Call',callConnecting:'Connecting...',callConnected:'Connected',callError:'Call error',deleteForAll:'Delete for everyone',deleteForMe:'Delete for me only',deletedMsg:'This message was deleted',deleteConfirmAll:'OK = Delete for everyone, Cancel = Delete for me only',deleteConfirmMe:'Delete this message for you?',typing:'typing...',recordingVoice:'Recording voice...',uploadingFile:'Uploading file...',online:'Online',lastSeen:'Last seen',onlineCount:'online',youPrefix:'You: '}};
+let lang=localStorage.getItem('lang')||'fa';
+function t(k){return(I18N[lang]&&I18N[lang][k])||(I18N.fa[k])||k}
+function applyLang(){document.documentElement.lang=lang;document.documentElement.dir=lang==='fa'?'rtl':'ltr';document.body.classList.toggle('lang-en',lang==='en');document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n)});document.querySelectorAll('[data-i18n-ph]').forEach(el=>{el.placeholder=t(el.dataset.i18nPh)});const lbl=document.getElementById('lang-lbl');if(lbl)lbl.textContent=lang==='fa'?'EN':'FA';const sel=document.getElementById('lang-select');if(sel)sel.value=lang;localStorage.setItem('lang',lang);if(typeof renderList==='function'&&document.getElementById('page-chats')?.classList.contains('active'))renderList()}
+window.toggleLang=()=>{lang=lang==='fa'?'en':'fa';applyLang()};
+window.changeLang=(newLang)=>{lang=newLang;applyLang()};
+let curTab='private',curChat=null,rtCh=null,allCts=[],selCts=[],grpType='group';
+let mr=null,ac=[],recStart=null,recTmr=null,curAud=null;
+let allSt=[],stByUser={},curStUser=null,curStIdx=0,stTmr=null,stRt=null,selStFile=null;
+let editId=null,menuTgt=null,replyTo=null;
+let selLibFile=null;
+let curClass=null,curCpTab='videos',vMode='upload',vFile=null;
+let groupPrivacy='public';
+let searchTab='all';
+let searchTimer=null;
+const namesCache={};const avatarsCache={};let myProfile=null;
+async function getProfile(email){if(!email)return null;const{data}=await sb.from('profiles').select('*').eq('email',email).maybeSingle();if(data){namesCache[email]=data.name||email.split('@')[0];avatarsCache[email]=data.avatar_url||null}return data}
+async function getName(email){if(!email)return '?';if(namesCache[email])return namesCache[email];const{data}=await sb.from('profiles').select('name').eq('email',email).maybeSingle();const name=data?.name||email.split('@')[0];namesCache[email]=name;return name}
+async function loadAllNames(emails){const unique=[...new Set(emails.filter(e=>e&&!namesCache[e]))];if(!unique.length)return;const{data}=await sb.from('profiles').select('email,name,avatar_url').in('email',unique);(data||[]).forEach(p=>{namesCache[p.email]=p.name||p.email.split('@')[0];avatarsCache[p.email]=p.avatar_url||null})}
+async function loadMyProfile(){let{data}=await sb.from('profiles').select('*').eq('email',myEmail).maybeSingle();if(!data){const defaultName=myEmail.split('@')[0];await sb.from('profiles').insert({email:myEmail,name:defaultName,username:defaultName});const{data:newData}=await sb.from('profiles').select('*').eq('email',myEmail).maybeSingle();data=newData}myProfile=data;if(data?.name)namesCache[myEmail]=data.name;if(data?.avatar_url)avatarsCache[myEmail]=data.avatar_url;return data}
+window.openMyProfile=async()=>{const p=await loadMyProfile();document.getElementById('profile-email-lbl').textContent=myEmail;document.getElementById('profile-email-txt').textContent=myEmail;const av=document.getElementById('profile-avatar');if(p?.avatar_url){av.textContent='';av.style.backgroundImage=`url('${p.avatar_url}')`}else{av.textContent=ini(p?.name||myEmail);av.style.backgroundImage=''}document.getElementById('profile-name').textContent=p?.name||myEmail.split('@')[0];document.getElementById('profile-username').textContent=p?.username?'@'+p.username:'@'+(myEmail.split('@')[0]);document.getElementById('profile-bio').textContent=p?.bio||t('noBio');document.getElementById('profile-phone').textContent=p?.phone||'—';showPage('profile')};
+window.closeProfile=()=>{showPage('home')};
+window.openProfile=async(email)=>{const targetEmail=email||myEmail;const isMe=targetEmail===myEmail;const p=await getProfile(targetEmail);if(!p){alert(t('error'));return}document.getElementById('vp-avatar').textContent=p.avatar_url?'':ini(p.name||p.email);document.getElementById('vp-avatar').style.backgroundImage=p.avatar_url?`url('${p.avatar_url}')`:'';document.getElementById('vp-avatar').style.backgroundSize='cover';document.getElementById('vp-avatar').style.backgroundPosition='center';document.getElementById('vp-name').textContent=p.name||p.email.split('@')[0];document.getElementById('vp-username').textContent=p.username?'@'+p.username:'';document.getElementById('vp-bio').textContent=p.bio||t('noBio');const chatBtn=document.getElementById('vp-chat-btn');if(isMe){chatBtn.textContent=lang==='fa'?'✏️ ویرایش پروفایل':'✏️ Edit Profile';chatBtn.onclick=()=>{closeModal('view-profile-modal');openEditProfile()}}else{chatBtn.textContent=lang==='fa'?'💬 شروع گفتگو':'💬 Start Chat';chatBtn.onclick=()=>{closeModal('view-profile-modal');openRoom('private',targetEmail)}}document.getElementById('view-profile-modal').classList.add('show')};
+window.openEditProfile=async()=>{const p=await loadMyProfile();document.getElementById('ep-name').value=p?.name||'';document.getElementById('ep-username').value=p?.username||'';document.getElementById('ep-bio').value=p?.bio||'';document.getElementById('ep-phone').value=p?.phone||'';document.getElementById('edit-profile-modal').classList.add('show')};
+document.getElementById('ep-save').onclick=async()=>{const name=document.getElementById('ep-name').value.trim();const username=document.getElementById('ep-username').value.trim().toLowerCase();const bio=document.getElementById('ep-bio').value.trim();const phone=document.getElementById('ep-phone').value.trim();if(!name){alert(t('nameLbl'));return}if(username&&!/^[a-z0-9_]{3,20}$/.test(username)){alert(t('usernameHint'));return}const btn=document.getElementById('ep-save');btn.disabled=true;btn.textContent='...';try{if(username){const{data:ex}=await sb.from('profiles').select('email').eq('username',username).neq('email',myEmail).maybeSingle();if(ex){alert(lang==='fa'?'این نام کاربری قبلاً گرفته شده':'Username already taken');btn.disabled=false;btn.textContent=t('save');return}}const{error}=await sb.from('profiles').update({name,username:username||null,bio,phone,updated_at:new Date().toISOString()}).eq('email',myEmail);if(error){alert(t('error')+': '+error.message);btn.disabled=false;btn.textContent=t('save');return}namesCache[myEmail]=name;myProfile=null;closeModal('edit-profile-modal');await openMyProfile()}catch(e){alert(t('error')+': '+e.message)}btn.disabled=false;btn.textContent=t('save')};
+document.getElementById('avatar-file').onchange=async(e)=>{const f=e.target.files[0];if(!f)return;e.target.value='';if(!f.type.startsWith('image/')){alert(lang==='fa'?'فقط عکس':'Images only');return}if(f.size>5*1024*1024){alert(lang==='fa'?'حجم عکس زیاد':'Image too large');return}const ext=f.name.split('.').pop()||'jpg';const fn=`avatar-${myEmail.replace(/[^a-z0-9]/gi,'_')}-${Date.now()}.${ext}`;const{error:ue}=await sb.storage.from('avatars').upload(fn,f,{contentType:f.type,upsert:true});if(ue){alert(t('error')+': '+ue.message);return}const{data:ud}=sb.storage.from('avatars').getPublicUrl(fn);const{error:pe}=await sb.from('profiles').update({avatar_url:ud.publicUrl,updated_at:new Date().toISOString()}).eq('email',myEmail);if(pe){alert(t('error')+': '+pe.message);return}avatarsCache[myEmail]=ud.publicUrl;await openMyProfile()};
+async function registerSession(){const ua=navigator.userAgent;let device='Unknown device';if(/Android/i.test(ua))device='Android';else if(/iPhone|iPad|iPod/i.test(ua))device='iPhone/iPad';else if(/Windows/i.test(ua))device='Windows';else if(/Mac/i.test(ua))device='Mac';else if(/Linux/i.test(ua))device='Linux';if(/Chrome/i.test(ua))device+=' • Chrome';else if(/Firefox/i.test(ua))device+=' • Firefox';else if(/Safari/i.test(ua))device+=' • Safari';const sessionId=localStorage.getItem('session_id');if(sessionId){await sb.from('sessions').update({last_active:new Date().toISOString()}).eq('id',sessionId)}else{const{data}=await sb.from('sessions').insert({user_email:myEmail,device_info:device,user_agent:ua}).select().single();if(data)localStorage.setItem('session_id',data.id)}}
+window.showSessions=async()=>{const list=document.getElementById('sessions-list');list.innerHTML='<div style="text-align:center;padding:20px;color:var(--mut)">...</div>';const{data}=await sb.from('sessions').select('*').eq('user_email',myEmail).order('last_active',{ascending:false});if(!data?.length){list.innerHTML='<div style="text-align:center;padding:20px;color:var(--mut)">'+(lang==='fa'?'نشستی نیست':'No sessions')+'</div>';return}const currentSessionId=localStorage.getItem('session_id');list.innerHTML='';data.forEach(s=>{const isCurrent=s.id===currentSessionId;const diff=Math.floor((Date.now()-new Date(s.last_active).getTime())/1000);const timeAgo=diff<60?(lang==='fa'?'الان':'Just now'):diff<3600?Math.floor(diff/60)+(lang==='fa'?' دقیقه پیش':' min ago'):Math.floor(diff/3600)+(lang==='fa'?' ساعت پیش':' hr ago');const it=document.createElement('div');it.className='session-card';it.innerHTML=`<div class="session-header"><div class="session-icon">📱</div><div class="session-info"><div class="session-device">${esc(s.device_info||'?')}</div><div class="session-time">${timeAgo}</div></div>${isCurrent?'<span class="session-current">'+(lang==='fa'?'فعلی':'Current')+'</span>':''}</div>`;if(!isCurrent){const btn=document.createElement('button');btn.style.cssText='width:100%;padding:8px;border-radius:10px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;background:rgba(239,68,68,.2);color:#fca5a5;border:none';btn.textContent=lang==='fa'?'خروج از این دستگاه':'Log out this device';btn.onclick=async()=>{if(!confirm(lang==='fa'?'از این دستگاه خارج شوی؟':'Log out from this device?'))return;await sb.from('sessions').delete().eq('id',s.id);showSessions()};it.appendChild(btn)}list.appendChild(it)});document.getElementById('sessions-modal').classList.add('show')};
+window.logoutAll=async()=>{if(!confirm(lang==='fa'?'از همه دستگاه‌ها خارج شوی؟':'Log out from all devices?'))return;await sb.from('sessions').delete().eq('user_email',myEmail);localStorage.removeItem('session_id');await sb.auth.signOut();localStorage.removeItem('my_email');location.href='index.html'};
+let twofaCode=null;
+window.openTwoFA=async()=>{const p=await loadMyProfile();const enabled=p?.twofa_enabled===true;if(enabled){if(!confirm(lang==='fa'?'رمز دو مرحله‌ای غیرفعال شود؟':'Disable 2FA?'))return;await sb.from('profiles').update({twofa_enabled:false,twofa_code:null,twofa_expires:null}).eq('email',myEmail);alert(lang==='fa'?'✅ غیرفعال شد':'✅ Disabled');updateTwoFAStatus();return}document.getElementById('twofa-step1').style.display='block';document.getElementById('twofa-step2').style.display='none';document.getElementById('twofa-modal').classList.add('show')};
+document.getElementById('twofa-enable-btn').onclick=async()=>{twofaCode=String(Math.floor(100000+Math.random()*900000));const expires=new Date(Date.now()+5*60*1000).toISOString();await sb.from('profiles').update({twofa_code:twofaCode,twofa_expires:expires}).eq('email',myEmail);document.getElementById('twofa-step1').style.display='none';document.getElementById('twofa-step2').style.display='block';document.getElementById('twofa-hint').textContent=(lang==='fa'?'کد (برای تست): ':'Code (test): ')+twofaCode};
+document.getElementById('twofa-verify-btn').onclick=async()=>{const code=document.getElementById('twofa-code-inp').value.trim();if(!/^\d{6}$/.test(code)){alert(lang==='fa'?'کد ۶ رقمی':'6-digit code');return}const{data}=await sb.from('profiles').select('twofa_code,twofa_expires').eq('email',myEmail).maybeSingle();if(!data?.twofa_code||data.twofa_code!==code){alert(lang==='fa'?'❌ کد اشتباه':'❌ Wrong code');return}if(new Date(data.twofa_expires)<new Date()){alert(lang==='fa'?'❌ کد منقضی شده':'❌ Code expired');return}await sb.from('profiles').update({twofa_enabled:true,twofa_code:null,twofa_expires:null}).eq('email',myEmail);closeModal('twofa-modal');alert(lang==='fa'?'✅ فعال شد':'✅ Enabled');updateTwoFAStatus()};
+async function updateTwoFAStatus(){const p=await loadMyProfile();const el=document.getElementById('twofa-status');if(el)el.textContent=p?.twofa_enabled?(lang==='fa'?'✅ فعال':'✅ Enabled'):(lang==='fa'?'غیرفعال - برای فعال‌سازی بزن':'Disabled - tap to enable')}
+window.changePassword=()=>{document.getElementById('new-password').value='';document.getElementById('confirm-password').value='';document.getElementById('password-modal').classList.add('show')};
+document.getElementById('password-save').onclick=async()=>{const np=document.getElementById('new-password').value;const cp=document.getElementById('confirm-password').value;if(np.length<6){alert(lang==='fa'?'رمز باید حداقل ۶ کاراکتر باشد':'Password min 6 chars');return}if(np!==cp){alert(lang==='fa'?'رمزها یکی نیستند':'Passwords do not match');return}const btn=document.getElementById('password-save');btn.disabled=true;btn.textContent='...';const{error}=await sb.auth.updateUser({password:np});btn.disabled=false;btn.textContent=t('save');if(error){alert(t('error')+': '+error.message);return}closeModal('password-modal');alert(lang==='fa'?'✅ رمز تغییر کرد':'✅ Password changed')};
+window.showPage=p=>{document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.getElementById('page-'+p).classList.add('active');document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));const nm={home:'nav-home',chats:'nav-chats',library:'nav-library',settings:'nav-more'};if(nm[p])document.getElementById(nm[p])?.classList.add('active');if(p==='chats')renderList();if(p==='library')loadLib();if(p==='bots')loadBots();if(p==='education')loadEdu();if(p==='payments')loadWallet();if(p==='settings'){const sel=document.getElementById('lang-select');if(sel)sel.value=lang;updateTwoFAStatus()}};
+window.goTab=x=>{showPage('chats');switchTab(x)};
+window.switchTab=x=>{curTab=x;document.querySelectorAll('.tab').forEach(el=>el.classList.toggle('active',el.dataset.tab===x));renderList()};
+window.logout=async()=>{if(!confirm(t('logoutConfirm')))return;const sessionId=localStorage.getItem('session_id');if(sessionId)await sb.from('sessions').delete().eq('id',sessionId);try{await setOffline()}catch(e){}await sb.auth.signOut();localStorage.removeItem('my_email');localStorage.removeItem('session_id');location.href='index.html'};
+window.showNotif=()=>alert(lang==='fa'?'اعلان‌ها به زودی...':'Notifications coming soon...');
+window.closeModal=id=>document.getElementById(id).classList.remove('show');
+// ===== جستجوی سراسری =====
+window.openGlobalSearch=()=>{document.getElementById('search-modal').classList.add('show');document.getElementById('search-input').value='';document.getElementById('search-results').innerHTML='<div class="search-empty"><div class="icon">🔍</div><h3>جستجو کن...</h3><p style="font-size:12px;margin-top:8px">نام گروه یا کانال رو تایپ کن</p></div>';setTimeout(()=>document.getElementById('search-input').focus(),200)};
+window.closeGlobalSearch=()=>{document.getElementById('search-modal').classList.remove('show');document.getElementById('search-input').value=''};
+window.switchSearchTab=t=>{searchTab=t;document.querySelectorAll('[data-search]').forEach(el=>el.classList.toggle('active',el.dataset.search===t));doGlobalSearch()};
+window.doGlobalSearch=()=>{clearTimeout(searchTimer);searchTimer=setTimeout(runSearch,300)};
+async function runSearch(){const q=document.getElementById('search-input').value.trim();const results=document.getElementById('search-results');if(!q||q.length<2){results.innerHTML='<div class="search-empty"><div class="icon">🔍</div><h3>'+(q.length===1?'حداقل ۲ حرف':'جستجو کن...')+'</h3><p style="font-size:12px;margin-top:8px">نام گروه یا کانال رو تایپ کن</p></div>';return}results.innerHTML='<div class="search-empty"><div class="icon">⏳</div><h3>در حال جستجو...</h3></div>';try{let query=sb.from('chats').select('*').eq('is_public',true).ilike('name','%'+q+'%').limit(30);if(searchTab!=='all'){query=query.eq('type',searchTab)}const{data,error}=await query;if(error){results.innerHTML='<div class="search-empty"><div class="icon">❌</div><h3>خطا: '+esc(error.message)+'</h3></div>';return}if(!data||!data.length){results.innerHTML='<div class="search-empty"><div class="icon">🔍</div><h3>چیزی پیدا نشد</h3><p style="font-size:12px;margin-top:8px">با اسم دیگه‌ای امتحان کن</p></div>';return}const ids=data.map(c=>c.id);const{data:myMemberships}=await sb.from('chat_members').select('chat_id').eq('member_email',myEmail).in('chat_id',ids);const joinedSet=new Set((myMemberships||[]).map(m=>m.chat_id));const ownerEmails=[...new Set(data.map(c=>c.owner_email).filter(Boolean))];await loadAllNames(ownerEmails);results.innerHTML='';data.forEach(c=>{const isJoined=joinedSet.has(c.id);const isOwner=c.owner_email===myEmail;const it=document.createElement('div');it.className='search-result-item'+(isJoined?' joined':'');const typeLabel=c.type==='group'?'گروه':'کانال';const typeClass=c.type==='group'?'group':'channel';const icon=c.type==='group'?'👥':'📢';const ownerName=namesCache[c.owner_email]||(c.owner_email||'').split('@')[0]||'?';it.innerHTML=`<div class="search-result-avatar ${typeClass}">${icon}</div><div class="search-result-info"><div class="search-result-name">${esc(c.name||'بدون نام')} <span class="search-result-type ${typeClass}">${typeLabel}</span></div><div class="search-result-desc">${esc(c.description||'بدون توضیحات')}</div><div class="search-result-meta">👤 ${esc(ownerName)}</div></div><div class="search-result-btn-slot"></div>`;const btnSlot=it.querySelector('.search-result-btn-slot');const btn=document.createElement('button');if(isJoined||isOwner){btn.className='search-result-btn joined';btn.textContent='✓ عضو هستی';btn.onclick=(e)=>{e.stopPropagation();closeGlobalSearch();switchTab(c.type);openRoom(c.type,c)}}else{btn.className='search-result-btn join';btn.textContent='+ عضویت';btn.onclick=(e)=>{e.stopPropagation();joinPublicChat(c)}}btnSlot.appendChild(btn);it.onclick=()=>{if(isJoined||isOwner){closeGlobalSearch();switchTab(c.type);openRoom(c.type,c)}else{joinPublicChat(c)}};results.appendChild(it)})}catch(e){results.innerHTML='<div class="search-empty"><div class="icon">❌</div><h3>خطا</h3><p style="font-size:12px;margin-top:8px">'+esc(e.message)+'</p></div>'}}
+async function joinPublicChat(chat){if(!confirm((lang==='fa'?'به "'+(chat.name||'')+'" بپیوندی؟':'Join "'+(chat.name||'')+'"?')))return;try{const{error}=await sb.from('chat_members').insert({chat_id:chat.id,member_email:myEmail,role:'member'});if(error){if(error.code==='23505'){switchTab(chat.type);closeGlobalSearch();openRoom(chat.type,chat);return}alert(t('error')+': '+error.message);return}closeGlobalSearch();switchTab(chat.type);openRoom(chat.type,chat)}catch(e){alert(t('error')+': '+e.message)}}
+window.setGroupPrivacy=(p)=>{groupPrivacy=p;document.querySelectorAll('.privacy-option').forEach(el=>{el.classList.toggle('selected',el.dataset.privacy===p)})};
+let typingTimer=null;let statusChannel=null;let isCurrentlyTyping=false;let isCurrentlyRecording=false;let isCurrentlyUploading=false;const statusCache={};
+async function updateMyStatus(updates){try{const payload={user_email:myEmail,chat_id:curChat?.id||null,updated_at:new Date().toISOString(),last_seen:new Date().toISOString(),...updates};await sb.from('user_status').upsert(payload,{onConflict:'user_email'})}catch(e){}}
+function onTyping(){if(!curChat)return;if(!isCurrentlyTyping){isCurrentlyTyping=true;updateMyStatus({is_typing:true,chat_id:curChat.id||null})}clearTimeout(typingTimer);typingTimer=setTimeout(()=>{isCurrentlyTyping=false;updateMyStatus({is_typing:false})},1500)}
+function onRecordingStart(){isCurrentlyRecording=true;updateMyStatus({is_recording:true,chat_id:curChat?.id||null})}
+function onRecordingStop(){isCurrentlyRecording=false;updateMyStatus({is_recording:false})}
+function onUploadStart(){isCurrentlyUploading=true;updateMyStatus({is_uploading:true,chat_id:curChat?.id||null})}
+function onUploadStop(){isCurrentlyUploading=false;updateMyStatus({is_uploading:false})}
+async function setOnline(){await updateMyStatus({is_online:true,last_seen:new Date().toISOString()})}
+async function setOffline(){await updateMyStatus({is_online:false,last_seen:new Date().toISOString(),is_typing:false,is_recording:false,is_uploading:false})}
+setInterval(()=>{if(document.hidden){setOffline()}else{setOnline()}},30000);
+function getStatusText(email){const st=statusCache[email];if(!st)return '';if(curChat&&curChat.type!=='private'&&st.chat_id&&st.chat_id!==curChat.id)return '';if(st.is_recording)return `<span class="status-text rec">🎤 ${lang==='fa'?'در حال ضبط ویس...':'Recording voice...'}</span>`;if(st.is_uploading)return `<span class="status-text up">📎 ${lang==='fa'?'در حال ارسال فایل...':'Uploading file...'}</span>`;if(st.is_typing)return `<span class="status-text"><span class="typing-dots"><span></span><span></span><span></span></span> ${lang==='fa'?'در حال نوشتن...':'typing...'}</span>`;if(st.is_online)return `<span class="status-text"><span class="status-online"></span> ${lang==='fa'?'آنلاین':'Online'}</span>`;if(st.last_seen){const diff=Math.floor((Date.now()-new Date(st.last_seen).getTime())/1000);if(diff<60)return `<span class="status-text">${lang==='fa'?'آخرین بازدید: الان':'Last seen: Just now'}</span>`;if(diff<3600)return `<span class="status-text">${lang==='fa'?'آخرین بازدید: ':'Last seen: '}${Math.floor(diff/60)} ${lang==='fa'?'دقیقه پیش':'min ago'}</span>`;if(diff<86400)return `<span class="status-text">${lang==='fa'?'آخرین بازدید: ':'Last seen: '}${Math.floor(diff/3600)} ${lang==='fa'?'ساعت پیش':'hr ago'}</span>`;return `<span class="status-text">${lang==='fa'?'آخرین بازدید: ':'Last seen: '}${Math.floor(diff/86400)} ${lang==='fa'?'روز پیش':'day ago'}</span>`}return ''}
+function updateChatStatus(){const st=document.getElementById('chat-status');if(!st)return;if(!curChat){st.innerHTML='';return}if(curChat.type==='private'){st.innerHTML=getStatusText(curChat.email)}else{const members=Object.entries(statusCache).filter(([email,s])=>email!==myEmail&&s.is_online);if(members.length===0){st.innerHTML='';return}st.innerHTML=`<span class="status-text"><span class="status-online"></span> ${members.length} ${lang==='fa'?'آنلاین':'online'}</span>`}}
+async function loadAllStatus(){try{const{data}=await sb.from('user_status').select('*');(data||[]).forEach(s=>{statusCache[s.user_email]=s});updateChatStatus()}catch(e){}}
+function setupStatusRealtime(){if(statusChannel)sb.removeChannel(statusChannel);statusChannel=sb.channel('status-rt').on('postgres_changes',{event:'*',schema:'public',table:'user_status'},p=>{const s=p.new;statusCache[s.user_email]=s;if(curChat){if(curChat.type==='private'&&s.user_email===curChat.email){updateChatStatus()}if(curChat.type!=='private'){updateChatStatus()}}updateListStatus()}).subscribe()}
+function updateListStatus(){document.querySelectorAll('.list-item').forEach(it=>{const av=it.querySelector('.list-avatar');if(!av)return;const email=av.dataset.email;if(!email)return;const st=statusCache[email];let statusEl=it.querySelector('.list-item-status');if(!st||(!st.is_online&&!st.is_typing&&!st.is_recording&&!st.is_uploading)){if(statusEl)statusEl.remove();return}let txt='';if(st.is_recording)txt='🎤 '+(lang==='fa'?'در حال ضبط...':'Recording...');else if(st.is_uploading)txt='📎 '+(lang==='fa'?'در حال ارسال...':'Uploading...');else if(st.is_typing)txt='✍️ '+(lang==='fa'?'در حال نوشتن...':'typing...');else if(st.is_online)txt='🟢 '+(lang==='fa'?'آنلاین':'Online');if(!statusEl){statusEl=document.createElement('div');statusEl.className='list-item-status';const info=it.querySelector('.list-info');if(info)info.appendChild(statusEl)}statusEl.textContent=txt})}
+setInterval(()=>{updateChatStatus();updateListStatus()},10000);
+const listC=document.getElementById('list-container');
+async function renderList(){listC.innerHTML='<div class="empty-state"><div class="icon">⏳</div><h3>'+t('loading')+'</h3></div>';if(curTab==='private')await renderPrivate();else await renderGrpCh(curTab)}
+async function getLastMsgAndUnread(targetEmail){const{data:lastMsgs}=await sb.from('messages').select('*').is('chat_id',null).or(`and(sender_email.eq.${myEmail},receiver_email.eq.${targetEmail}),and(sender_email.eq.${targetEmail},receiver_email.eq.${myEmail})`).order('created_at',{ascending:false}).limit(1);const last=lastMsgs?.[0]||null;const{data:deletedArr}=await sb.from('deleted_messages').select('message_id').eq('user_email',myEmail);const deletedIds=new Set((deletedArr||[]).map(d=>d.message_id));const{data:unreadMsgs}=await sb.from('messages').select('id').is('chat_id',null).eq('sender_email',targetEmail).eq('receiver_email',myEmail).is('read_at',null);const unreadCount=(unreadMsgs||[]).filter(m=>!deletedIds.has(m.id)).length;return{last,unreadCount}}
+async function renderPrivate(){const{data,error}=await sb.from('messages').select('sender_email,receiver_email').is('chat_id',null).or(`sender_email.eq.${myEmail},receiver_email.eq.${myEmail}`);if(error){listC.innerHTML='<div class="empty-state"><div class="icon">❌</div><h3>'+t('error')+'</h3></div>';return}const set=new Set();data.forEach(m=>{if(m.sender_email!==myEmail)set.add(m.sender_email);if(m.receiver_email!==myEmail)set.add(m.receiver_email)});const cts=[...set];if(!cts.length){listC.innerHTML='<div class="empty-state"><div class="icon">👤</div><h3>'+t('noContacts')+'</h3></div>';return}await loadAllNames(cts);const infoMap={};await Promise.all(cts.map(async e=>{infoMap[e]=await getLastMsgAndUnread(e)}));cts.sort((a,b)=>{const ta=infoMap[a]?.last?.created_at;const tb=infoMap[b]?.last?.created_at;if(!ta&&!tb)return 0;if(!ta)return 1;if(!tb)return -1;return new Date(tb)-new Date(ta)});listC.innerHTML='';cts.forEach(e=>{const info=infoMap[e]||{};const last=info.last;const unread=info.unreadCount||0;const it=document.createElement('div');it.className='list-item'+(unread>0?' unread':'');const dispName=namesCache[e]||e.split('@')[0];let lastTxt='';if(last){const raw=previewMsg(last);const isMine=last.sender_email===myEmail;lastTxt=(isMine?t('youPrefix'):'')+raw}else{lastTxt=(lang==='fa'?'شروع گفتگو کن...':'Start chatting...')}const timeTxt=last?shortTime(new Date(last.created_at)):'';const badgeHTML=unread>0?`<div class="unread-badge">${unread>99?'99+':unread}</div>`:'';it.innerHTML=`<div class="list-avatar" data-email="${esc(e)}">${ini(dispName)}</div><div class="list-info"><div class="list-name">${esc(dispName)}</div><div class="list-last-msg${last&&last.sender_email===myEmail?' mine-prefix':''}">${esc(lastTxt)}</div></div>${timeTxt?`<div class="list-time${unread>0?' unread-time':''}">${esc(timeTxt)}</div>`:''}${badgeHTML}`;const av=it.querySelector('.list-avatar');if(avatarsCache[e]){av.textContent='';av.style.backgroundImage=`url('${avatarsCache[e]}')`}av.onclick=(ev)=>{ev.stopPropagation();openProfile(e)};it.onclick=()=>openRoom('private',e);const st=statusCache[e];if(st){const statusEl=document.createElement('div');statusEl.className='list-item-status';let txt='';if(st.is_recording)txt='🎤 '+(lang==='fa'?'در حال ضبط...':'Recording...');else if(st.is_uploading)txt='📎 '+(lang==='fa'?'در حال ارسال...':'Uploading...');else if(st.is_typing)txt='✍️ '+(lang==='fa'?'در حال نوشتن...':'typing...');else if(st.is_online)txt='🟢 '+(lang==='fa'?'آنلاین':'Online');if(txt){statusEl.textContent=txt;it.querySelector('.list-info').appendChild(statusEl)}}listC.appendChild(it)})}
+async function renderGrpCh(type){const{data:mem}=await sb.from('chat_members').select('chat_id').eq('member_email',myEmail);const emptyMsg=`<div class="empty-state"><div class="icon">${type==='group'?'👥':'📢'}</div><h3>${t('noClasses')}</h3></div>`;if(!mem?.length){listC.innerHTML=emptyMsg;return}const ids=mem.map(m=>m.chat_id);const{data:chs}=await sb.from('chats').select('*').in('id',ids).eq('type',type).order('created_at',{ascending:false});if(!chs?.length){listC.innerHTML=emptyMsg;return}const{data:deletedArr}=await sb.from('deleted_messages').select('message_id').eq('user_email',myEmail);const deletedIds=new Set((deletedArr||[]).map(d=>d.message_id));const infoMap={};await Promise.all(chs.map(async c=>{const{data:lastMsgs}=await sb.from('messages').select('*').eq('chat_id',c.id).order('created_at',{ascending:false}).limit(1);const last=lastMsgs?.[0]||null;const{data:unreadMsgs}=await sb.from('messages').select('id').eq('chat_id',c.id).neq('sender_email',myEmail);const unreadIds=(unreadMsgs||[]).map(m=>m.id).filter(id=>!deletedIds.has(id));let unreadCount=0;if(unreadIds.length){const{data:reads}=await sb.from('message_reads').select('message_id').eq('user_email',myEmail).in('message_id',unreadIds);const readSet=new Set((reads||[]).map(r=>r.message_id));unreadCount=unreadIds.filter(id=>!readSet.has(id)).length}infoMap[c.id]={last,unreadCount}}));chs.sort((a,b)=>{const ta=infoMap[a.id]?.last?.created_at;const tb=infoMap[b.id]?.last?.created_at;if(!ta&&!tb)return 0;if(!ta)return 1;if(!tb)return -1;return new Date(tb)-new Date(ta)});listC.innerHTML='';chs.forEach(c=>{const info=infoMap[c.id]||{};const last=info.last;const unread=info.unreadCount||0;const it=document.createElement('div');it.className='list-item'+(unread>0?' unread':'');let lastTxt='';if(last){const isMine=last.sender_email===myEmail;const senderName=isMine?t('youPrefix'):(namesCache[last.sender_email]||last.sender_email.split('@')[0])+': ';lastTxt=senderName+previewMsg(last)}else{lastTxt=c.description||(lang==='fa'?'گروه جدید':'New group')}const timeTxt=last?shortTime(new Date(last.created_at)):'';const badgeHTML=unread>0?`<div class="unread-badge">${unread>99?'99+':unread}</div>`:'';it.innerHTML=`<div class="list-avatar">${type==='group'?'👥':'📢'}</div><div class="list-info"><div class="list-name">${esc(c.name)}</div><div class="list-last-msg${last&&last.sender_email===myEmail?' mine-prefix':''}">${esc(lastTxt)}</div></div>${timeTxt?`<div class="list-time${unread>0?' unread-time':''}">${esc(timeTxt)}</div>`:''}${badgeHTML}`;it.onclick=()=>openRoom(type,c);listC.appendChild(it)})}
+const room=document.getElementById('chat-room'),msgArea=document.getElementById('messages-area');
+const roomAv=document.getElementById('room-avatar'),roomNm=document.getElementById('room-name'),roomSub=document.getElementById('room-sub');
+const callStartBtn=document.getElementById('call-start-btn');
+window.openRoom=async(type,data)=>{if(type==='private'){curChat={type:'private',email:data};const dispName=await getName(data);roomAv.textContent=ini(dispName);roomNm.textContent=dispName;roomSub.textContent=data;if(avatarsCache[data]){roomAv.textContent='';roomAv.style.backgroundImage=`url('${avatarsCache[data]}')`}else{roomAv.style.backgroundImage=''}roomAv.onclick=()=>openProfile(data);document.getElementById('room-info-click').onclick=()=>openProfile(data);callStartBtn.style.display='flex';const sorted=[myEmail,data].sort();callStartBtn.dataset.room='private_'+sorted[0]+'_'+sorted[1];callStartBtn.dataset.name=dispName;callStartBtn.dataset.type='private'}else{curChat={type,id:data.id,name:data.name};roomAv.textContent=type==='group'?'👥':'📢';roomAv.style.backgroundImage='';roomNm.textContent=data.name;roomSub.textContent=data.description||'';document.getElementById('room-info-click').onclick=null;callStartBtn.style.display=type==='group'?'flex':'none';callStartBtn.dataset.room='room_'+data.id;callStartBtn.dataset.name=data.name;callStartBtn.dataset.type='group'}room.classList.add('active');await loadMsgs();setupRT();updateChatStatus()};
+window.closeRoom=()=>{room.classList.remove('active');curChat=null;if(rtCh)sb.removeChannel(rtCh);cancelReply();if(document.getElementById('page-chats')?.classList.contains('active'))renderList()};
+async function loadMsgs(){if(!curChat)return;let q;if(curChat.type==='private'){q=sb.from('messages').select('*').is('chat_id',null).or(`and(sender_email.eq.${myEmail},receiver_email.eq.${curChat.email}),and(sender_email.eq.${curChat.email},receiver_email.eq.${myEmail})`).order('created_at',{ascending:true})}else{q=sb.from('messages').select('*').eq('chat_id',curChat.id).order('created_at',{ascending:true})}const{data}=await q;const{data:myDeleted}=await sb.from('deleted_messages').select('message_id').eq('user_email',myEmail);const deletedIds=new Set((myDeleted||[]).map(d=>d.message_id));msgArea.innerHTML='';(data||[]).forEach(m=>{if(deletedIds.has(m.id))return;addMsg(m)});await markMessagesRead();await updateGroupChecks()}
+function addMsg(m){if(m.deleted_for_all){const d=document.createElement('div');d.className='msg deleted '+(m.sender_email===myEmail?'mine':'other');d.dataset.id=m.id;d.dataset.type='deleted';let h='';if(curChat.type!=='private'&&m.sender_email!==myEmail){const dispName=namesCache[m.sender_email]||m.sender_email.split('@')[0];h+=`<div class="msg-sender">${esc(dispName)}</div>`}h+=`<div class="msg-deleted-txt">🚫 ${t('deletedMsg')}</div>`;h+=`<div class="msg-actions" data-id="${m.id}">⋯</div>`;d.innerHTML=h;msgArea.appendChild(d);msgArea.scrollTop=msgArea.scrollHeight;return}const d=document.createElement('div');d.className='msg '+(m.sender_email===myEmail?'mine':'other');d.dataset.id=m.id;d.dataset.type=m.message_type;let h='';if(curChat.type!=='private'&&m.sender_email!==myEmail){const dispName=namesCache[m.sender_email]||m.sender_email.split('@')[0];h+=`<div class="msg-sender" onclick="openProfile('${esc(m.sender_email)}')" style="cursor:pointer">${esc(dispName)}</div>`}if(m.reply_to_id){const rt=m.reply_to_type||'text';let rtx=m.reply_to_content;if(!rtx||!rtx.trim()){if(rt==='voice')rtx=t('voiceMsg');else if(rt==='image')rtx=t('imageMsg');else if(rt==='file')rtx=t('fileMsg');else rtx='...'}h+=`<div class="reply-preview" data-rid="${esc(m.reply_to_id)}"><div class="reply-name">${esc((m.reply_to_sender||'').split('@')[0])}</div><div class="reply-text">${esc(rtx)}</div></div>`}if(m.message_type==='voice'&&m.audio_url){const du=m.audio_duration||0;h+=`<div class="voice-wrap"><button class="voice-play" data-url="${esc(m.audio_url)}">▶</button><div class="voice-wave">${Array.from({length:18},()=>`<span style="height:${Math.random()*18+6}px"></span>`).join('')}</div><div class="voice-dur">${fmtT(du)}</div></div>`}else if(m.message_type==='image'&&m.file_url){h+=`<div class="img-msg"><img src="${esc(m.file_url)}" data-full="${esc(m.file_url)}"></div>`}else if(m.message_type==='file'&&m.file_url){h+=`<div class="file-msg"><div class="file-icon">📄</div><div class="file-info"><div class="file-name">${esc(m.file_name||'file')}</div><div class="file-size">${fmtSz(m.file_size)}</div></div><a class="file-dl" href="${esc(m.file_url)}" download="${esc(m.file_name||'')}" target="_blank">⬇</a></div>`}else{h+=`<div>${esc(m.content||'')}</div>`}if(m.edited_at)h+=`<div class="msg-edited">${t('edited')}</div>`;if(m.sender_email===myEmail){if(curChat.type==='private'){const isRead=m.read_at?true:false;h+=`<div class="msg-meta">${isRead?'<span class="msg-check read">✓✓</span>':'<span class="msg-check sent">✓</span>'}</div>`}else{h+=`<div class="msg-meta" data-check="${m.id}"><span class="msg-check sent">✓</span></div>`}}h+=`<div class="msg-actions" data-id="${m.id}">⋯</div>`;d.innerHTML=h;msgArea.appendChild(d);msgArea.scrollTop=msgArea.scrollHeight}
+function setupRT(){if(rtCh)sb.removeChannel(rtCh);rtCh=sb.channel('r-'+Date.now()).on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},async p=>{const m=p.new;let ok=false;if(curChat.type==='private'){ok=(m.sender_email===myEmail&&m.receiver_email===curChat.email)||(m.sender_email===curChat.email&&m.receiver_email===myEmail);if(ok&&!m.chat_id){addMsg(m);if(m.sender_email===curChat.email){await markMessagesRead()}}}else{if(m.chat_id===curChat.id){addMsg(m);await markMessagesRead();updateGroupChecks()}}}).on('postgres_changes',{event:'UPDATE',schema:'public',table:'messages'},p=>{const m=p.new;let ok=false;if(curChat.type==='private'){ok=(m.sender_email===myEmail&&m.receiver_email===curChat.email)||(m.sender_email===curChat.email&&m.receiver_email===myEmail)}else{ok=m.chat_id===curChat.id}if(ok){const o=msgArea.querySelector(`[data-id="${m.id}"]`);if(o)o.remove();addMsg(m);updateGroupChecks()}}).on('postgres_changes',{event:'INSERT',schema:'public',table:'message_reads'},()=>{updateGroupChecks()}).on('postgres_changes',{event:'INSERT',schema:'public',table:'deleted_messages'},async p=>{const dd=p.new;if(dd.user_email===myEmail){const el=msgArea.querySelector(`[data-id="${dd.message_id}"]`);if(el)el.remove()}}).subscribe()}
+async function markMessagesRead(){if(!curChat)return;try{if(curChat.type==='private'){await sb.from('messages').update({read_at:new Date().toISOString()}).is('chat_id',null).eq('sender_email',curChat.email).eq('receiver_email',myEmail).is('read_at',null)}else{const{data:unread}=await sb.from('messages').select('id').eq('chat_id',curChat.id).neq('sender_email',myEmail);if(!unread?.length)return;const ids=unread.map(m=>m.id);const{data:already}=await sb.from('message_reads').select('message_id').in('message_id',ids).eq('user_email',myEmail);const alreadyIds=new Set((already||[]).map(r=>r.message_id));const toInsert=ids.filter(id=>!alreadyIds.has(id)).map(id=>({message_id:id,user_email:myEmail}));if(toInsert.length){await sb.from('message_reads').insert(toInsert)}}}catch(e){}}
+async function updateGroupChecks(){if(!curChat||curChat.type==='private')return;const myMsgs=[...msgArea.querySelectorAll('.msg.mine')];if(!myMsgs.length)return;const ids=myMsgs.map(el=>el.dataset.id);const{data:members}=await sb.from('chat_members').select('member_email').eq('chat_id',curChat.id);const totalOthers=(members||[]).filter(m=>m.member_email!==myEmail).length;if(totalOthers===0)return;const{data:reads}=await sb.from('message_reads').select('message_id').in('message_id',ids);const readCount={};(reads||[]).forEach(r=>{readCount[r.message_id]=(readCount[r.message_id]||0)+1});myMsgs.forEach(el=>{const id=el.dataset.id;const cnt=readCount[id]||0;const checkEl=el.querySelector('[data-check]');if(!checkEl)return;if(cnt>=totalOthers){checkEl.innerHTML='<span class="msg-check read">✓✓</span>'}else{checkEl.innerHTML='<span class="msg-check sent">✓</span>'}})}
+const msgIn=document.getElementById('msg-input'),sendBtn=document.getElementById('send-btn');
+async function sendTxt(){const c=msgIn.value.trim();if(!c||!curChat)return;let pl=curChat.type==='private'?{content:c,sender_email:myEmail,receiver_email:curChat.email,message_type:'text'}:{content:c,sender_email:myEmail,receiver_email:'',chat_id:curChat.id,message_type:'text'};if(replyTo){pl.reply_to_id=replyTo.id;pl.reply_to_content=replyTo.content;pl.reply_to_sender=replyTo.sender;pl.reply_to_type=replyTo.type}const{error}=await sb.from('messages').insert(pl);if(error)alert(t('error')+': '+error.message);else{msgIn.value='';cancelReply();if(isCurrentlyTyping){isCurrentlyTyping=false;clearTimeout(typingTimer);updateMyStatus({is_typing:false})}}}
+sendBtn.onclick=sendTxt;
+msgIn.addEventListener('input',()=>{if(msgIn.value.trim().length>0)onTyping()});
+msgIn.addEventListener('keypress',e=>{if(e.key==='Enter')sendTxt()});
+const attachM=document.getElementById('attach-menu'),attachB=document.getElementById('attach-btn');
+attachB.onclick=e=>{e.stopPropagation();attachM.classList.toggle('show')};
+document.addEventListener('click',e=>{if(!attachM.classList.contains('show'))return;if(e.target.closest('#attach-menu')||e.target.closest('#attach-btn'))return;attachM.classList.remove('show')});
+window.pickImage=()=>{attachM.classList.remove('show');document.getElementById('file-img').click()};
+window.pickFile=()=>{attachM.classList.remove('show');document.getElementById('file-doc').click()};
+document.getElementById('file-img').onchange=async e=>{const f=e.target.files[0];if(!f)return;e.target.value='';if(!f.type.startsWith('image/')){alert(lang==='fa'?'فقط عکس':'Images only');return}if(f.size>5*1024*1024){alert(lang==='fa'?'حجم عکس زیاد':'Image too large');return}const td=document.createElement('div');td.className='msg mine';td.innerHTML='<div>'+t('loading')+'</div>';msgArea.appendChild(td);onUploadStart();const fn=`${Date.now()}-${Math.random().toString(36).slice(2)}.${f.name.split('.').pop()}`;const{error:ue}=await sb.storage.from('chat-files').upload(fn,f,{contentType:f.type});if(ue){td.remove();onUploadStop();alert(t('error')+': '+ue.message);return}const{data:ud}=sb.storage.from('chat-files').getPublicUrl(fn);let pl=curChat.type==='private'?{content:'',sender_email:myEmail,receiver_email:curChat.email,message_type:'image',file_url:ud.publicUrl,file_name:f.name,file_size:f.size}:{content:'',sender_email:myEmail,receiver_email:'',chat_id:curChat.id,message_type:'image',file_url:ud.publicUrl,file_name:f.name,file_size:f.size};if(replyTo){pl.reply_to_id=replyTo.id;pl.reply_to_content=replyTo.content;pl.reply_to_sender=replyTo.sender;pl.reply_to_type=replyTo.type}await sb.from('messages').insert(pl);td.remove();onUploadStop();cancelReply()};
+document.getElementById('file-doc').onchange=async e=>{const f=e.target.files[0];if(!f)return;e.target.value='';if(f.size>20*1024*1024){alert(lang==='fa'?'حجم فایل زیاد':'File too large');return}const td=document.createElement('div');td.className='msg mine';td.innerHTML='<div>'+t('loading')+'</div>';msgArea.appendChild(td);onUploadStart();const fn=`file-${Date.now()}-${Math.random().toString(36).slice(2)}.${f.name.split('.').pop()}`;const{error:ue}=await sb.storage.from('chat-files').upload(fn,f,{contentType:f.type||'application/octet-stream'});if(ue){td.remove();onUploadStop();alert(t('error')+': '+ue.message);return}const{data:ud}=sb.storage.from('chat-files').getPublicUrl(fn);let pl=curChat.type==='private'?{content:'',sender_email:myEmail,receiver_email:curChat.email,message_type:'file',file_url:ud.publicUrl,file_name:f.name,file_size:f.size}:{content:'',sender_email:myEmail,receiver_email:'',chat_id:curChat.id,message_type:'file',file_url:ud.publicUrl,file_name:f.name,file_size:f.size};if(replyTo){pl.reply_to_id=replyTo.id;pl.reply_to_content=replyTo.content;pl.reply_to_sender=replyTo.sender;pl.reply_to_type=replyTo.type}await sb.from('messages').insert(pl);td.remove();onUploadStop();cancelReply()};
+const recBar=document.getElementById('rec-bar'),recTime=document.getElementById('rec-time');
+window.startRec=async()=>{attachM.classList.remove('show');try{const st=await navigator.mediaDevices.getUserMedia({audio:true});ac=[];mr=new MediaRecorder(st);mr.ondataavailable=e=>{if(e.data.size>0)ac.push(e.data)};mr.onstop=()=>st.getTracks().forEach(t=>t.stop());mr.start();recStart=Date.now();recBar.classList.add('show');document.getElementById('input-area').style.display='none';onRecordingStart();recTime.textContent='0:00';recTmr=setInterval(()=>{const s=Math.floor((Date.now()-recStart)/1000);recTime.textContent=fmtT(s);if(s>=60)stopRec(false)},500)}catch(e){alert(lang==='fa'?'دسترسی به میکروفون داده نشد':'Microphone access denied')}};
+function stopRec(c){if(!mr)return;if(mr.state!=='inactive')mr.stop();if(recTmr){clearInterval(recTmr);recTmr=null}recBar.classList.remove('show');document.getElementById('input-area').style.display='flex';onRecordingStop();if(c){ac=[];mr=null;recStart=null}}
+document.getElementById('rec-cancel').onclick=()=>stopRec(true);
+document.getElementById('rec-send').onclick=async()=>{const du=Math.floor((Date.now()-recStart)/1000);stopRec(false);setTimeout(async()=>{if(!ac.length)return;const bl=new Blob(ac,{type:'audio/webm'});ac=[];mr=null;const fn=`voice-${myEmail.replace(/[^a-z0-9]/gi,'_')}-${Date.now()}.webm`;const{error:ue}=await sb.storage.from('voice-messages').upload(fn,bl,{contentType:'audio/webm'});if(ue){alert(t('error')+': '+ue.message);return}const{data:ud}=sb.storage.from('voice-messages').getPublicUrl(fn);let pl=curChat.type==='private'?{content:'',sender_email:myEmail,receiver_email:curChat.email,message_type:'voice',audio_url:ud.publicUrl,audio_duration:du}:{content:'',sender_email:myEmail,receiver_email:'',chat_id:curChat.id,message_type:'voice',audio_url:ud.publicUrl,audio_duration:du};if(replyTo){pl.reply_to_id=replyTo.id;pl.reply_to_content=replyTo.content;pl.reply_to_sender=replyTo.sender;pl.reply_to_type=replyTo.type}await sb.from('messages').insert(pl);cancelReply()},200)};
+const msgMenu=document.getElementById('msg-menu');
+msgArea.addEventListener('click',e=>{const ab=e.target.closest('.msg-actions');if(ab){e.stopPropagation();const id=ab.dataset.id;const d=ab.closest('.msg');const ty=d.dataset.type;const snd=d.classList.contains('mine')?myEmail:(curChat.type==='private'?curChat.email:'');const isMine=d.classList.contains('mine');const ct=d.querySelector('div:not(.msg-sender):not(.reply-preview):not(.msg-actions):not(.voice-wrap):not(.img-msg):not(.file-msg):not(.msg-meta):not(.msg-deleted-txt)')?.textContent||'';menuTgt={id,ty,ct,snd,isMine};let h=`<button class="msg-menu-item reply" data-a="reply">↩ ${t('replyLabel')}</button>`;if(ty==='text'&&isMine)h+=`<button class="msg-menu-item" data-a="edit">${t('editLabel')}</button>`;h+=`<button class="msg-menu-item delete" data-a="delete">🗑️ ${t('delete')}</button>`;msgMenu.innerHTML=h;let items=2;if(ty==='text'&&isMine)items=3;const w=180,h2=items*45+16;let x=ab.getBoundingClientRect().left,y=ab.getBoundingClientRect().bottom+5;if(document.dir==='rtl')x=ab.getBoundingClientRect().right-w;x=Math.max(10,Math.min(x,innerWidth-w-10));y=Math.min(y,innerHeight-h2-10);msgMenu.style.top=y+'px';msgMenu.style.left=x+'px';msgMenu.classList.add('show');return}const vb=e.target.closest('.voice-play');if(vb){const u=vb.dataset.url;if(curAud){curAud.pause();curAud=null;document.querySelectorAll('.voice-play').forEach(b=>b.textContent='▶')}if(vb.textContent==='▶'){curAud=new Audio(u);curAud.play();vb.textContent='⏸';curAud.onended=()=>{vb.textContent='▶';curAud=null}}else{vb.textContent='▶'}}const im=e.target.closest('.img-msg img');if(im){window.open(im.dataset.full||im.src,'_blank')}const rp=e.target.closest('.reply-preview');if(rp){const tid=rp.dataset.rid;const tm=msgArea.querySelector(`[data-id="${tid}"]`);if(tm){tm.scrollIntoView({behavior:'smooth',block:'center'});tm.style.background='rgba(255,243,205,.3)';setTimeout(()=>tm.style.background='',1500)}}});
+msgMenu.addEventListener('click',async e=>{const it=e.target.closest('.msg-menu-item');if(!it||!menuTgt)return;const a=it.dataset.a;const{id,ty,ct,snd,isMine}=menuTgt;msgMenu.classList.remove('show');if(a==='edit'){const{data}=await sb.from('messages').select('content').eq('id',id).single();if(data){editId=id;document.getElementById('edit-inp').value=data.content;document.getElementById('edit-modal').classList.add('show')}}else if(a==='reply'){let rc=ct;if(ty==='voice'){const{data}=await sb.from('messages').select('audio_duration').eq('id',id).single();rc=t('voiceMsg')+' ('+fmtT(data?.audio_duration||0)+')'}else if(ty==='image')rc=t('imageMsg');else if(ty==='file'){const{data}=await sb.from('messages').select('file_name').eq('id',id).single();rc=t('fileMsg')+' '+(data?.file_name||'')}else if(ty==='deleted')rc=t('deletedMsg');replyTo={id,sender:snd,content:rc,type:ty};document.getElementById('reply-bar-name').textContent=snd.split('@')[0];document.getElementById('reply-bar-text').textContent=rc;document.getElementById('reply-bar').classList.add('show');msgIn.focus()}else if(a==='delete'){if(isMine){const choice=confirm(t('deleteConfirmAll'));if(choice){const{error}=await sb.from('messages').update({deleted_for_all:true,content:null,file_url:null,audio_url:null,file_name:null}).eq('id',id);if(error){alert(t('error')+': '+error.message);return}}else{await sb.from('deleted_messages').insert({message_id:id,user_email:myEmail});const el=msgArea.querySelector(`[data-id="${id}"]`);if(el)el.remove()}}else{if(!confirm(t('deleteConfirmMe')))return;await sb.from('deleted_messages').insert({message_id:id,user_email:myEmail});const el=msgArea.querySelector(`[data-id="${id}"]`);if(el)el.remove()}}});
+document.addEventListener('click',e=>{if(!msgMenu.classList.contains('show'))return;if(e.target.closest('#msg-menu')||e.target.closest('.msg-actions'))return;msgMenu.classList.remove('show')});
+function cancelReply(){replyTo=null;document.getElementById('reply-bar')?.classList.remove('show')}
+document.getElementById('reply-close').onclick=cancelReply;
+document.getElementById('edit-save').onclick=async()=>{const v=document.getElementById('edit-inp').value.trim();if(!v){alert(lang==='fa'?'خالی':'Empty');return}const{error}=await sb.from('messages').update({content:v,edited_at:new Date().toISOString()}).eq('id',editId);if(error)alert(t('error')+': '+error.message);else{closeModal('edit-modal');editId=null}};
+window.openNewContact=()=>document.getElementById('contact-modal').classList.add('show');
+document.getElementById('contact-add').onclick=async()=>{const em=document.getElementById('contact-email').value.trim().toLowerCase();if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){alert(t('invalidEmail'));return}if(em===myEmail){alert(t('cantChatSelf'));return}closeModal('contact-modal');await renderList();openRoom('private',em)};
+window.openNewGroup=ty=>{grpType=ty;selCts=[];groupPrivacy='public';document.querySelectorAll('.privacy-option').forEach(el=>{el.classList.toggle('selected',el.dataset.privacy==='public')});document.getElementById('group-title').textContent=ty==='group'?'👥 '+t('newGroupTitle'):'📢 '+t('newGroupTitle');document.getElementById('group-name').value='';document.getElementById('group-desc').value='';document.getElementById('search-contacts').value='';document.getElementById('group-modal').classList.add('show');loadCtsPicker()};
+async function loadCtsPicker(){const p=document.getElementById('contacts-picker');p.innerHTML='<div style="text-align:center;color:var(--mut);padding:16px;font-size:12px">...</div>';const{data}=await sb.from('messages').select('sender_email,receiver_email').is('chat_id',null).or(`sender_email.eq.${myEmail},receiver_email.eq.${myEmail}`);if(!data){p.innerHTML='<div style="text-align:center;color:var(--mut);padding:16px;font-size:12px">'+t('noContacts')+'</div>';return}const s=new Set();data.forEach(m=>{if(m.sender_email!==myEmail)s.add(m.sender_email);if(m.receiver_email!==myEmail)s.add(m.receiver_email)});allCts=[...s];if(!allCts.length){p.innerHTML='<div style="text-align:center;color:var(--mut);padding:16px;font-size:12px">'+t('noContacts')+'</div>';return}await loadAllNames(allCts);renderCtsPicker(allCts)}
+function renderCtsPicker(cts){const p=document.getElementById('contacts-picker'),sc=document.getElementById('selected-count');if(!cts.length){p.innerHTML='<div style="text-align:center;color:var(--mut);padding:16px;font-size:12px">—</div>';sc.textContent='';return}p.innerHTML='';cts.forEach(e=>{const sel=selCts.includes(e);const it=document.createElement('div');it.className='contact-chk'+(sel?' selected':'');const dispName=namesCache[e]||e.split('@')[0];it.innerHTML=`<input type="checkbox" ${sel?'checked':''}><div class="chk-avatar">${ini(dispName)}</div><div class="chk-info"><div class="chk-name">${esc(dispName)}</div><div class="chk-email">${esc(e)}</div></div>`;it.onclick=ev=>{ev.preventDefault();const i=selCts.indexOf(e);if(i>-1)selCts.splice(i,1);else selCts.push(e);renderCtsPicker(allCts)};p.appendChild(it)});sc.textContent=selCts.length>0?(lang==='fa'?'انتخاب شده: '+selCts.length:'Selected: '+selCts.length):''}
+document.getElementById('search-contacts').addEventListener('input',e=>{const q=e.target.value.trim().toLowerCase();if(!q){renderCtsPicker(allCts);return}renderCtsPicker(allCts.filter(x=>x.toLowerCase().includes(q)))});
+document.getElementById('group-create').onclick=async()=>{const nm=document.getElementById('group-name').value.trim(),dc=document.getElementById('group-desc').value.trim();if(!nm){alert(t('nameLbl'));return}const{data,error}=await sb.from('chats').insert({name:nm,description:dc,type:grpType,owner_email:myEmail,is_public:groupPrivacy==='public'}).select().single();if(error){alert(t('error')+': '+error.message);return}const mem=[{chat_id:data.id,member_email:myEmail,role:'owner'},...selCts.filter(e=>e!==myEmail).map(e=>({chat_id:data.id,member_email:e,role:'member'}))];await sb.from('chat_members').insert(mem);closeModal('group-modal');selCts=[];switchTab(grpType);openRoom(grpType,data)};
+const stBar=document.getElementById('stories-bar');
+async function loadStories(){const{data}=await sb.from('stories').select('*').order('created_at',{ascending:false});if(!data||!data.length){allSt=[];stByUser={};renderStories();return}allSt=data;stByUser={};data.forEach(s=>{if(!stByUser[s.user_email])stByUser[s.user_email]=[];stByUser[s.user_email].push(s)});const emails=Object.keys(stByUser);await loadAllNames(emails);renderStories()}
+function renderStories(){if(!stBar)return;stBar.innerHTML='';const ad=document.createElement('div');ad.className='story-item';ad.innerHTML=`<div class="story-avatar add-story"><div style="width:100%;height:100%;border-radius:50%;background:rgba(5,6,26,.9);display:flex;align-items:center;justify-content:center;font-size:20px;color:#00d4ff;font-weight:700">+</div></div><div class="story-name">${lang==='fa'?'استوری من':'My Story'}</div>`;ad.onclick=openStoryModal;stBar.appendChild(ad);const us=Object.keys(stByUser);if(!us.length)return;const sorted=us.sort((a,b)=>{if(a===myEmail)return-1;if(b===myEmail)return 1;return 0});sorted.forEach(email=>{const sts=stByUser[email];if(!sts?.length)return;const it=document.createElement('div');it.className='story-item';const last=sts[0],isV=last.media_type==='video',mine=email===myEmail,cnt=sts.length;let thumb=isV?`<div style="width:100%;height:100%;border-radius:50%;background:linear-gradient(135deg,#000,#7b3ff2);display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px">▶</div>`:`<img src="${esc(last.media_url)}" onerror="this.style.display='none'">`;const dispName=namesCache[email]||email.split('@')[0];it.innerHTML=`<div class="story-avatar has-story">${thumb}${mine?'<div class="plus">+</div>':''}${!mine&&cnt>1?`<div style="position:absolute;top:-2px;left:-2px;background:linear-gradient(135deg,#ef4444,#f97316);color:#fff;font-size:10px;font-weight:700;padding:1px 5px;border-radius:8px;border:2px solid #05061a">${cnt}</div>`:''}</div><div class="story-name">${mine?(lang==='fa'?'استوری من':'My Story'):esc(dispName)}</div>`;it.onclick=()=>{if(mine){if(sts.length>0)viewStory(email);else openStoryModal()}else viewStory(email)};stBar.appendChild(it)})}
+window.openStoryModal=()=>{selStFile=null;const p=document.getElementById('story-preview');p.innerHTML=t('nothingSelected');p.classList.add('empty');document.getElementById('story-cap-inp').value='';document.getElementById('story-modal').classList.add('show')};
+document.getElementById('file-story').onchange=e=>{const f=e.target.files[0];if(!f)return;e.target.value='';const isI=f.type.startsWith('image/'),isV=f.type.startsWith('video/');if(!isI&&!isV){alert(lang==='fa'?'فقط عکس یا ویدیو':'Images or videos only');return}if(isI&&f.size>10*1048576){alert(lang==='fa'?'عکس زیاد':'Image too large');return}if(isV&&f.size>150*1048576){alert(lang==='fa'?'ویدیو زیاد':'Video too large');return}selStFile=f;const p=document.getElementById('story-preview');p.classList.remove('empty');if(isI){const r=new FileReader();r.onload=ev=>{p.innerHTML=`<img src="${ev.target.result}">`};r.readAsDataURL(f)}else{const u=URL.createObjectURL(f);p.innerHTML=`<video src="${u}" controls></video>`}};
+document.getElementById('story-pub').onclick=async()=>{if(!selStFile){alert(t('nothingSelected'));return}const cap=document.getElementById('story-cap-inp').value.trim();const btn=document.getElementById('story-pub');btn.disabled=true;btn.textContent='...';const isV=selStFile.type.startsWith('video/');const mt=isV?'video':'image';try{const fn=`story-${myEmail.replace(/[^a-z0-9]/gi,'_')}-${Date.now()}.${selStFile.name.split('.').pop()}`;const{error:ue}=await sb.storage.from('stories').upload(fn,selStFile,{contentType:selStFile.type});if(ue){alert(t('error')+': '+ue.message);btn.disabled=false;btn.textContent=t('publish');return}const{data:ud}=sb.storage.from('stories').getPublicUrl(fn);const ex=new Date(Date.now()+24*60*60*1000).toISOString();await sb.from('stories').insert({user_email:myEmail,media_url:ud.publicUrl,media_type:mt,caption:cap,expires_at:ex});closeModal('story-modal');await loadStories()}catch(e){alert(t('error')+': '+e.message)}btn.disabled=false;btn.textContent=t('publish')};
+window.viewStory=em=>{curStUser=em;curStIdx=0;document.getElementById('story-viewer').classList.add('show');showStory()};
+function showStory(){if(!curStUser)return;const sts=stByUser[curStUser];if(!sts?.length){closeStory();return}const s=sts[curStIdx];if(!s){closeStory();return}const md=document.getElementById('story-media');md.innerHTML=s.media_type==='video'?`<video src="${esc(s.media_url)}" autoplay controls playsinline></video>`:`<img src="${esc(s.media_url)}">`;document.getElementById('story-head-av').textContent=ini(namesCache[curStUser]||curStUser);document.getElementById('story-head-name').textContent=namesCache[curStUser]||curStUser;document.getElementById('story-head-time').textContent=ago(new Date(s.created_at));if(s.caption){document.getElementById('story-cap').textContent=s.caption;document.getElementById('story-cap').style.display='block'}else document.getElementById('story-cap').style.display='none';const pb=document.getElementById('story-prog-bar');pb.style.width='0%';if(stTmr)clearInterval(stTmr);if(s.media_type==='video'){const v=md.querySelector('video');if(v){v.onended=nextStory;v.onloadedmetadata=()=>{const du=v.duration*1000,t0=Date.now();stTmr=setInterval(()=>{const p=Math.min(((Date.now()-t0)/du)*100,100);pb.style.width=p+'%';if(p>=100){clearInterval(stTmr);nextStory()}},50)}}}else{const du=5000,t0=Date.now();stTmr=setInterval(()=>{const p=Math.min(((Date.now()-t0)/du)*100,100);pb.style.width=p+'%';if(p>=100){clearInterval(stTmr);nextStory()}},50)}}
+window.nextStory=()=>{if(!curStUser)return;const sts=stByUser[curStUser];if(curStIdx<sts.length-1){curStIdx++;showStory()}else{const us=Object.keys(stByUser);const i=us.indexOf(curStUser);if(i<us.length-1){curStUser=us[i+1];curStIdx=0;showStory()}else closeStory()}};
+window.prevStory=()=>{if(!curStUser)return;if(curStIdx>0){curStIdx--;showStory()}else{const us=Object.keys(stByUser);const i=us.indexOf(curStUser);if(i>0){curStUser=us[i-1];curStIdx=stByUser[curStUser].length-1;showStory()}}};
+window.closeStory=()=>{document.getElementById('story-viewer').classList.remove('show');if(stTmr){clearInterval(stTmr);stTmr=null}document.getElementById('story-media').innerHTML='';curStUser=null;curStIdx=0};
+async function loadLib(){const list=document.getElementById('lib-list');list.innerHTML='<div class="empty-state"><div class="icon">⏳</div></div>';const{data}=await sb.from('library').select('*').order('created_at',{ascending:false});if(!data?.length){list.innerHTML='<div class="empty-state"><div class="icon">🎬</div><h3>'+(lang==='fa'?'هنوز محتوایی نیست':'No content yet')+'</h3></div>';return}list.innerHTML='';data.forEach(l=>{const it=document.createElement('div');it.className='list-item';const thumb=l.media_type==='video'?`<div class="list-avatar" style="font-size:22px">🎬</div>`:`<div class="list-avatar" style="background-image:url('${esc(l.media_url)}')"></div>`;it.innerHTML=`${thumb}<div class="list-info"><div class="list-name">${esc(l.title||'—')}</div><div class="list-sub">${esc(l.description||'—')}</div></div>`;it.onclick=()=>{if(l.media_type==='video'){const w=window.open('','_blank');w.document.write(`<video src="${l.media_url}" autoplay controls style="width:100%;height:100%;background:#000"></video>`)}else window.open(l.media_url,'_blank')};list.appendChild(it)})}
+window.openLibModal=()=>{selLibFile=null;document.getElementById('lib-title').value='';document.getElementById('lib-desc').value='';const p=document.getElementById('lib-preview');p.innerHTML=t('nothingSelected');p.classList.add('empty');document.getElementById('lib-modal').classList.add('show')};
+document.getElementById('file-lib').onchange=e=>{const f=e.target.files[0];if(!f)return;e.target.value='';selLibFile=f;const p=document.getElementById('lib-preview');p.classList.remove('empty');if(f.type.startsWith('image/')){const r=new FileReader();r.onload=ev=>{p.innerHTML=`<img src="${ev.target.result}">`};r.readAsDataURL(f)}else{const u=URL.createObjectURL(f);p.innerHTML=`<video src="${u}" controls></video>`}};
+document.getElementById('lib-pub').onclick=async()=>{if(!selLibFile){alert(t('nothingSelected'));return}const ti=document.getElementById('lib-title').value.trim()||(lang==='fa'?'بدون عنوان':'Untitled');const d=document.getElementById('lib-desc').value.trim();const isV=selLibFile.type.startsWith('video/');const mt=isV?'video':'image';const btn=document.getElementById('lib-pub');btn.disabled=true;btn.textContent='...';const fn=`lib-${Date.now()}-${Math.random().toString(36).slice(2)}.${selLibFile.name.split('.').pop()}`;const{error:ue}=await sb.storage.from('chat-files').upload(fn,selLibFile,{contentType:selLibFile.type});if(ue){alert(t('error')+': '+ue.message);btn.disabled=false;btn.textContent=t('add');return}const{data:ud}=sb.storage.from('chat-files').getPublicUrl(fn);await sb.from('library').insert({title:ti,description:d,media_url:ud.publicUrl,media_type:mt,owner_email:myEmail});closeModal('lib-modal');loadLib();btn.disabled=false;btn.textContent=t('add')};
+async function loadBots(){const list=document.getElementById('bots-list');list.innerHTML='<div class="empty-state"><div class="icon">⏳</div></div>';const{data}=await sb.from('bots').select('*').order('created_at',{ascending:false});if(!data?.length){list.innerHTML='<div class="empty-state"><div class="icon">🤖</div><h3>'+(lang==='fa'?'هنوز رباتی نیست':'No bots yet')+'</h3></div>';return}list.innerHTML='';data.forEach(b=>{const it=document.createElement('div');it.className='bot-card';it.innerHTML=`<div class="bot-head"><div class="bot-avatar">🤖</div><div class="bot-name">${esc(b.name)}</div></div><div class="bot-desc">${esc(b.description||'—')}</div><div class="bot-desc" style="color:var(--p)">${lang==='fa'?'پاسخ':'Reply'}: ${esc(b.reply||'—')}</div><div class="bot-actions"><button class="bot-start">${lang==='fa'?'شروع':'Start'}</button>${b.owner_email===myEmail?'<button class="bot-del">'+t('delete')+'</button>':''}</div>`;it.querySelector('.bot-start').onclick=()=>alert((lang==='fa'?'ربات "'+b.name+'" فعال شد. پاسخ: ':'Bot "'+b.name+'" activated. Reply: ')+b.reply);if(b.owner_email===myEmail){it.querySelector('.bot-del').onclick=async()=>{if(!confirm(lang==='fa'?'حذف شود؟':'Delete?'))return;await sb.from('bots').delete().eq('id',b.id);loadBots()}}list.appendChild(it)})}
+window.openBotModal=()=>{document.getElementById('bot-name').value='';document.getElementById('bot-desc').value='';document.getElementById('bot-reply').value='';document.getElementById('bot-modal').classList.add('show')};
+document.getElementById('bot-create').onclick=async()=>{const n=document.getElementById('bot-name').value.trim();const d=document.getElementById('bot-desc').value.trim();const r=document.getElementById('bot-reply').value.trim();if(!n){alert(t('nameLbl'));return}if(!r){alert(t('autoReplyLbl'));return}const{error}=await sb.from('bots').insert({name:n,description:d,reply:r,owner_email:myEmail});if(error){alert(t('error')+': '+error.message);return}closeModal('bot-modal');loadBots()};
+async function loadEdu(){const list=document.getElementById('edu-list');list.innerHTML='<div class="empty-state"><div class="icon">⏳</div></div>';const{data,error}=await sb.from('education').select('*').order('created_at',{ascending:false});if(error){list.innerHTML='<div class="empty-state"><div class="icon">❌</div><h3>'+t('error')+'</h3></div>';return}if(!data?.length){list.innerHTML='<div class="empty-state"><div class="icon">📚</div><h3>'+t('noClasses')+'</h3></div>';return}const myClasses=data.filter(c=>c.owner_email===myEmail||(c.members||[]).includes(myEmail));if(!myClasses.length){list.innerHTML='<div class="empty-state"><div class="icon">🔒</div><h3>'+(lang==='fa'?'هنوز عضو هیچ کلاسی نیستی':'Not a member of any class')+'</h3><p style="font-size:12px;margin-top:6px;line-height:1.6">'+(lang==='fa'?'با دکمه <b>🔑 ورود با کد</b> کد کلاس رو وارد کن<br>یا اگه معلمی، با دکمه <b>➕ ساخت کلاس</b> کلاس بساز':'Use <b>🔑 Join with Code</b> to enter<br>or <b>➕ Create Class</b> if you teach')+'</p></div>';return}list.innerHTML='';myClasses.forEach(c=>{const it=document.createElement('div');it.className='edu-class';const isOwner=c.owner_email===myEmail;const codeValid=/^\d{6}$/.test(c.code||'');const codeDisplay=codeValid?esc(c.code):'<span style="color:#ef4444">'+(lang==='fa'?'نامعتبر':'Invalid')+'</span>';it.innerHTML=`<div class="edu-head"><div class="edu-avatar">📚</div><div class="edu-name">${esc(c.name)}</div>${isOwner?'<span style="font-size:10px;background:var(--p);color:#000;padding:2px 8px;border-radius:8px;font-weight:700">'+t('teacher')+'</span>':'<span style="font-size:10px;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;padding:2px 8px;border-radius:8px;font-weight:700">'+t('student')+'</span>'}</div><div class="edu-info">${esc(c.description||'—')}</div><div class="edu-info" style="margin-top:6px;color:var(--p);font-size:11px">👥 ${(c.members||[]).length+1} ${lang==='fa'?'عضو':'members'}${isOwner?` • ${lang==='fa'?'کد':'Code'}: <b style="direction:ltr;display:inline-block">${codeDisplay}</b>`:''}</div><div style="margin-top:8px"><button class="edu-enter-btn" style="width:100%;padding:8px;border:none;border-radius:8px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#00d4ff,#7b3ff2);color:#fff">${isOwner?'⚙️ '+t('classPanel'):'📖 '+(lang==='fa'?'ورود به کلاس':'Enter Class')}</button></div>`;it.querySelector('.edu-enter-btn').onclick=(ev)=>{ev.stopPropagation();openClassPanel(c.id)};list.appendChild(it)})}
+window.openEduModal=()=>{document.getElementById('edu-name').value='';document.getElementById('edu-desc').value='';document.getElementById('edu-modal').classList.add('show')};
+function genCode(){return String(Math.floor(100000+Math.random()*900000))}
+async function genUniqueCode(){for(let i=0;i<15;i++){const c=genCode();if(!/^\d{6}$/.test(c))continue;const{data,error}=await sb.from('education').select('id').eq('code',c).maybeSingle();if(!error && !data)return c}return String(Date.now()).slice(-6).padStart(6,'0')}
+document.getElementById('edu-create').onclick=async()=>{const n=document.getElementById('edu-name').value.trim();const d=document.getElementById('edu-desc').value.trim();if(!n){alert(t('classNameLbl'));return}const btn=document.getElementById('edu-create');btn.disabled=true;btn.textContent='...';const code=await genUniqueCode();if(!/^\d{6}$/.test(code)){alert(t('error'));btn.disabled=false;btn.textContent=t('create');return}const{data,error}=await sb.from('education').insert({name:n,description:d,owner_email:myEmail,code,members:[]}).select().single();btn.disabled=false;btn.textContent=t('create');if(error){alert(t('error')+': '+error.message);return}closeModal('edu-modal');document.getElementById('edu-show-code').textContent=code;document.getElementById('edu-code-modal').classList.add('show')};
+window.openEduJoin=()=>{document.getElementById('edu-join-code').value='';document.getElementById('edu-join-modal').classList.add('show');setTimeout(()=>document.getElementById('edu-join-code').focus(),200)};
+document.getElementById('edu-join-btn').onclick=async()=>{const code=document.getElementById('edu-join-code').value.trim();if(!/^\d{6}$/.test(code)){alert(lang==='fa'?'کد باید ۶ رقم عددی باشه':'Code must be 6 digits');return}const btn=document.getElementById('edu-join-btn');btn.disabled=true;btn.textContent='...';try{const{data,error}=await sb.rpc('join_edu_class',{p_code:code});btn.disabled=false;btn.textContent=t('enter');if(error){alert('❌ '+(error.message||t('error')));return}if(!data){alert(t('error'));return}if(!data.ok){alert(data.msg||t('error'));if(data.owner){closeModal('edu-join-modal');loadEdu()}return}closeModal('edu-join-modal');if(data.msg==='قبلاً عضو بودی'||data.msg==='Already member'){alert('✅ '+(lang==='fa'?'قبلاً عضو بودی':'Already member'))}else{alert('🎉 '+(lang==='fa'?'خوش آمدی':'Welcome')+' "'+data.name+'"')}loadEdu()}catch(e){btn.disabled=false;btn.textContent=t('enter');alert(t('error')+': '+e.message)}};
+window.copyEduCode=()=>{const c=document.getElementById('edu-show-code').textContent;if(navigator.clipboard){navigator.clipboard.writeText(c).then(()=>alert('✅ '+t('copySuccess')+': '+c)).catch(()=>alert(c))}else alert(c)};
+window.openClassPanel=async(clsId)=>{const{data,error}=await sb.from('education').select('*').eq('id',clsId).single();if(error||!data){alert(t('error'));return}curClass=data;const isOwner=data.owner_email===myEmail;document.getElementById('cp-title').textContent='📚 '+data.name;document.getElementById('cp-sub').textContent=isOwner?t('classPanel'):(lang==='fa'?'کلاس آموزشی':'Class');document.getElementById('cp-code').textContent=data.code||'—';const membersTab=document.querySelector('[data-cp="members"]');if(membersTab)membersTab.style.display=isOwner?'block':'none';const addVideoBtn=document.getElementById('cp-add-video-btn');if(addVideoBtn)addVideoBtn.style.display=isOwner?'block':'none';const codeCard=document.getElementById('cp-code-card');if(codeCard)codeCard.style.display=isOwner?'flex':'none';showPage('class-panel');switchCpTab('videos')};
+window.closeClassPanel=()=>{curClass=null;showPage('education')};
+window.copyCpCode=()=>{if(!curClass?.code)return;if(navigator.clipboard){navigator.clipboard.writeText(curClass.code).then(()=>alert('✅ '+t('copySuccess'))).catch(()=>alert(curClass.code))}else alert(curClass.code)};
+window.switchCpTab=x=>{curCpTab=x;document.querySelectorAll('[data-cp]').forEach(el=>el.classList.toggle('active',el.dataset.cp===x));document.getElementById('cp-videos').style.display=x==='videos'?'block':'none';document.getElementById('cp-members').style.display=x==='members'?'block':'none';const vcEl=document.getElementById('cp-virtual');if(vcEl)vcEl.style.display=x==='virtual'?'block':'none';const addVideoBtn=document.getElementById('cp-add-video-btn');if(addVideoBtn)addVideoBtn.style.display=(curClass?.owner_email===myEmail)?'block':'none';if(x==='videos')loadClassVideos();if(x==='members')loadClassMembers();if(x==='virtual'){const isOwner=curClass?.owner_email===myEmail;const desc=document.getElementById('vc-enter-desc');if(desc)desc.textContent=isOwner?'جلسه زنده برگزار کن: صدا، چت و تخته سفید در اختیار توست':'به جلسه زنده بپیوند: صدا، چت و تخته سفید'}};
+window.switchVideoMode=m=>{vMode=m;document.querySelectorAll('[data-vmode]').forEach(el=>el.classList.toggle('active',el.dataset.vmode===m));document.getElementById('v-upload-section').style.display=m==='upload'?'block':'none';document.getElementById('v-link-section').style.display=m==='link'?'block':'none'};
+window.openAddVideoModal=()=>{if(!curClass||curClass.owner_email!==myEmail){alert(t('onlyTeacher'));return}vFile=null;vMode='upload';document.getElementById('v-title').value='';document.getElementById('v-desc').value='';document.getElementById('v-url').value='';const p=document.getElementById('v-preview');p.innerHTML=t('nothingSelected');p.classList.add('empty');document.getElementById('v-upload-progress').style.display='none';document.getElementById('v-progress-bar').style.width='0%';document.getElementById('v-progress-text').textContent='0%';switchVideoMode('upload');document.getElementById('add-video-modal').classList.add('show')};
+document.getElementById('v-file').onchange=e=>{const f=e.target.files[0];if(!f)return;e.target.value='';if(!f.type.startsWith('video/')){alert(lang==='fa'?'فقط ویدیو':'Video only');return}if(f.size>50*1024*1024){alert(t('maxSize'));return}vFile=f;const p=document.getElementById('v-preview');p.classList.remove('empty');const u=URL.createObjectURL(f);p.innerHTML=`<video src="${u}" controls style="max-width:100%;max-height:180px;border-radius:12px"></video>`};
+document.getElementById('v-add-btn').onclick=async()=>{if(!curClass){alert(t('error'));return}if(curClass.owner_email!==myEmail){alert(t('onlyTeacher'));return}const ti=document.getElementById('v-title').value.trim();const d=document.getElementById('v-desc').value.trim();if(!ti){alert(t('videoTitleLbl'));return}const btn=document.getElementById('v-add-btn');btn.disabled=true;if(vMode==='link'){const u=document.getElementById('v-url').value.trim();if(!u){alert(t('videoUrlLbl'));btn.disabled=false;return}if(!/^https?:\/\//i.test(u)){alert(lang==='fa'?'لینک باید با http یا https شروع بشه':'URL must start with http or https');btn.disabled=false;return}btn.textContent='...';const{error}=await sb.from('edu_videos').insert({class_id:curClass.id,title:ti,description:d,video_url:u,owner_email:myEmail,mime_type:'link'});btn.disabled=false;btn.textContent=t('add');if(error){alert(t('error')+': '+error.message);return}closeModal('add-video-modal');loadClassVideos();return}if(!vFile){alert(t('nothingSelected'));btn.disabled=false;return}btn.textContent=t('loading');document.getElementById('v-upload-progress').style.display='block';const ext=vFile.name.split('.').pop()||'mp4';const fn=`edu-${curClass.id}-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;try{const{error:ue}=await sb.storage.from('edu-videos').upload(fn,vFile,{contentType:vFile.type||'video/mp4',cacheControl:'3600',upsert:false});if(ue){alert(t('error')+': '+ue.message);btn.disabled=false;btn.textContent=t('add');document.getElementById('v-upload-progress').style.display='none';return}let prog=0;const int=setInterval(()=>{prog=Math.min(prog+15,100);document.getElementById('v-progress-bar').style.width=prog+'%';document.getElementById('v-progress-text').textContent=prog+'%';if(prog>=100)clearInterval(int)},150);await new Promise(r=>setTimeout(r,800));const{data:ud}=sb.storage.from('edu-videos').getPublicUrl(fn);const{error:ie}=await sb.from('edu_videos').insert({class_id:curClass.id,title:ti,description:d,video_url:ud.publicUrl,owner_email:myEmail,storage_path:fn,file_size:vFile.size,mime_type:vFile.type||'video/mp4'});if(ie){alert(t('error')+': '+ie.message);await sb.storage.from('edu-videos').remove([fn]);btn.disabled=false;btn.textContent=t('add');return}closeModal('add-video-modal');vFile=null;loadClassVideos()}catch(err){alert(t('error')+': '+err.message);btn.disabled=false;btn.textContent=t('add');document.getElementById('v-upload-progress').style.display='none'}};
+async function loadClassVideos(){if(!curClass)return;const list=document.getElementById('cp-videos-list');list.innerHTML='<div class="empty-state"><div class="icon">⏳</div></div>';const{data}=await sb.from('edu_videos').select('*').eq('class_id',curClass.id).order('created_at',{ascending:false});if(!data?.length){list.innerHTML='<div class="empty-state"><div class="icon">🎬</div><h3>'+t('emptyVideo')+'</h3></div>';return}const isOwner=curClass.owner_email===myEmail;list.innerHTML='';data.forEach(v=>{const it=document.createElement('div');it.className='list-item';const isUploaded=v.storage_path&&v.mime_type!=='link';const badge=isUploaded?`<span style="font-size:9px;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;padding:2px 6px;border-radius:6px;font-weight:700">${lang==='fa'?'آپلود شده':'Uploaded'}</span>`:`<span style="font-size:9px;background:linear-gradient(135deg,#00d4ff,#7b3ff2);color:#fff;padding:2px 6px;border-radius:6px;font-weight:700">${lang==='fa'?'لینک':'Link'}</span>`;const delBtn=(isOwner&&v.owner_email===myEmail)?`<button class="bot-del" style="padding:6px 12px;border:none;border-radius:8px;font-family:inherit;font-size:11px;font-weight:600;cursor:pointer;background:rgba(239,68,68,.2);color:#fca5a5">${t('delete')}</button>`:'';it.innerHTML=`<div class="list-avatar" style="font-size:22px">🎬</div><div class="list-info"><div class="list-name">${esc(v.title)} ${badge}</div><div class="list-sub">${esc(v.description||'—')}${v.file_size?' • '+fmtSz(v.file_size):''}</div></div>${delBtn}`;it.querySelector('.list-info').onclick=()=>{const w=window.open('','_blank');w.document.write(`<html dir="rtl"><head><title>${esc(v.title)}</title><style>body{margin:0;background:#000;color:#fff;font-family:Vazirmatn,Tahoma,sans-serif}video{width:100%;height:100vh;background:#000}h2{padding:14px;margin:0;font-size:16px;background:#0a0e28}p{padding:0 14px 14px;color:#8b9dc3;font-size:13px}</style></head><body><h2>${esc(v.title)}</h2><video src="${esc(v.video_url)}" autoplay controls></video>${v.description?`<p>${esc(v.description)}</p>`:''}</body></html>`)};const delBtnEl=it.querySelector('.bot-del');if(delBtnEl)delBtnEl.onclick=async(ev)=>{ev.stopPropagation();if(!confirm(t('deleteVideo')))return;if(v.storage_path){await sb.storage.from('edu-videos').remove([v.storage_path])}await sb.from('edu_videos').delete().eq('id',v.id);loadClassVideos()};list.appendChild(it)})}
+async function loadClassMembers(){if(!curClass)return;if(curClass.owner_email!==myEmail)return;const list=document.getElementById('cp-members-list');list.innerHTML='<div class="empty-state"><div class="icon">⏳</div></div>';const members=curClass.members||[];await loadAllNames([curClass.owner_email,...members]);list.innerHTML='';const teacherName=namesCache[curClass.owner_email]||curClass.owner_email.split('@')[0];const teacherItem=document.createElement('div');teacherItem.className='list-item';teacherItem.innerHTML=`<div class="list-avatar" style="background:linear-gradient(135deg,#f59e0b,#f97316)">${ini(teacherName)}</div><div class="list-info"><div class="list-name">${esc(teacherName)}</div><div class="list-sub">${esc(curClass.owner_email)}</div></div><span style="font-size:10px;background:var(--p);color:#000;padding:2px 8px;border-radius:8px;font-weight:700">${t('teacher')}</span>`;list.appendChild(teacherItem);if(!members.length){const empty=document.createElement('div');empty.className='empty-state';empty.style.padding='30px 20px';empty.innerHTML='<div class="icon" style="font-size:40px">👥</div><h3>'+t('emptyMembers')+'</h3>';list.appendChild(empty);return}members.forEach(em=>{const dispName=namesCache[em]||em.split('@')[0];const it=document.createElement('div');it.className='list-item';it.innerHTML=`<div class="list-avatar">${ini(dispName)}</div><div class="list-info"><div class="list-name">${esc(dispName)}</div><div class="list-sub">${esc(em)}</div></div><button class="bot-del" style="padding:6px 12px;border:none;border-radius:8px;font-family:inherit;font-size:11px;font-weight:600;cursor:pointer;background:rgba(239,68,68,.2);color:#fca5a5">${t('delete')}</button>`;it.querySelector('.bot-del').onclick=async()=>{if(!confirm(t('deleteStudent')))return;const newMembers=members.filter(x=>x!==em);const{error}=await sb.from('education').update({members:newMembers}).eq('id',curClass.id);if(error){alert(t('error')+': '+error.message);return}curClass.members=newMembers;loadClassMembers()};list.appendChild(it)})}
+async function loadWallet(){const el=document.getElementById('wallet-bal');if(!el)return;const{data}=await sb.from('wallets').select('balance').eq('user_email',myEmail).maybeSingle();const bal=data?.balance||0;el.textContent=Number(bal).toLocaleString(lang==='fa'?'fa-IR':'en-US')+(lang==='fa'?' تومان':' Toman')}
+const LK_URL='wss://tms-bxlk0q2o.livekit.cloud';
+const LK_KEY='APIBhvnBREQa54D';
+const LK_SECRET='18fup4uYJKd3zv7JLeY2JLAPpxtlpi7RvGOEBZcGrQh';
+let lkRoom=null;
+async function generateLKToken(roomName,identity){const header={alg:'HS256',typ:'JWT'};const now=Math.floor(Date.now()/1000);const payload={exp:now+3600,iss:LK_KEY,sub:identity,nbf:now-10,name:identity,video:{roomJoin:true,room:roomName,canPublish:true,canSubscribe:true,canPublishData:true}};const enc=s=>btoa(JSON.stringify(s)).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');const headerB64=enc(header);const payloadB64=enc(payload);const data=headerB64+'.'+payloadB64;const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(LK_SECRET),{name:'HMAC',hash:'SHA-256'},false,['sign']);const sig=await crypto.subtle.sign('HMAC',key,new TextEncoder().encode(data));const sigB64=btoa(String.fromCharCode(...new Uint8Array(sig))).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');return data+'.'+sigB64}
+window.startCall=async(roomName,displayName,callType)=>{if(!roomName){alert(t('error'));return}try{document.getElementById('call-modal').classList.add('show');document.getElementById('call-title').textContent=callType==='private'?('📞 '+t('callPrivate')+' - '+displayName):('📞 '+(displayName||t('callGroup')));document.getElementById('call-sub').textContent=t('callConnecting');document.getElementById('call-status').textContent='';document.getElementById('call-participants').innerHTML='';const identity=myEmail.split('@')[0]+'_'+Date.now();const token=await generateLKToken(roomName,identity);lkRoom=new LivekitClient.Room({adaptiveStream:true,dynacast:true,autoSubscribe:true,audioCaptureDefaults:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});lkRoom.on(LivekitClient.RoomEvent.ParticipantConnected,()=>renderParticipants());lkRoom.on(LivekitClient.RoomEvent.ParticipantDisconnected,()=>renderParticipants());lkRoom.on(LivekitClient.RoomEvent.TrackSubscribed,(track)=>{if(track.kind==='audio'){const el=track.attach();el.autoplay=true;el.style.display='none';document.body.appendChild(el);el.play().catch(()=>{})}renderParticipants()});lkRoom.on(LivekitClient.RoomEvent.TrackUnsubscribed,(track)=>{track.detach();renderParticipants()});lkRoom.on(LivekitClient.RoomEvent.ActiveSpeakersChanged,()=>renderParticipants());lkRoom.on(LivekitClient.RoomEvent.Disconnected,()=>endCall());await lkRoom.connect(LK_URL,token);document.getElementById('call-sub').textContent=t('callConnected');await lkRoom.localParticipant.setMicrophoneEnabled(true);renderParticipants();updateMicBtn()}catch(e){alert(t('callError')+': '+e.message);endCall()}};
+window.startCallFromChat=()=>{const btn=document.getElementById('call-start-btn');if(!btn.dataset.room){alert(t('error'));return}startCall(btn.dataset.room,btn.dataset.name,btn.dataset.type||'group')};
+function renderParticipants(){if(!lkRoom)return;const cont=document.getElementById('call-participants');cont.innerHTML='';const all=[lkRoom.localParticipant,...Array.from(lkRoom.remoteParticipants.values())];all.forEach(p=>{const isLocal=p===lkRoom.localParticipant;const isSpeaking=p.isSpeaking;const isMuted=!p.isMicrophoneEnabled;const rawName=p.identity.split('_')[0];const name=isLocal?t('you'):(namesCache[rawName]||rawName);const initial=(name||'?').charAt(0).toUpperCase();const d=document.createElement('div');d.className='participant'+(isSpeaking?' speaking':'');d.innerHTML=`<div class="participant-avatar">${initial}${isMuted?'<div class="participant-muted">🔇</div>':''}</div><div class="participant-name">${esc(name)}</div>`;cont.appendChild(d)})}
+window.toggleMic=async()=>{if(!lkRoom)return;const enabled=lkRoom.localParticipant.isMicrophoneEnabled;await lkRoom.localParticipant.setMicrophoneEnabled(!enabled);updateMicBtn();renderParticipants()};
+function updateMicBtn(){const btn=document.getElementById('call-mic-btn');if(!lkRoom)return;if(lkRoom.localParticipant.isMicrophoneEnabled){btn.classList.remove('muted');btn.textContent='🎤'}else{btn.classList.add('muted');btn.textContent='🔇'}}
+window.endCall=async()=>{try{if(lkRoom){await lkRoom.disconnect();lkRoom=null}}catch(e){}document.querySelectorAll('audio').forEach(a=>{if(a.srcObject)a.remove()});document.getElementById('call-modal').classList.remove('show')};
+document.getElementById('call-mic-btn').onclick=toggleMic;
+document.getElementById('call-end-btn').onclick=endCall;
+let vcRoom=null;let vcChannel=null;let vcClass=null;let vcIsTeacher=false;
+let vcCanvas,vcCtx;let vcDrawing=false,vcLastX=0,vcLastY=0;let vcTool='pen';let vcColor='#00d4ff';
+const vcStrokes=[];const vcMutedStudents=new Set();
+const vcBoardImages=[];
+function showVcUnlockBtn(){const btn=document.getElementById('vc-unlock-audio');if(btn)btn.style.display='block'}
+function hideVcUnlockBtn(){const btn=document.getElementById('vc-unlock-audio');if(btn)btn.style.display='none'}
+window.unlockVcAudio=async()=>{try{if(vcRoom){await vcRoom.startAudio()}document.querySelectorAll('audio').forEach(a=>{a.play().catch(()=>{})});hideVcUnlockBtn()}catch(e){alert('خطا: '+e.message)}};
+
+// ===== آپلود عکس روی تخته =====
+document.getElementById('vc-board-file')?.addEventListener('change',async(e)=>{
+const file=e.target.files[0];if(!file)return;e.target.value='';
+if(!vcIsTeacher){alert('فقط معلم می‌تواند عکس اضافه کند');return}
+if(!file.type.startsWith('image/')){alert('فقط عکس');return}
+if(file.size>5*1024*1024){alert('حجم عکس زیاد (حداکثر ۵ مگابایت)');return}
+const reader=new FileReader();
+reader.onload=async(ev)=>{
+const imgData={id:Date.now()+'_'+Math.random().toString(36).slice(2),data:ev.target.result,x:50,y:50,w:200,h:200};
+addBoardImage(imgData,false);
+if(vcChannel){vcChannel.send({type:'broadcast',event:'board-image',payload:imgData})}
+};
+reader.readAsDataURL(file);
+});
+
+function addBoardImage(imgData,isRemote=false){
+const layer=document.getElementById('vc-image-layer');if(!layer)return;
+const existing=document.getElementById('vcimg_'+imgData.id);if(existing)existing.remove();
+const wrap=document.createElement('div');
+wrap.className='vc-board-img';wrap.id='vcimg_'+imgData.id;wrap.dataset.imgid=imgData.id;
+wrap.style.left=imgData.x+'px';wrap.style.top=imgData.y+'px';wrap.style.width=imgData.w+'px';wrap.style.height=imgData.h+'px';
+const img=document.createElement('img');img.src=imgData.data;img.style.cssText='width:100%;height:100%;object-fit:contain;border-radius:6px;pointer-events:none;display:block';wrap.appendChild(img);
+const delBtn=document.createElement('div');delBtn.className='vc-img-delete';delBtn.textContent='✕';delBtn.onclick=(e)=>{e.stopPropagation();removeBoardImage(imgData.id)};wrap.appendChild(delBtn);
+const resizeHandle=document.createElement('div');resizeHandle.className='vc-img-resize';resizeHandle.textContent='⤡';wrap.appendChild(resizeHandle);
+let isDragging=false,startX=0,startY=0,origX=0,origY=0;
+const startDrag=(e)=>{if(!vcIsTeacher)return;e.preventDefault();document.querySelectorAll('.vc-board-img').forEach(el=>el.classList.remove('selected'));wrap.classList.add('selected');const touch=e.touches?e.touches[0]:e;isDragging=true;startX=touch.clientX;startY=touch.clientY;origX=parseInt(wrap.style.left);origY=parseInt(wrap.style.top)};
+const moveDrag=(e)=>{if(!isDragging)return;e.preventDefault();const touch=e.touches?e.touches[0]:e;const dx=touch.clientX-startX;const dy=touch.clientY-startY;wrap.style.left=(origX+dx)+'px';wrap.style.top=(origY+dy)+'px'};
+const endDrag=()=>{if(!isDragging)return;isDragging=false;imgData.x=parseInt(wrap.style.left);imgData.y=parseInt(wrap.style.top);if(vcChannel&&vcIsTeacher){vcChannel.send({type:'broadcast',event:'board-image-move',payload:{id:imgData.id,x:imgData.x,y:imgData.y}})}};
+wrap.addEventListener('mousedown',startDrag);wrap.addEventListener('touchstart',startDrag,{passive:false});
+document.addEventListener('mousemove',moveDrag);document.addEventListener('touchmove',moveDrag,{passive:false});
+document.addEventListener('mouseup',endDrag);document.addEventListener('touchend',endDrag);
+let isResizing=false,startRX=0,startRY=0,origW=0,origH=0;
+const startResize=(e)=>{if(!vcIsTeacher)return;e.stopPropagation();e.preventDefault();isResizing=true;const t=e.touches?e.touches[0]:e;startRX=t.clientX;startRY=t.clientY;origW=parseInt(wrap.style.width);origH=parseInt(wrap.style.height)};
+resizeHandle.addEventListener('mousedown',startResize);resizeHandle.addEventListener('touchstart',startResize,{passive:false});
+const doResize=(e)=>{if(!isResizing)return;e.preventDefault();const t=e.touches?e.touches[0]:e;const dx=t.clientX-startRX;const dy=t.clientY-startRY;const newW=Math.max(80,origW+dx);const newH=Math.max(80,origH+dy);wrap.style.width=newW+'px';wrap.style.height=newH+'px'};
+const endResize=()=>{if(!isResizing)return;isResizing=false;imgData.w=parseInt(wrap.style.width);imgData.h=parseInt(wrap.style.height);if(vcChannel&&vcIsTeacher){vcChannel.send({type:'broadcast',event:'board-image-resize',payload:{id:imgData.id,w:imgData.w,h:imgData.h}})}};
+document.addEventListener('mousemove',doResize);document.addEventListener('touchmove',doResize,{passive:false});
+document.addEventListener('mouseup',endResize);document.addEventListener('touchend',endResize);
+layer.appendChild(wrap);
+vcBoardImages.push(imgData);
+}
+
+function removeBoardImage(id){
+if(!vcIsTeacher){alert('فقط معلم می‌تواند عکس حذف کند');return}
+const el=document.getElementById('vcimg_'+id);if(el)el.remove();
+const idx=vcBoardImages.findIndex(i=>i.id===id);if(idx>-1)vcBoardImages.splice(idx,1);
+if(vcChannel){vcChannel.send({type:'broadcast',event:'board-image-delete',payload:{id}})}
+}
+
+function clearAllBoardImages(){
+const layer=document.getElementById('vc-image-layer');if(layer)layer.innerHTML='';
+vcBoardImages.length=0;
+if(vcChannel&&vcIsTeacher){vcChannel.send({type:'broadcast',event:'board-image-clear',payload:{}})}
+}
+
+window.enterVirtualClass=async()=>{if(!curClass){alert(t('error'));return}
+const imgLayer=document.getElementById('vc-image-layer');if(imgLayer)imgLayer.innerHTML='';vcBoardImages.length=0;
+try{const tmpStream=await navigator.mediaDevices.getUserMedia({audio:true});tmpStream.getTracks().forEach(t=>t.stop())}catch(e){alert(lang==='fa'?'دسترسی به میکروفون داده نشد. لطفاً اجازه بده.':'Microphone access denied. Please allow.');return}
+vcClass=curClass;vcIsTeacher=(curClass.owner_email===myEmail);
+document.getElementById('vc-title').textContent='📚 '+(curClass.name||'کلاس');
+document.getElementById('virtual-class').classList.add('show');
+setTimeout(initWhiteboard,80);setupVcChannel();
+const roomName='edu_'+curClass.id;
+try{await startVcAudio(roomName)}catch(e){alert('خطا در اتصال صوتی: '+e.message)}
+document.getElementById('vc-board-tools').style.display=vcIsTeacher?'flex':'none';
+document.getElementById('vc-lock-note').style.display=vcIsTeacher?'none':'block';
+document.getElementById('whiteboard').classList.toggle('readonly',!vcIsTeacher);
+setTimeout(()=>{if(vcRoom&&!vcRoom.canPlayAudio){showVcUnlockBtn()}},1500);
+updateMyStatus({chat_id:'vc_'+curClass.id})};
+
+window.exitVirtualClass=async()=>{document.getElementById('virtual-class').classList.remove('show');hideVcUnlockBtn();if(vcChannel){sb.removeChannel(vcChannel);vcChannel=null}if(vcRoom){try{await vcRoom.disconnect()}catch(e){}vcRoom=null}vcStrokes.length=0;vcMutedStudents.clear();const imgLayer=document.getElementById('vc-image-layer');if(imgLayer)imgLayer.innerHTML='';vcBoardImages.length=0;updateMyStatus({chat_id:null})};
+
+window.switchVcTab=tab=>{document.querySelectorAll('.vc-tab').forEach(b=>b.classList.toggle('active',b.dataset.vc===tab));document.querySelectorAll('.vc-panel').forEach(p=>p.classList.remove('active'));document.getElementById('vc-'+tab).classList.add('active');if(tab==='students')renderVcStudents();if(tab==='board')setTimeout(()=>resizeCanvas(),50)};
+
+async function startVcAudio(roomName){const identity=myEmail.split('@')[0]+'_'+Date.now();const token=await generateLKToken(roomName,identity);vcRoom=new LivekitClient.Room({adaptiveStream:true,dynacast:true,autoSubscribe:true,audioCaptureDefaults:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});vcRoom.on(LivekitClient.RoomEvent.ParticipantConnected,()=>renderVcStudents());vcRoom.on(LivekitClient.RoomEvent.ParticipantDisconnected,()=>renderVcStudents());vcRoom.on(LivekitClient.RoomEvent.TrackSubscribed,track=>{if(track.kind==='audio'){const el=track.attach();el.autoplay=true;el.style.display='none';el.volume=1.0;document.body.appendChild(el);el.play().catch(err=>{showVcUnlockBtn()})}renderVcStudents()});vcRoom.on(LivekitClient.RoomEvent.TrackUnsubscribed,track=>{track.detach();renderVcStudents()});vcRoom.on(LivekitClient.RoomEvent.TrackMuted,pub=>{if(pub.kind==='audio')renderVcStudents()});vcRoom.on(LivekitClient.RoomEvent.TrackUnmuted,pub=>{if(pub.kind==='audio')renderVcStudents()});vcRoom.on(LivekitClient.RoomEvent.TrackPublished,pub=>{if(pub.kind==='audio'){pub.setSubscribed(true).catch(()=>{});renderVcStudents()}});vcRoom.on(LivekitClient.RoomEvent.ActiveSpeakersChanged,()=>renderVcStudents());vcRoom.on(LivekitClient.RoomEvent.Disconnected,()=>{if(document.getElementById('virtual-class').classList.contains('show')){setTimeout(()=>{try{startVcAudio(roomName)}catch(e){}},1500)}});vcRoom.on(LivekitClient.RoomEvent.AudioPlaybackStatusChanged,()=>{if(!vcRoom.canPlayAudio){showVcUnlockBtn()}else{hideVcUnlockBtn()}});await vcRoom.connect(LK_URL,token);if(!vcRoom.canPlayAudio){showVcUnlockBtn()}for(const p of vcRoom.remoteParticipants.values()){for(const pub of p.trackPublications.values()){if(pub.kind==='audio'&&pub.trackSid){try{await pub.setSubscribed(true);if(pub.track){const el=pub.track.attach();el.autoplay=true;el.style.display='none';document.body.appendChild(el);el.play().catch(()=>{showVcUnlockBtn()})}}catch(e){}}}}await vcRoom.localParticipant.setMicrophoneEnabled(true);updateVcMicBtn();renderVcStudents()}
+
+window.toggleVcMic=async()=>{if(!vcRoom)return;const enabled=vcRoom.localParticipant.isMicrophoneEnabled;await vcRoom.localParticipant.setMicrophoneEnabled(!enabled);updateVcMicBtn();renderVcStudents();vcChannel?.send({type:'broadcast',event:'mic-state',payload:{email:myEmail,muted:enabled}})};
+function updateVcMicBtn(){const btn=document.getElementById('vc-mic-btn');if(!btn||!vcRoom)return;const on=vcRoom.localParticipant.isMicrophoneEnabled;btn.classList.toggle('muted',!on);btn.textContent=on?'🎤':'🔇'}
+window.sendVcChat=()=>{const inp=document.getElementById('vc-chat-input');const txt=inp.value.trim();if(!txt||!vcChannel)return;const msg={id:Date.now()+'_'+Math.random().toString(36).slice(2),email:myEmail,name:namesCache[myEmail]||myEmail.split('@')[0],text:txt,time:new Date().toISOString()};addVcMessage(msg);vcChannel.send({type:'broadcast',event:'chat',payload:msg});inp.value=''};
+function addVcMessage(msg){const box=document.getElementById('vc-messages');const isMineMsg=msg.email===myEmail;const div=document.createElement('div');div.className='vc-msg '+(isMineMsg?'mine':'other');const time=new Date(msg.time).toLocaleTimeString(lang==='fa'?'fa-IR':'en-US',{hour:'2-digit',minute:'2-digit'});div.innerHTML=`<div class="vc-msg-sender">${esc(msg.name||msg.email.split('@')[0])}</div><div>${esc(msg.text)}</div><div class="vc-msg-time">${time}</div>`;box.appendChild(div);box.scrollTop=box.scrollHeight}
+function renderVcStudents(){const list=document.getElementById('vc-students-list');if(!list)return;const participants=[];if(vcRoom){const all=[vcRoom.localParticipant,...Array.from(vcRoom.remoteParticipants.values())];all.forEach(p=>{const isLocal=p===vcRoom.localParticipant;const rawName=p.identity.split('_')[0];let email=null;if(isLocal)email=myEmail;else{const allEmails=[vcClass.owner_email,...(vcClass.members||[])];email=allEmails.find(e=>e.split('@')[0]===rawName)||rawName}let micEnabled=false;try{if(isLocal){micEnabled=vcRoom.localParticipant.isMicrophoneEnabled}else{const hasAudio=Array.from(p.trackPublications.values()).some(pub=>pub.kind==='audio'&&pub.isSubscribed&&!pub.isMuted);micEnabled=hasAudio}}catch(e){micEnabled=false}participants.push({email,name:namesCache[email]||(email||'').split('@')[0]||rawName,isLocal,muted:!micEnabled||vcMutedStudents.has(email),isTeacher:email===vcClass.owner_email})})}if(!participants.length){const members=[vcClass.owner_email,...(vcClass.members||[])];members.forEach(em=>{participants.push({email:em,name:namesCache[em]||em.split('@')[0],isLocal:em===myEmail,muted:vcMutedStudents.has(em),isTeacher:em===vcClass.owner_email})})}list.innerHTML='';if(!participants.length){list.innerHTML='<div class="vc-empty-vc">کسی در کلاس نیست</div>';return}participants.forEach(p=>{const it=document.createElement('div');it.className='vc-student';const initial=(p.name||'?').charAt(0).toUpperCase();const roleLabel=p.isTeacher?'👨‍🏫 معلم':'👤 دانش‌آموز';const mutedClass=p.muted?'muted':'';it.innerHTML=`<div class="vc-student-av ${mutedClass}">${initial}</div><div class="vc-student-info"><div class="vc-student-name">${esc(p.name)}${p.isLocal?' (شما)':''}</div><div class="vc-student-role">${roleLabel}</div></div><div class="vc-student-actions"></div>`;if(vcIsTeacher&&!p.isLocal){const actions=it.querySelector('.vc-student-actions');if(p.muted){const un=document.createElement('button');un.className='vc-student-btn vc-unmute-btn';un.textContent='🔊 باز';un.onclick=()=>requestStudentMic(p.email,false);actions.appendChild(un)}else{const mu=document.createElement('button');mu.className='vc-student-btn vc-mute-btn';mu.textContent='🔇 بستن';mu.onclick=()=>requestStudentMic(p.email,true);actions.appendChild(mu)}}list.appendChild(it)})}
+function requestStudentMic(email,mute){if(!vcIsTeacher||!vcChannel)return;if(email===myEmail && vcRoom){vcRoom.localParticipant.setMicrophoneEnabled(!mute).then(()=>{updateVcMicBtn();renderVcStudents()});return}vcChannel.send({type:'broadcast',event:'mic-command',payload:{target:email,mute}});if(mute)vcMutedStudents.add(email);else vcMutedStudents.delete(email);setTimeout(renderVcStudents,300)}
+function setupVcChannel(){if(vcChannel)sb.removeChannel(vcChannel);const chName='vc_'+vcClass.id;vcChannel=sb.channel(chName,{config:{broadcast:{self:true}}});vcChannel.on('broadcast',{event:'mic-command'},async ({payload})=>{if(vcIsTeacher)return;if(payload.target!==myEmail)return;if(!vcRoom)return;try{await vcRoom.localParticipant.setMicrophoneEnabled(!payload.mute);updateVcMicBtn();renderVcStudents()}catch(e){setTimeout(async()=>{try{await vcRoom.localParticipant.setMicrophoneEnabled(!payload.mute);updateVcMicBtn();renderVcStudents()}catch(e2){}},1000)}});vcChannel.on('broadcast',{event:'mic-state'},({payload})=>{if(payload.muted)vcMutedStudents.add(payload.email);else vcMutedStudents.delete(payload.email);renderVcStudents()});vcChannel.on('broadcast',{event:'chat'},({payload})=>{addVcMessage(payload)});vcChannel.on('broadcast',{event:'draw'},({payload})=>{drawLineLocal(payload);vcStrokes.push(payload)});vcChannel.on('broadcast',{event:'clear-board'},()=>{clearCanvasLocal()});vcChannel.on('broadcast',{event:'board-image'},({payload})=>{addBoardImage(payload,true)});vcChannel.on('broadcast',{event:'board-image-move'},({payload})=>{const el=document.getElementById('vcimg_'+payload.id);if(el){el.style.left=payload.x+'px';el.style.top=payload.y+'px';const imgData=vcBoardImages.find(i=>i.id===payload.id);if(imgData){imgData.x=payload.x;imgData.y=payload.y}}});vcChannel.on('broadcast',{event:'board-image-resize'},({payload})=>{const el=document.getElementById('vcimg_'+payload.id);if(el){el.style.width=payload.w+'px';el.style.height=payload.h+'px';const imgData=vcBoardImages.find(i=>i.id===payload.id);if(imgData){imgData.w=payload.w;imgData.h=payload.h}}});vcChannel.on('broadcast',{event:'board-image-delete'},({payload})=>{const el=document.getElementById('vcimg_'+payload.id);if(el)el.remove();const idx=vcBoardImages.findIndex(i=>i.id===payload.id);if(idx>-1)vcBoardImages.splice(idx,1)});vcChannel.on('broadcast',{event:'board-image-clear'},()=>{const layer=document.getElementById('vc-image-layer');if(layer)layer.innerHTML='';vcBoardImages.length=0});vcChannel.on('broadcast',{event:'presence'},({payload})=>{if(!namesCache[payload.email])namesCache[payload.email]=payload.name;renderVcStudents()});vcChannel.subscribe(status=>{if(status==='SUBSCRIBED'){vcChannel.send({type:'broadcast',event:'presence',payload:{email:myEmail,name:namesCache[myEmail]||myEmail.split('@')[0]}})}})}
+function initWhiteboard(){vcCanvas=document.getElementById('whiteboard');if(!vcCanvas)return;resizeCanvas();vcCtx=vcCanvas.getContext('2d');vcCtx.lineCap='round';vcCtx.lineJoin='round';vcCanvas.addEventListener('pointerdown',vcStartDraw);vcCanvas.addEventListener('pointermove',vcDrawMove);vcCanvas.addEventListener('pointerup',vcEndDraw);vcCanvas.addEventListener('pointerleave',vcEndDraw);vcCanvas.addEventListener('pointercancel',vcEndDraw);window.addEventListener('resize',resizeCanvas);vcStrokes.forEach(drawLineLocal)}
+function resizeCanvas(){if(!vcCanvas)return;const wrap=document.getElementById('vc-board-wrap');if(!wrap)return;const rect=wrap.getBoundingClientRect();let img=null;try{if(vcCanvas.width>0&&vcCanvas.height>0){img=vcCtx.getImageData(0,0,vcCanvas.width,vcCanvas.height)}}catch(e){}vcCanvas.width=rect.width;vcCanvas.height=rect.height;vcCtx=vcCanvas.getContext('2d');vcCtx.lineCap='round';vcCtx.lineJoin='round';if(img){try{vcCtx.putImageData(img,0,0)}catch(e){}}else{vcStrokes.forEach(drawLineLocal)}}
+function vcStartDraw(e){if(!vcIsTeacher)return;e.preventDefault();vcDrawing=true;const rect=vcCanvas.getBoundingClientRect();vcLastX=e.clientX-rect.left;vcLastY=e.clientY-rect.top}
+function vcDrawMove(e){if(!vcDrawing||!vcIsTeacher)return;e.preventDefault();const rect=vcCanvas.getBoundingClientRect();const x=e.clientX-rect.left;const y=e.clientY-rect.top;const data={x1:vcLastX,y1:vcLastY,x2:x,y2:y,color:vcColor,tool:vcTool,w:vcTool==='eraser'?24:3};drawLineLocal(data);vcStrokes.push(data);vcChannel?.send({type:'broadcast',event:'draw',payload:data});vcLastX=x;vcLastY=y}
+function vcEndDraw(){vcDrawing=false}
+function drawLineLocal(d){if(!vcCtx)return;vcCtx.strokeStyle=d.tool==='eraser'?'#0a0e28':d.color;vcCtx.lineWidth=d.w||3;vcCtx.beginPath();vcCtx.moveTo(d.x1,d.y1);vcCtx.lineTo(d.x2,d.y2);vcCtx.stroke()}
+function clearCanvasLocal(){if(!vcCtx||!vcCanvas)return;vcCtx.clearRect(0,0,vcCanvas.width,vcCanvas.height);vcStrokes.length=0}
+window.setVcTool=tool=>{if(!vcIsTeacher)return;vcTool=tool;document.querySelectorAll('.vc-tool-btn').forEach(b=>{b.classList.toggle('active',b.dataset.tool===tool)})};
+window.clearBoard=()=>{if(!vcIsTeacher){alert('فقط معلم می‌تواند تخته را پاک کند');return}if(!confirm('تخته (نوشته‌ها و عکس‌ها) پاک شود؟'))return;clearCanvasLocal();clearAllBoardImages();vcChannel?.send({type:'broadcast',event:'clear-board',payload:{}})};
+document.getElementById('vc-color')?.addEventListener('input',e=>{vcColor=e.target.value;if(vcTool==='eraser')setVcTool('pen')});
+document.getElementById('vc-chat-input')?.addEventListener('keypress',e=>{if(e.key==='Enter')sendVcChat()});
+(async()=>{applyLang();await loadMyProfile();await registerSession();await loadStories();await setOnline();await loadAllStatus();setupStatusRealtime();const homeAv=document.getElementById('home-avatar');if(homeAv&&avatarsCache[myEmail]){homeAv.textContent='';homeAv.style.backgroundImage=`url('${avatarsCache[myEmail]}')`}const greeting=document.getElementById('home-greeting');if(greeting&&namesCache[myEmail]){greeting.textContent=(lang==='fa'?'سلام، ':'Hi, ')+namesCache[myEmail]+'!'}stRt=sb.channel('stories-rt').on('postgres_changes',{event:'*',schema:'public',table:'stories'},()=>loadStories()).subscribe();setInterval(()=>{if(document.getElementById('page-chats')?.classList.contains('active') && !curChat){renderList()}},10000)})();
+window.addEventListener('beforeunload',()=>{try{setOffline()}catch(e){}if(rtCh)sb.removeChannel(rtCh);if(stRt)sb.removeChannel(stRt);if(statusChannel)sb.removeChannel(statusChannel);if(vcChannel)sb.removeChannel(vcChannel);if(lkRoom){try{lkRoom.disconnect()}catch(e){}}if(vcRoom){try{vcRoom.disconnect()}catch(e){}}});
+</script>
+</body>
+</html>
