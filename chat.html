@@ -351,7 +351,7 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 .vc-student-info{flex:1;min-width:0}
 .vc-student-name{font-size:13.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .vc-student-role{font-size:10.5px;color:var(--mut)}
-.vc-student-actions{display:flex;gap:6px}
+.vc-student-actions{display:flex;gap:6px;align-items:center}
 .vc-student-btn{padding:6px 10px;border:none;border-radius:8px;font-family:inherit;font-size:11px;font-weight:600;cursor:pointer;color:#fff}
 .vc-mute-btn{background:linear-gradient(135deg,#ef4444,#dc2626)}
 .vc-unmute-btn{background:linear-gradient(135deg,#22c55e,#16a34a)}
@@ -392,6 +392,8 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 @keyframes handNotifyOut{to{opacity:0;transform:translateX(-50%) translateY(-20px) scale(.9)}}
 .vc-student.raised-hand{border-color:rgba(245,158,11,.6);background:linear-gradient(135deg,rgba(245,158,11,.12),var(--card2))}
 .vc-student-av.hand-raised::before{content:'✋';position:absolute;top:-4px;left:-4px;font-size:16px;background:linear-gradient(135deg,#fbbf24,#f59e0b);width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid #05061a;animation:handWave 1.5s ease-in-out infinite}
+.vc-student.offline{opacity:.6;background:rgba(15,20,60,.3)}
+.vc-student.offline .vc-student-name{color:#8b9dc3}
 .search-modal{position:fixed;inset:0;background:rgba(5,6,26,.92);backdrop-filter:blur(10px);z-index:2500;display:none;flex-direction:column;padding:14px}
 .search-modal.show{display:flex}
 .search-header{display:flex;gap:10px;margin-bottom:14px;flex-shrink:0}
@@ -1103,21 +1105,7 @@ function hideVcUnlockBtn(){const btn=document.getElementById('vc-unlock-audio');
 window.unlockVcAudio=async()=>{try{if(vcRoom){await vcRoom.startAudio()}document.querySelectorAll('audio').forEach(a=>{a.play().catch(()=>{})});hideVcUnlockBtn()}catch(e){alert('خطا: '+e.message)}};
 function initHandSound(){try{vcHandSound=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}
 function playHandSound(){if(!vcHandSound)return;try{const now=vcHandSound.currentTime;[0,0.15].forEach((offset,i)=>{const osc=vcHandSound.createOscillator();const gain=vcHandSound.createGain();osc.type='sine';osc.frequency.setValueAtTime(i===0?880:1100,now+offset);gain.gain.setValueAtTime(0,now+offset);gain.gain.linearRampToValueAtTime(0.15,now+offset+0.01);gain.gain.exponentialRampToValueAtTime(0.001,now+offset+0.12);osc.connect(gain);gain.connect(vcHandSound.destination);osc.start(now+offset);osc.stop(now+offset+0.15)})}catch(e){}}
-
-// ✅ فقط دانش‌آموز می‌تونه دست بلند کنه
-window.toggleHandRaise=function(){
-  if(vcIsTeacher)return;  // معلم نمی‌تونه
-  if(!vcChannel)return;
-  const isRaised=vcHands.has(myEmail);
-  if(isRaised){
-    vcHands.delete(myEmail);
-    vcChannel.send({type:'broadcast',event:'hand-lower',payload:{email:myEmail,by:myEmail}});
-  }else{
-    vcHands.add(myEmail);
-    vcChannel.send({type:'broadcast',event:'hand-raise',payload:{email:myEmail,name:namesCache[myEmail]||myEmail.split('@')[0],time:new Date().toISOString()}});
-  }
-  updateHandUI();renderHandBar();renderVcStudents();
-};
+window.toggleHandRaise=function(){if(vcIsTeacher)return;if(!vcChannel)return;const isRaised=vcHands.has(myEmail);if(isRaised){vcHands.delete(myEmail);vcChannel.send({type:'broadcast',event:'hand-lower',payload:{email:myEmail,by:myEmail}})}else{vcHands.add(myEmail);vcChannel.send({type:'broadcast',event:'hand-raise',payload:{email:myEmail,name:namesCache[myEmail]||myEmail.split('@')[0],time:new Date().toISOString()}})}updateHandUI();renderHandBar();renderVcStudents()};
 window.lowerHand=function(email){if(!vcIsTeacher||!vcChannel)return;vcHands.delete(email);vcChannel.send({type:'broadcast',event:'hand-lower',payload:{email,by:myEmail,byTeacher:true}});renderHandBar();renderVcStudents()};
 window.acceptHand=function(email){if(!vcIsTeacher||!vcChannel)return;requestStudentMic(email,false);lowerHand(email);addVcMessage({email:'system',name:'سیستم',text:'✅ معلم دست '+email.split('@')[0]+' رو پذیرفت و میکروفون رو باز کرد',time:new Date().toISOString()})};
 function updateHandUI(){const btn=document.getElementById('vc-hand-btn');if(!btn)return;if(vcIsTeacher){btn.style.display='none';return}btn.style.display='flex';const isRaised=vcHands.has(myEmail);btn.classList.toggle('active',isRaised);btn.textContent=isRaised?'✋✓':'✋';btn.title=isRaised?'دستت رو پایین بیار':'دست بلند کن'}
@@ -1130,74 +1118,74 @@ function clearAllBoardImages(){const layer=document.getElementById('vc-image-lay
 window.enterVirtualClass=async()=>{if(!curClass){alert(t('error'));return}const imgLayer=document.getElementById('vc-image-layer');if(imgLayer)imgLayer.innerHTML='';vcBoardImages.length=0;vcHands.clear();initHandSound();try{const tmpStream=await navigator.mediaDevices.getUserMedia({audio:true});tmpStream.getTracks().forEach(t=>t.stop())}catch(e){alert(lang==='fa'?'دسترسی به میکروفون داده نشد. لطفاً اجازه بده.':'Microphone access denied. Please allow.');return}vcClass=curClass;vcIsTeacher=(curClass.owner_email===myEmail);if(!vcIsTeacher)vcMutedStudents.add(myEmail);document.getElementById('vc-title').textContent='📚 '+(curClass.name||'کلاس');document.getElementById('virtual-class').classList.add('show');setTimeout(initWhiteboard,80);setupVcChannel();const roomName='edu_'+curClass.id;try{await startVcAudio(roomName)}catch(e){alert('خطا در اتصال صوتی: '+e.message)}updateVcWriteUI();updateHandUI();setTimeout(()=>{if(vcRoom&&!vcRoom.canPlayAudio){showVcUnlockBtn()}},1500);updateMyStatus({chat_id:'vc_'+curClass.id})};
 window.exitVirtualClass=async()=>{document.getElementById('virtual-class').classList.remove('show');hideVcUnlockBtn();if(vcChannel){sb.removeChannel(vcChannel);vcChannel=null}if(vcRoom){try{await vcRoom.disconnect()}catch(e){}vcRoom=null}vcStrokes.length=0;vcMutedStudents.clear();vcWriters.clear();vcAllCanWrite=false;vcHands.clear();if(vcHandSound){try{vcHandSound.close()}catch(e){}vcHandSound=null}const imgLayer=document.getElementById('vc-image-layer');if(imgLayer)imgLayer.innerHTML='';vcBoardImages.length=0;updateMyStatus({chat_id:null})};
 window.switchVcTab=tab=>{document.querySelectorAll('.vc-tab').forEach(b=>b.classList.toggle('active',b.dataset.vc===tab));document.querySelectorAll('.vc-panel').forEach(p=>p.classList.remove('active'));document.getElementById('vc-'+tab).classList.add('active');if(tab==='students')renderVcStudents();if(tab==='board')setTimeout(()=>resizeCanvas(),50)};
-async function startVcAudio(roomName){
-  const identity=myEmail.split('@')[0]+'_'+Date.now();
-  const token=await generateLKToken(roomName,identity);
-  vcRoom=new LivekitClient.Room({adaptiveStream:true,dynacast:true,autoSubscribe:true,audioCaptureDefaults:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
-  vcRoom.on(LivekitClient.RoomEvent.ParticipantConnected,()=>renderVcStudents());
-  vcRoom.on(LivekitClient.RoomEvent.ParticipantDisconnected,()=>renderVcStudents());
-  vcRoom.on(LivekitClient.RoomEvent.TrackSubscribed,track=>{if(track.kind==='audio'){const el=track.attach();el.autoplay=true;el.style.display='none';el.volume=1.0;document.body.appendChild(el);el.play().catch(err=>{showVcUnlockBtn()})}renderVcStudents()});
-  vcRoom.on(LivekitClient.RoomEvent.TrackUnsubscribed,track=>{track.detach();renderVcStudents()});
-  vcRoom.on(LivekitClient.RoomEvent.TrackMuted,pub=>{if(pub.kind==='audio')renderVcStudents()});
-  vcRoom.on(LivekitClient.RoomEvent.TrackUnmuted,pub=>{if(pub.kind==='audio')renderVcStudents()});
-  vcRoom.on(LivekitClient.RoomEvent.TrackPublished,pub=>{if(pub.kind==='audio'){pub.setSubscribed(true).catch(()=>{});renderVcStudents()}});
-  vcRoom.on(LivekitClient.RoomEvent.ActiveSpeakersChanged,()=>renderVcStudents());
-  vcRoom.on(LivekitClient.RoomEvent.Disconnected,()=>{if(document.getElementById('virtual-class').classList.contains('show')){setTimeout(()=>{try{startVcAudio(roomName)}catch(e){}},1500)}});
-  vcRoom.on(LivekitClient.RoomEvent.AudioPlaybackStatusChanged,()=>{if(!vcRoom.canPlayAudio){showVcUnlockBtn()}else{hideVcUnlockBtn()}});
-  await vcRoom.connect(LK_URL,token);
-  if(!vcRoom.canPlayAudio){showVcUnlockBtn()}
-  for(const p of vcRoom.remoteParticipants.values()){for(const pub of p.trackPublications.values()){if(pub.kind==='audio'&&pub.trackSid){try{await pub.setSubscribed(true);if(pub.track){const el=pub.track.attach();el.autoplay=true;el.style.display='none';document.body.appendChild(el);el.play().catch(()=>{showVcUnlockBtn()})}}catch(e){}}}}
-  // ✅ معلم میکروفونش باز، دانش‌آموز کاملاً بسته
-  if(vcIsTeacher){
-    await vcRoom.localParticipant.setMicrophoneEnabled(true);
-  }else{
-    await vcRoom.localParticipant.setMicrophoneEnabled(false);
-    vcMutedStudents.add(myEmail);
-    try{
-      const pub=vcRoom.localParticipant.getTrackPublication(LivekitClient.Track.Source.Microphone);
-      if(pub&&pub.track&&pub.track.mediaStreamTrack){pub.track.mediaStreamTrack.enabled=false}
-    }catch(e){}
-  }
-  updateVcMicBtn();renderVcStudents();
-}
-// ✅ میکروفون: فقط معلم
-window.toggleVcMic=async()=>{
-  if(!vcRoom)return;
-  if(!vcIsTeacher){
-    const note=document.getElementById('vc-mic-locked-note');
-    if(note){note.style.display='block';setTimeout(()=>{note.style.display='none'},2500)}
-    return;
-  }
-  const enabled=vcRoom.localParticipant.isMicrophoneEnabled;
-  await vcRoom.localParticipant.setMicrophoneEnabled(!enabled);
-  updateVcMicBtn();
-  renderVcStudents();
-  vcChannel?.send({type:'broadcast',event:'mic-state',payload:{email:myEmail,muted:enabled}});
-};
+async function startVcAudio(roomName){const identity=myEmail.split('@')[0]+'_'+Date.now();const token=await generateLKToken(roomName,identity);vcRoom=new LivekitClient.Room({adaptiveStream:true,dynacast:true,autoSubscribe:true,audioCaptureDefaults:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});vcRoom.on(LivekitClient.RoomEvent.ParticipantConnected,()=>renderVcStudents());vcRoom.on(LivekitClient.RoomEvent.ParticipantDisconnected,()=>renderVcStudents());vcRoom.on(LivekitClient.RoomEvent.TrackSubscribed,track=>{if(track.kind==='audio'){const el=track.attach();el.autoplay=true;el.style.display='none';el.volume=1.0;document.body.appendChild(el);el.play().catch(err=>{showVcUnlockBtn()})}renderVcStudents()});vcRoom.on(LivekitClient.RoomEvent.TrackUnsubscribed,track=>{track.detach();renderVcStudents()});vcRoom.on(LivekitClient.RoomEvent.TrackMuted,pub=>{if(pub.kind==='audio')renderVcStudents()});vcRoom.on(LivekitClient.RoomEvent.TrackUnmuted,pub=>{if(pub.kind==='audio')renderVcStudents()});vcRoom.on(LivekitClient.RoomEvent.TrackPublished,pub=>{if(pub.kind==='audio'){pub.setSubscribed(true).catch(()=>{});renderVcStudents()}});vcRoom.on(LivekitClient.RoomEvent.ActiveSpeakersChanged,()=>renderVcStudents());vcRoom.on(LivekitClient.RoomEvent.Disconnected,()=>{if(document.getElementById('virtual-class').classList.contains('show')){setTimeout(()=>{try{startVcAudio(roomName)}catch(e){}},1500)}});vcRoom.on(LivekitClient.RoomEvent.AudioPlaybackStatusChanged,()=>{if(!vcRoom.canPlayAudio){showVcUnlockBtn()}else{hideVcUnlockBtn()}});await vcRoom.connect(LK_URL,token);if(!vcRoom.canPlayAudio){showVcUnlockBtn()}for(const p of vcRoom.remoteParticipants.values()){for(const pub of p.trackPublications.values()){if(pub.kind==='audio'&&pub.trackSid){try{await pub.setSubscribed(true);if(pub.track){const el=pub.track.attach();el.autoplay=true;el.style.display='none';document.body.appendChild(el);el.play().catch(()=>{showVcUnlockBtn()})}}catch(e){}}}}if(vcIsTeacher){await vcRoom.localParticipant.setMicrophoneEnabled(true)}else{await vcRoom.localParticipant.setMicrophoneEnabled(false);vcMutedStudents.add(myEmail);try{const pub=vcRoom.localParticipant.getTrackPublication(LivekitClient.Track.Source.Microphone);if(pub&&pub.track&&pub.track.mediaStreamTrack){pub.track.mediaStreamTrack.enabled=false}}catch(e){}}updateVcMicBtn();renderVcStudents()}
+window.toggleVcMic=async()=>{if(!vcRoom)return;if(!vcIsTeacher){const note=document.getElementById('vc-mic-locked-note');if(note){note.style.display='block';setTimeout(()=>{note.style.display='none'},2500)}return}const enabled=vcRoom.localParticipant.isMicrophoneEnabled;await vcRoom.localParticipant.setMicrophoneEnabled(!enabled);updateVcMicBtn();renderVcStudents();vcChannel?.send({type:'broadcast',event:'mic-state',payload:{email:myEmail,muted:enabled}})};
 function updateVcMicBtn(){const btn=document.getElementById('vc-mic-btn');if(!btn||!vcRoom)return;const on=vcRoom.localParticipant.isMicrophoneEnabled;btn.classList.toggle('muted',!on);if(vcIsTeacher){btn.textContent=on?'🎤':'🔇';btn.style.opacity='1';btn.classList.remove('locked');btn.title=on?'بستن میکروفون':'باز کردن میکروفون'}else{const isAllowed=!vcMutedStudents.has(myEmail);if(isAllowed){btn.textContent=on?'🎤':'🔇';btn.style.opacity='1';btn.classList.remove('locked');btn.title=on?'بستن میکروفون':'باز کردن میکروفون'}else{btn.textContent='🔒';btn.style.opacity='.5';btn.classList.add('locked');btn.title='میکروفون توسط معلم قفل شده'}}}
-// ✅ نوشتن: معلم + نویسنده‌ها
 function canIWrite(){if(vcIsTeacher)return true;return vcWriters.has(myEmail)||vcAllCanWrite}
-function updateVcWriteUI(){
-  const lockNote=document.getElementById('vc-lock-note');
-  if(lockNote){
-    if(vcIsTeacher){lockNote.style.display='none'}
-    else{
-      if(vcWriters.has(myEmail)||vcAllCanWrite){
-        lockNote.style.display='block';lockNote.textContent='✏️ می‌تونی روی تخته بنویسی';lockNote.style.background='rgba(34,197,94,.15)';lockNote.style.color='#86efac';
-      }else{
-        lockNote.style.display='block';lockNote.textContent='👁 فقط معلم می‌تواند بنویسد';lockNote.style.background='rgba(139,157,195,.1)';lockNote.style.color='var(--mut)';
-      }
-    }
-  }
-  const wb=document.getElementById('whiteboard');
-  if(wb){
-    if(canIWrite()){wb.classList.remove('readonly');wb.style.cursor='crosshair';wb.style.pointerEvents='auto'}
-    else{wb.classList.add('readonly');wb.style.cursor='default';wb.style.pointerEvents='auto'}
-  }
-}
+function updateVcWriteUI(){const lockNote=document.getElementById('vc-lock-note');if(lockNote){if(vcIsTeacher){lockNote.style.display='none'}else{if(vcWriters.has(myEmail)||vcAllCanWrite){lockNote.style.display='block';lockNote.textContent='✏️ می‌تونی روی تخته بنویسی';lockNote.style.background='rgba(34,197,94,.15)';lockNote.style.color='#86efac'}else{lockNote.style.display='block';lockNote.textContent='👁 فقط معلم می‌تواند بنویسد';lockNote.style.background='rgba(139,157,195,.1)';lockNote.style.color='var(--mut)'}}}const wb=document.getElementById('whiteboard');if(wb){if(canIWrite()){wb.classList.remove('readonly');wb.style.cursor='crosshair';wb.style.pointerEvents='auto'}else{wb.classList.add('readonly');wb.style.cursor='default';wb.style.pointerEvents='auto'}}}
 window.sendVcChat=()=>{const inp=document.getElementById('vc-chat-input');const txt=inp.value.trim();if(!txt||!vcChannel)return;const msg={id:Date.now()+'_'+Math.random().toString(36).slice(2),email:myEmail,name:namesCache[myEmail]||myEmail.split('@')[0],text:txt,time:new Date().toISOString()};addVcMessage(msg);vcChannel.send({type:'broadcast',event:'chat',payload:msg});inp.value=''};
 function addVcMessage(msg){const box=document.getElementById('vc-messages');const isMineMsg=msg.email===myEmail;const div=document.createElement('div');div.className='vc-msg '+(isMineMsg?'mine':'other');const time=new Date(msg.time).toLocaleTimeString(lang==='fa'?'fa-IR':'en-US',{hour:'2-digit',minute:'2-digit'});div.innerHTML=`<div class="vc-msg-sender">${esc(msg.name||msg.email.split('@')[0])}</div><div>${esc(msg.text)}</div><div class="vc-msg-time">${time}</div>`;box.appendChild(div);box.scrollTop=box.scrollHeight}
-function renderVcStudents(){const list=document.getElementById('vc-students-list');if(!list)return;const participants=[];if(vcRoom){const all=[vcRoom.localParticipant,...Array.from(vcRoom.remoteParticipants.values())];all.forEach(p=>{const isLocal=p===vcRoom.localParticipant;const rawName=p.identity.split('_')[0];let email=null;if(isLocal)email=myEmail;else{const allEmails=[vcClass.owner_email,...(vcClass.members||[])];email=allEmails.find(e=>e.split('@')[0]===rawName)||rawName}let micEnabled=false;try{if(isLocal){micEnabled=vcRoom.localParticipant.isMicrophoneEnabled}else{const hasAudio=Array.from(p.trackPublications.values()).some(pub=>pub.kind==='audio'&&pub.isSubscribed&&!pub.isMuted);micEnabled=hasAudio}}catch(e){micEnabled=false}const isMuted=vcMutedStudents.has(email)||!micEnabled;participants.push({email,name:namesCache[email]||(email||'').split('@')[0]||rawName,isLocal,muted:isMuted,isTeacher:email===vcClass.owner_email})})}if(!participants.length){const members=[vcClass.owner_email,...(vcClass.members||[])];members.forEach(em=>{participants.push({email:em,name:namesCache[em]||em.split('@')[0],isLocal:em===myEmail,muted:vcMutedStudents.has(em),isTeacher:em===vcClass.owner_email})})}list.innerHTML='';if(!participants.length){list.innerHTML='<div class="vc-empty-vc">کسی در کلاس نیست</div>';return}participants.forEach(p=>{const it=document.createElement('div');it.className='vc-student'+(vcHands.has(p.email)?' raised-hand':'');const initial=(p.name||'?').charAt(0).toUpperCase();const roleLabel=p.isTeacher?'👨‍🏫 معلم':'👤 دانش‌آموز';const mutedClass=p.muted?'muted':'';const handClass=vcHands.has(p.email)?'hand-raised':'';it.innerHTML=`<div class="vc-student-av ${mutedClass} ${handClass}">${initial}</div><div class="vc-student-info"><div class="vc-student-name">${esc(p.name)}${p.isLocal?' (شما)':''} ${vcHands.has(p.email)?'✋':''}</div><div class="vc-student-role">${roleLabel}</div></div><div class="vc-student-actions"></div>`;if(vcIsTeacher&&!p.isLocal){const actions=it.querySelector('.vc-student-actions');if(p.muted){const un=document.createElement('button');un.className='vc-student-btn vc-unmute-btn';un.textContent='🔊 باز';un.onclick=()=>requestStudentMic(p.email,false);actions.appendChild(un)}else{const mu=document.createElement('button');mu.className='vc-student-btn vc-mute-btn';mu.textContent='🔇 بستن';mu.onclick=()=>requestStudentMic(p.email,true);actions.appendChild(mu)}const canWrite=vcWriters.has(p.email);const wb=document.createElement('button');wb.className='vc-student-btn '+(canWrite?'vc-write-granted':'vc-write-grant');wb.textContent=canWrite?'✏️ نوشتن ✓':'✏️ اجازه نوشتن';wb.title=canWrite?'دانش‌آموز می‌تواند روی تخته بنویسد':'به این دانش‌آموز اجازه‌ی نوشتن بده';wb.onclick=()=>toggleStudentWrite(p.email);actions.appendChild(wb)}list.appendChild(it)});renderHandBar()}
+
+// ✅ نمایش همه‌ی اعضای کلاس (آنلاین + آفلاین)
+function renderVcStudents(){
+  const list=document.getElementById('vc-students-list');
+  if(!list)return;
+  const allClassEmails=[vcClass.owner_email,...(vcClass.members||[])];
+  const livekitEmails=new Set();
+  const livekitInfo={};
+  if(vcRoom){
+    const all=[vcRoom.localParticipant,...Array.from(vcRoom.remoteParticipants.values())];
+    all.forEach(p=>{
+      const isLocal=p===vcRoom.localParticipant;
+      const rawName=p.identity.split('_')[0];
+      let email=null;
+      if(isLocal)email=myEmail;
+      else{email=allClassEmails.find(e=>e.split('@')[0]===rawName)||rawName}
+      if(email){
+        livekitEmails.add(email);
+        let micEnabled=false;
+        try{
+          if(isLocal){micEnabled=vcRoom.localParticipant.isMicrophoneEnabled}
+          else{const hasAudio=Array.from(p.trackPublications.values()).some(pub=>pub.kind==='audio'&&pub.isSubscribed&&!pub.isMuted);micEnabled=hasAudio}
+        }catch(e){micEnabled=false}
+        livekitInfo[email]={micEnabled,isLocal};
+      }
+    });
+  }
+  const participants=[];
+  allClassEmails.forEach(email=>{
+    const isInLiveKit=livekitEmails.has(email);
+    const info=livekitInfo[email]||{micEnabled:false,isLocal:email===myEmail};
+    const isMuted=vcMutedStudents.has(email)||!info.micEnabled;
+    participants.push({email,name:namesCache[email]||email.split('@')[0],isLocal:email===myEmail,muted:isMuted,isTeacher:email===vcClass.owner_email,isOnline:isInLiveKit});
+  });
+  list.innerHTML='';
+  if(!participants.length){list.innerHTML='<div class="vc-empty-vc">کسی در کلاس نیست</div>';return}
+  participants.sort((a,b)=>{if(a.isTeacher&&!b.isTeacher)return-1;if(b.isTeacher&&!a.isTeacher)return 1;if(a.isOnline&&!b.isOnline)return-1;if(b.isOnline&&!a.isOnline)return 1;return 0});
+  participants.forEach(p=>{
+    const it=document.createElement('div');
+    it.className='vc-student'+(vcHands.has(p.email)?' raised-hand':'')+(!p.isOnline?' offline':'');
+    const initial=(p.name||'?').charAt(0).toUpperCase();
+    const roleLabel=p.isTeacher?'👨‍🏫 معلم':'👤 دانش‌آموز';
+    const mutedClass=p.muted?'muted':'';
+    const handClass=vcHands.has(p.email)?'hand-raised':'';
+    const onlineDot=p.isOnline?'<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#22c55e;margin-right:4px;box-shadow:0 0 6px rgba(34,197,94,.8)"></span>':'<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#64748b;margin-right:4px"></span>';
+    it.innerHTML=`<div class="vc-student-av ${mutedClass} ${handClass}" style="${!p.isOnline?'opacity:.5':''}">${initial}</div><div class="vc-student-info"><div class="vc-student-name">${onlineDot}${esc(p.name)}${p.isLocal?' (شما)':''} ${vcHands.has(p.email)?'✋':''}</div><div class="vc-student-role">${roleLabel}${!p.isOnline?' • <span style="color:#64748b">آفلاین</span>':''}</div></div><div class="vc-student-actions"></div>`;
+    if(vcIsTeacher&&!p.isLocal&&p.isOnline){
+      const actions=it.querySelector('.vc-student-actions');
+      if(p.muted){const un=document.createElement('button');un.className='vc-student-btn vc-unmute-btn';un.textContent='🔊 باز';un.onclick=()=>requestStudentMic(p.email,false);actions.appendChild(un)}
+      else{const mu=document.createElement('button');mu.className='vc-student-btn vc-mute-btn';mu.textContent='🔇 بستن';mu.onclick=()=>requestStudentMic(p.email,true);actions.appendChild(mu)}
+      const canWrite=vcWriters.has(p.email);
+      const wb=document.createElement('button');wb.className='vc-student-btn '+(canWrite?'vc-write-granted':'vc-write-grant');wb.textContent=canWrite?'✏️ نوشتن ✓':'✏️ اجازه نوشتن';wb.title=canWrite?'دانش‌آموز می‌تواند روی تخته بنویسد':'به این دانش‌آموز اجازه‌ی نوشتن بده';wb.onclick=()=>toggleStudentWrite(p.email);actions.appendChild(wb);
+    }
+    if(!p.isOnline&&!p.isLocal){
+      const actions=it.querySelector('.vc-student-actions');
+      const badge=document.createElement('span');badge.style.cssText='font-size:10px;color:#64748b;font-style:italic';badge.textContent='در کلاس نیست';actions.appendChild(badge);
+    }
+    list.appendChild(it);
+  });
+  renderHandBar();
+}
 function requestStudentMic(email,mute){if(!vcIsTeacher||!vcChannel)return;if(mute)vcMutedStudents.add(email);else vcMutedStudents.delete(email);vcChannel.send({type:'broadcast',event:'mic-command',payload:{target:email,mute}});addVcMessage({email:'system',name:'سیستم',text:(mute?'🔇 معلم میکروفون ':'🎤 معلم میکروفون ')+email.split('@')[0]+(mute?' را بست':' را باز کرد'),time:new Date().toISOString()});setTimeout(renderVcStudents,300)}
 function toggleStudentWrite(email){if(!vcIsTeacher||!vcChannel)return;const willGrant=!vcWriters.has(email);if(willGrant)vcWriters.add(email);else vcWriters.delete(email);vcChannel.send({type:'broadcast',event:'write-command',payload:{target:email,canWrite:willGrant,by:myEmail}});renderVcStudents();addVcMessage({email:'system',name:'سیستم',text:(willGrant?'✏️ معلم به ':'🚫 معلم اجازه‌ی نوشتن ')+email.split('@')[0]+(willGrant?' اجازه‌ی نوشتن روی تخته داد':' را از تخته گرفت'),time:new Date().toISOString()})}
 function toggleAllowAllWrite(){if(!vcIsTeacher||!vcChannel)return;vcAllCanWrite=!vcAllCanWrite;const btn=document.getElementById('vc-allow-all-btn');if(vcAllCanWrite){btn.textContent='🚫 لغو اجازه‌ی همه';btn.style.background='linear-gradient(135deg,#ef4444,#dc2626)';const all=[vcClass.owner_email,...(vcClass.members||[])];all.forEach(e=>{if(e!==vcClass.owner_email)vcWriters.add(e)});vcChannel.send({type:'broadcast',event:'write-all',payload:{canWrite:true,by:myEmail}})}else{btn.textContent='✏️ اجازه به همه';btn.style.background='linear-gradient(135deg,#f59e0b,#d97706)';vcWriters.clear();vcChannel.send({type:'broadcast',event:'write-all',payload:{canWrite:false,by:myEmail}})}renderVcStudents();updateVcWriteUI()}
@@ -1205,7 +1193,6 @@ function setupVcChannel(){
   if(vcChannel)sb.removeChannel(vcChannel);
   const chName='vc_'+vcClass.id;
   vcChannel=sb.channel(chName,{config:{broadcast:{self:true}}});
-  // ✅ دستور میکروفون
   vcChannel.on('broadcast',{event:'mic-command'},async ({payload})=>{
     if(vcIsTeacher)return;
     if(payload.target!==myEmail)return;
@@ -1221,23 +1208,13 @@ function setupVcChannel(){
     }catch(e){}
   });
   vcChannel.on('broadcast',{event:'mic-state'},({payload})=>{if(payload.muted)vcMutedStudents.add(payload.email);else vcMutedStudents.delete(payload.email);renderVcStudents()});
-  // ✅ دست بلند کردن
   vcChannel.on('broadcast',{event:'hand-raise'},({payload})=>{vcHands.add(payload.email);renderHandBar();renderVcStudents();updateHandUI();if(vcIsTeacher){showHandNotification(payload.name||payload.email.split('@')[0]);addVcMessage({email:'system',name:'سیستم',text:'✋ '+(payload.name||payload.email.split('@')[0])+' دستش رو بلند کرد',time:new Date().toISOString()})}});
   vcChannel.on('broadcast',{event:'hand-lower'},({payload})=>{vcHands.delete(payload.email);renderHandBar();renderVcStudents();updateHandUI();if(payload.email===myEmail&&payload.byTeacher){const note=document.getElementById('vc-write-note');if(note){note.style.display='block';note.textContent='✋ معلم دستت رو پایین آورد';note.style.background='rgba(245,158,11,.15)';note.style.color='#fbbf24';note.style.borderColor='rgba(245,158,11,.4)';setTimeout(()=>{note.style.display='none'},3000)}}});
-  // ✅ اجازه نوشتن
   vcChannel.on('broadcast',{event:'write-command'},({payload})=>{
     if(payload.target!==myEmail)return;
-    if(payload.canWrite){
-      vcWriters.add(myEmail);
-      const note=document.getElementById('vc-write-note');
-      if(note){note.style.display='block';note.textContent='✏️ معلم به تو اجازه‌ی نوشتن روی تخته داد';note.style.background='rgba(34,197,94,.15)';note.style.color='#86efac';note.style.borderColor='rgba(34,197,94,.4)';setTimeout(()=>{note.style.display='none'},4000)}
-    }else{
-      vcWriters.delete(myEmail);
-      const note=document.getElementById('vc-write-note');
-      if(note){note.style.display='block';note.textContent='🚫 معلم اجازه‌ی نوشتن را گرفت';note.style.background='rgba(239,68,68,.15)';note.style.color='#fca5a5';note.style.borderColor='rgba(239,68,68,.4)';setTimeout(()=>{note.style.display='none'},4000)}
-    }
-    updateVcWriteUI();
-    renderVcStudents();
+    if(payload.canWrite){vcWriters.add(myEmail);const note=document.getElementById('vc-write-note');if(note){note.style.display='block';note.textContent='✏️ معلم به تو اجازه‌ی نوشتن روی تخته داد';note.style.background='rgba(34,197,94,.15)';note.style.color='#86efac';note.style.borderColor='rgba(34,197,94,.4)';setTimeout(()=>{note.style.display='none'},4000)}}
+    else{vcWriters.delete(myEmail);const note=document.getElementById('vc-write-note');if(note){note.style.display='block';note.textContent='🚫 معلم اجازه‌ی نوشتن را گرفت';note.style.background='rgba(239,68,68,.15)';note.style.color='#fca5a5';note.style.borderColor='rgba(239,68,68,.4)';setTimeout(()=>{note.style.display='none'},4000)}}
+    updateVcWriteUI();renderVcStudents();
   });
   vcChannel.on('broadcast',{event:'write-all'},({payload})=>{if(payload.canWrite){vcWriters.add(myEmail);vcAllCanWrite=true}else{vcWriters.delete(myEmail);vcAllCanWrite=false}updateVcWriteUI()});
   vcChannel.on('broadcast',{event:'chat'},({payload})=>{addVcMessage(payload)});
