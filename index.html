@@ -148,6 +148,24 @@
             line-height: 1.6;
         }
 
+        .invite-banner {
+            display: none;
+            background: linear-gradient(135deg, #e6f4fa, #f0e6fa);
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            font-size: 12.5px;
+            color: var(--primary-dark);
+            font-weight: 600;
+            text-align: center;
+            animation: cardIn 0.5s ease;
+        }
+
+        .invite-banner.show { display: block; }
+
+        .invite-banner .icon { font-size: 20px; display: block; margin-bottom: 4px; }
+
         .auth-tabs {
             display: flex;
             gap: 4px;
@@ -294,6 +312,11 @@
         <h1 data-i18n="appName">نکسوم</h1>
         <p class="auth-subtitle" data-i18n="subtitle">وارد شوید یا ثبت‌نام کنید</p>
 
+        <div class="invite-banner" id="invite-banner">
+            <span class="icon">🔗</span>
+            <span id="invite-banner-text">به یک گروه دعوت شده‌اید! پس از ورود، به‌طور خودکار عضو خواهید شد.</span>
+        </div>
+
         <div class="auth-tabs">
             <button class="auth-tab active" id="tab-login" data-i18n="loginTab">ورود</button>
             <button class="auth-tab" id="tab-signup" data-i18n="signupTab">ثبت‌نام</button>
@@ -345,7 +368,9 @@
                 signupError: '❌ خطا در ثبت‌نام: ',
                 loading: '⏳ لطفاً صبر کنید...',
                 langTitle: 'تغییر زبان',
-                pageTitle: 'ورود به نکسوم'
+                pageTitle: 'ورود به نکسوم',
+                inviteBanner: 'به یک گروه دعوت شده‌اید! پس از ورود، به‌طور خودکار عضو خواهید شد.',
+                emailConfirm: '✅ ثبت‌نام شد. لطفاً ایمیل خود را تایید کنید.'
             },
             en: {
                 appName: 'Nexom',
@@ -365,7 +390,9 @@
                 signupError: '❌ Signup error: ',
                 loading: '⏳ Please wait...',
                 langTitle: 'Change language',
-                pageTitle: 'Login to Nexom'
+                pageTitle: 'Login to Nexom',
+                inviteBanner: 'You\'ve been invited to a group! You\'ll join automatically after signing in.',
+                emailConfirm: '✅ Signed up. Please confirm your email.'
             }
         };
 
@@ -384,6 +411,9 @@
                 const key = el.dataset.i18n;
                 el.innerHTML = t(key);
             });
+
+            const inviteText = document.getElementById('invite-banner-text');
+            if (inviteText) inviteText.textContent = t('inviteBanner');
 
             document.getElementById('lang-label').textContent = currentLang === 'fa' ? 'EN' : 'FA';
             document.getElementById('lang-btn').title = t('langTitle');
@@ -424,11 +454,33 @@
         const submitBtn = document.getElementById('submit-btn');
         const messageArea = document.getElementById('message-area');
 
-        // چک کردن نشست فعلی
+        // ═══════════════════════════════════════════════════════
+        // تشخیص لینک دعوت در URL
+        // ═══════════════════════════════════════════════════════
+        const params = new URLSearchParams(location.search);
+        const inviteCode = params.get('invite');
+
+        if (inviteCode) {
+            localStorage.setItem('pending_invite', inviteCode);
+            document.getElementById('invite-banner').classList.add('show');
+        }
+
+        // ═══════════════════════════════════════════════════════
+        // ساخت URL مقصد بعد از لاگین
+        // ═══════════════════════════════════════════════════════
+        const buildRedirectURL = () => {
+            const pending = localStorage.getItem('pending_invite') || inviteCode;
+            if (pending) {
+                return 'chat.html?invite=' + encodeURIComponent(pending);
+            }
+            return 'chat.html';
+        };
+
+        // چک کردن نشست فعلی — اگه لاگین هست، برو به chat.html
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.user?.email) {
             localStorage.setItem('my_email', session.user.email);
-            window.location.href = 'chat.html';
+            window.location.href = buildRedirectURL();
         }
 
         const handleSubmit = async () => {
@@ -484,7 +536,7 @@
                         messageArea.className = 'success';
 
                         setTimeout(() => {
-                            window.location.href = 'chat.html';
+                            window.location.href = buildRedirectURL();
                         }, 500);
                     }
                 } else {
@@ -506,11 +558,12 @@
                         messageArea.className = 'success';
 
                         setTimeout(() => {
-                            window.location.href = 'chat.html';
+                            window.location.href = buildRedirectURL();
                         }, 500);
                     } else {
-                        messageArea.textContent = '✅ ثبت‌نام شد. لطفاً ایمیل خود را تایید کنید.';
+                        messageArea.textContent = t('emailConfirm');
                         messageArea.className = 'success';
+                        submitBtn.disabled = false;
                     }
                 }
             } catch (err) {
