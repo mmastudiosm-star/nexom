@@ -384,7 +384,7 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 .search-result-item{padding:14px;background:var(--card);border:2px solid var(--bd);border-radius:14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;backdrop-filter:blur(10px);transition:all .2s}
 .search-result-item:hover{background:rgba(0,212,255,.1);transform:translateX(-3px)}
 .search-result-item.joined{opacity:.7;border-color:rgba(34,197,94,.5)}
-.search-result-avatar{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;background:linear-gradient(135deg,#00d4ff,#7b3ff2)}
+.search-result-avatar{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;background:linear-gradient(135deg,#00d4ff,#7b3ff2);background-size:cover;background-position:center}
 .search-result-avatar.group{background:linear-gradient(135deg,#7b3ff2,#a855f7)}
 .search-result-avatar.channel{background:linear-gradient(135deg,#00d4ff,#0088cc)}
 .search-result-info{flex:1;min-width:0}
@@ -563,6 +563,7 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 <div id="chat-status" style="min-height:14px;margin-top:2px"></div>
 </div>
 <button class="back-btn call-start-btn" id="call-start-btn" style="display:none" onclick="startCallFromChat()">📞</button>
+<button class="back-btn" id="room-menu-btn" style="display:none" onclick="toggleRoomMenu()">⋮</button>
 </div>
 <div class="messages-area" id="messages-area"></div>
 <div class="reply-bar" id="reply-bar">
@@ -667,6 +668,42 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 <div class="modal-btns"><button class="btn-cancel" onclick="closeModal('add-video-modal')" data-i18n="cancel">انصراف</button><button class="btn-primary" id="v-add-btn" data-i18n="add">افزودن</button></div></div></div>
 
 <div class="msg-menu" id="msg-menu"></div>
+
+<!-- منوی گروه/کانال -->
+<div class="msg-menu" id="room-menu"></div>
+
+<!-- مودال ویرایش گروه/کانال -->
+<div class="modal-overlay" id="edit-group-modal">
+  <div class="modal">
+    <h3 id="eg-title">✏️ ویرایش</h3>
+    <div style="text-align:center;margin-bottom:14px">
+      <div class="profile-avatar" id="eg-avatar"
+           style="width:90px;height:90px;font-size:36px;margin:0 auto 10px;cursor:pointer"
+           onclick="document.getElementById('group-avatar-file').click()">?</div>
+      <button class="lang-btn" onclick="document.getElementById('group-avatar-file').click()">📷 تغییر عکس</button>
+      <input type="file" id="group-avatar-file" accept="image/*" style="display:none">
+    </div>
+    <label>نام</label>
+    <input type="text" id="eg-name">
+    <label>درباره / بیوگرافی</label>
+    <textarea id="eg-desc"></textarea>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal('edit-group-modal')">انصراف</button>
+      <button class="btn-primary" id="eg-save">ذخیره</button>
+    </div>
+  </div>
+</div>
+
+<!-- مودال مشاهده اعضا -->
+<div class="modal-overlay" id="group-members-modal">
+  <div class="modal">
+    <h3 id="gm-title">👥 اعضا</h3>
+    <div id="gm-list" style="max-height:60vh;overflow-y:auto;margin-bottom:12px"></div>
+    <div class="modal-btns">
+      <button class="btn-primary" onclick="closeModal('group-members-modal')">بستن</button>
+    </div>
+  </div>
+</div>
 
 <div class="search-modal" id="search-modal">
   <div class="search-header">
@@ -903,7 +940,7 @@ const fmtSz=b=>{if(!b)return'0 B';if(b<1024)return b+' B';if(b<1048576)return(b/
 const ago=d=>{const s=Math.floor((Date.now()-d.getTime())/1000),m=Math.floor(s/60),h=Math.floor(m/60),dd=Math.floor(h/24);if(s<60)return t('justNow');if(m<60)return m+' '+t('minAgo');if(h<24)return h+' '+t('hrAgo');return dd+' '+t('dayAgo')};
 const shortTime=d=>{const now=new Date();const date=new Date(d);const diff=Math.floor((now-date.getTime())/1000);const isToday=now.toDateString()===date.toDateString();const yesterday=new Date(now);yesterday.setDate(yesterday.getDate()-1);const isYesterday=yesterday.toDateString()===date.toDateString();if(diff<60)return lang==='fa'?'الان':'now';if(isToday){const hh=date.getHours(),mm=date.getMinutes();return (hh<10?'0':'')+hh+':'+(mm<10?'0':'')+mm}if(isYesterday)return lang==='fa'?'دیروز':'yesterday';if(diff<7*86400){const days=['یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه','شنبه'];if(lang==='fa')return days[date.getDay()];return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][date.getDay()]}return (date.getMonth()+1)+'/'+date.getDate()};
 const previewMsg=m=>{if(!m)return '';if(m.deleted_for_all)return '🚫 '+(lang==='fa'?'پیام حذف شد':'Message deleted');if(m.message_type==='voice')return '🎤 '+(lang==='fa'?'پیام صوتی':'Voice message');if(m.message_type==='image')return '🖼️ '+(lang==='fa'?'عکس':'Photo');if(m.message_type==='file')return '📄 '+(m.file_name||'فایل');return m.content||''};
-const I18N={fa:{appName:'نکسوم',appTagline:'سوپر اپلیکیشن',welcome:'سلام!',welcomeSub:'به نکسوم خوش آمدید',groups:'گروه‌ها',channels:'کانال‌ها',contacts:'مخاطبین',chats:'گفتگوها',library:'کتابخانه',bots:'ربات‌ها',finance:'خدمات مالی',financeShort:'مالی',education:'آموزش',home:'خانه',more:'بیشتر',privateTab:'خصوصی',secTitle:'امنیت بالا',secSub:'با رمزنگاری پیشرفته',spdTitle:'سرعت بالا',spdSub:'ارسال و دریافت سریع',cldTitle:'فضای ابری',cldSub:'دسترسی از همه جا',freTitle:'رایگان',freSub:'بدون هزینه، همیشه',librarySub:'ویدیوها و محتوا',botsSub:'پاسخ خودکار',financeSub:'شارژ، بسته، پرداخت',classes:'کلاس‌ها',classPanel:'پنل مدیریت',wallet:'کیف پول',balance:'موجودی',chargeSection:'📱 شارژ و بسته اینترنت',mci:'همراه اول',irancell:'ایرانسل',rightel:'رایتل',otherOperators:'سایر اپراتورها',chargeDesc:'شارژ / بسته اینترنت',servicePortal:'سامانه خدمات',otherServices:'🧾 خدمات دیگر',payElectricity:'پرداخت برق',payGas:'پرداخت گاز',payWater:'پرداخت آب',payPhone:'پرداخت تلفن',newContact:'مخاطب',newGroup:'گروه',newChannel:'کانال',joinWithCode:'ورود با کد',createClass:'ساخت کلاس',newContactTitle:'👤 مخاطب جدید',newContactDesc:'ایمیل مخاطب را وارد کن',newGroupTitle:'گروه جدید',newGroupDesc:'اطلاعات را وارد کن',nameLbl:'نام',descLbl:'توضیحات',selectMembers:'انتخاب اعضا',searchPlaceholder:'جستجو...',newStoryTitle:'📸 استوری جدید',newStoryDesc:'عکس یا ویدیو انتخاب کن',nothingSelected:'چیزی انتخاب نشده',pickFile:'📷 انتخاب فایل',captionLbl:'کپشن',publish:'انتشار',storiesListTitle:'📸 استوری‌ها',pickUser:'یک کاربر انتخاب کن',close:'بستن',addStory:'افزودن استوری',editMsgTitle:'✏️ ویرایش پیام',editMsgDesc:'متن جدید را وارد کن',libAddTitle:'🎬 افزودن به کتابخانه',titleLbl:'عنوان',botNewTitle:'🤖 ربات جدید',autoReplyLbl:'پاسخ خودکار',newClassTitle:'📚 کلاس جدید',classNameLbl:'نام کلاس',joinTitle:'🔑 ورود به کلاس',joinDesc:'کد ۶ رقمی که معلم داده رو وارد کن',enter:'ورود',classCreated:'✅ کلاس ساخته شد!',giveCodeDesc:'این کد رو به دانش‌آموزان بده:',copyCode:'📋 کپی کد',addVideoTitle:'🎬 افزودن ویدیو',uploadFromDevice:'📤 آپلود از دستگاه',linkTab:'🔗 لینک',videoTitleLbl:'عنوان ویدیو',videoTitlePh:'مثلاً: جلسه ۱ - مقدمه',descOptional:'توضیحات (اختیاری)',descPh:'توضیح کوتاه...',pickVideo:'📹 انتخاب ویدیو از دستگاه',maxSize:'حداکثر حجم: ۵۰ مگابایت',videoUrlLbl:'لینک ویدیو (URL)',linkHint:'میتونی از یوتیوب، آپارات یا هر لینک mp4 استفاده کنی',msgPlaceholder:'پیام...',sendImage:'ارسال عکس',sendFile:'ارسال فایل',sendVoice:'ضبط ویس',recording:'در حال ضبط...',send:'ارسال',cancel:'انصراف',save:'ذخیره',delete:'حذف',add:'افزودن',create:'ساخت',ok:'باشه',copy:'کپی',videos:'🎬 ویدیوها',members:'👥 اعضا',addVideo:'➕ افزودن ویدیو',classCode:'کد کلاس',loading:'در حال بارگذاری...',noClasses:'هنوز کلاسی نیست',noContacts:'هنوز مخاطبی نداری',error:'خطا',teacher:'معلم',student:'دانش‌آموز',emptyChat:'هنوز پیامی نیست',emptyVideo:'هنوز ویدیویی نیست',emptyMembers:'هنوز دانش‌آموزی نیست',logoutConfirm:'خارج می‌شوی؟',justNow:'الان',minAgo:'دقیقه پیش',hrAgo:'ساعت پیش',dayAgo:'روز پیش',you:'شما',replyLabel:'پاسخ',editLabel:'✏️ ویرایش',voiceMsg:'🎤 ویس',imageMsg:'🖼️ عکس',fileMsg:'📄 فایل',edited:'ویرایش شده',invalidEmail:'ایمیل معتبر نیست',cantChatSelf:'نمی‌تونی با خودت چت کنی!',onlyTeacher:'فقط معلم می‌تونه ویدیو اضافه کنه',deleteVideo:'این ویدیو حذف شود؟',deleteStudent:'این دانش‌آموز از کلاس حذف شود؟',copySuccess:'کد کپی شد',profile:'پروفایل',editProfileTitle:'✏️ ویرایش پروفایل',usernameLbl:'نام کاربری',usernameHint:'فقط حروف انگلیسی، اعداد و _ (بدون @)',bioLbl:'درباره من',phoneLbl:'📱 شماره تماس',phoneLbl2:'شماره تماس (اختیاری)',emailLbl:'✉️ ایمیل',startChat:'شروع گفتگو',noBio:'درباره من چیزی ننوشتی',settings:'تنظیمات',accountSection:'👤 حساب کاربری',profileDesc:'نام، عکس، بیوگرافی',languageSection:'🌐 زبان',language:'زبان',languageDesc:'فارسی یا انگلیسی',securitySection:'🔒 امنیت',twoFA:'رمز دو مرحله‌ای',twoFADesc:'محافظت بیشتر از حساب',twoFATitle:'🔐 رمز دو مرحله‌ای',twoFADesc2:'با فعال‌سازی، هنگام ورود یک کد ۶ رقمی به ایمیلت فرستاده می‌شود.',twoFAEnable:'فعال‌سازی',twoFACodeLbl:'کد ۶ رقمی',verify:'تأیید',activeSessions:'نشست‌های فعال',activeSessionsDesc:'دستگاه‌های متصل',sessionsTitle:'📱 نشست‌های فعال',sessionsDesc:'دستگاه‌هایی که با حساب تو لاگین کردن:',logoutAll:'خروج از همه',changePassword:'تغییر رمز عبور',changePasswordDesc:'رمز جدید تنظیم کن',changePasswordTitle:'🔑 تغییر رمز عبور',newPassword:'رمز جدید',confirmPassword:'تکرار رمز جدید',aboutSection:'ℹ️ درباره',appVersion:'نسخه برنامه',logoutBtn:'خروج از حساب',logoutDesc:'خارج شدن از این دستگاه',callStart:'شروع تماس',callGroup:'تماس گروهی',callPrivate:'تماس خصوصی',callConnecting:'در حال اتصال...',callConnected:'متصل شد',callError:'خطا در تماس',deleteForAll:'حذف برای همه',deleteForMe:'حذف فقط برای من',deletedMsg:'این پیام حذف شد',deleteConfirmAll:'OK = حذف برای همه، Cancel = حذف فقط برای من',deleteConfirmMe:'این پیام برای تو حذف شود؟',typing:'در حال نوشتن...',recordingVoice:'در حال ضبط ویس...',uploadingFile:'در حال ارسال فایل...',online:'آنلاین',lastSeen:'آخرین بازدید',onlineCount:'آنلاین',youPrefix:'شما: '},en:{appName:'Nexom',appTagline:'Super App',welcome:'Hello!',welcomeSub:'Welcome to Nexom',groups:'Groups',channels:'Channels',contacts:'Contacts',chats:'Chats',library:'Library',bots:'Bots',finance:'Finance',financeShort:'Finance',education:'Education',home:'Home',more:'More',privateTab:'Private',secTitle:'High Security',secSub:'Advanced encryption',spdTitle:'High Speed',spdSub:'Fast send & receive',cldTitle:'Cloud Space',cldSub:'Access anywhere',freTitle:'Free',freSub:'No cost, always',librarySub:'Videos & content',botsSub:'Auto reply',financeSub:'Top-up, packages, payments',classes:'Classes',classPanel:'Admin Panel',wallet:'Wallet',balance:'Balance',chargeSection:'📱 Top-up & Internet',mci:'MCI',irancell:'Irancell',rightel:'Rightel',otherOperators:'Other operators',chargeDesc:'Top-up / Internet',servicePortal:'Service portal',otherServices:'🧾 Other Services',payElectricity:'Pay Electricity',payGas:'Pay Gas',payWater:'Pay Water',payPhone:'Pay Phone',newContact:'Contact',newGroup:'Group',newChannel:'Channel',joinWithCode:'Join with Code',createClass:'Create Class',newContactTitle:'👤 New Contact',newContactDesc:'Enter the contact email',newGroupTitle:'New Group',newGroupDesc:'Enter the information',nameLbl:'Name',descLbl:'Description',selectMembers:'Select members',searchPlaceholder:'Search...',newStoryTitle:'📸 New Story',newStoryDesc:'Pick an image or video',nothingSelected:'Nothing selected',pickFile:'📷 Pick a file',captionLbl:'Caption',publish:'Publish',storiesListTitle:'📸 Stories',pickUser:'Pick a user',close:'Close',addStory:'Add Story',editMsgTitle:'✏️ Edit Message',editMsgDesc:'Enter new text',libAddTitle:'🎬 Add to Library',titleLbl:'Title',botNewTitle:'🤖 New Bot',autoReplyLbl:'Auto reply',newClassTitle:'📚 New Class',classNameLbl:'Class Name',joinTitle:'🔑 Join Class',joinDesc:'Enter the 6-digit code from your teacher',enter:'Enter',classCreated:'✅ Class Created!',giveCodeDesc:'Give this code to students:',copyCode:'📋 Copy Code',addVideoTitle:'🎬 Add Video',uploadFromDevice:'📤 Upload from device',linkTab:'🔗 Link',videoTitleLbl:'Video title',videoTitlePh:'E.g. Session 1 - Intro',descOptional:'Description (optional)',descPh:'Short description...',pickVideo:'📹 Pick video from device',maxSize:'Max size: 50 MB',videoUrlLbl:'Video URL',linkHint:'You can use YouTube, Aparat or any mp4 link',msgPlaceholder:'Message...',sendImage:'Send image',sendFile:'Send file',sendVoice:'Record voice',recording:'Recording...',send:'Send',cancel:'Cancel',save:'Save',delete:'Delete',add:'Add',create:'Create',ok:'OK',copy:'Copy',videos:'🎬 Videos',members:'👥 Members',addVideo:'➕ Add Video',classCode:'Class Code',loading:'Loading...',noClasses:'No classes yet',noContacts:'No contacts yet',error:'Error',teacher:'Teacher',student:'Student',emptyChat:'No messages yet',emptyVideo:'No videos yet',emptyMembers:'No students yet',logoutConfirm:'Log out?',justNow:'Just now',minAgo:'min ago',hrAgo:'hr ago',dayAgo:'day ago',you:'You',replyLabel:'Reply',editLabel:'✏️ Edit',voiceMsg:'🎤 Voice',imageMsg:'🖼️ Image',fileMsg:'📄 File',edited:'edited',invalidEmail:'Invalid email',cantChatSelf:"You can't chat with yourself!",onlyTeacher:'Only the teacher can add videos',deleteVideo:'Delete this video?',deleteStudent:'Remove this student from class?',copySuccess:'Code copied',profile:'Profile',editProfileTitle:'✏️ Edit Profile',usernameLbl:'Username',usernameHint:'Only a-z, 0-9, _ (no @)',bioLbl:'About me',phoneLbl:'📱 Phone',phoneLbl2:'Phone (optional)',emailLbl:'✉️ Email',startChat:'Start Chat',noBio:'No bio yet',settings:'Settings',accountSection:'👤 Account',profileDesc:'Name, photo, bio',languageSection:'🌐 Language',language:'Language',languageDesc:'Persian or English',securitySection:'🔒 Security',twoFA:'Two-Factor Auth',twoFADesc:'Extra account protection',twoFATitle:'🔐 Two-Factor Auth',twoFADesc2:'When enabled, a 6-digit code is sent to your email on login.',twoFAEnable:'Enable',twoFACodeLbl:'6-digit code',verify:'Verify',activeSessions:'Active Sessions',activeSessionsDesc:'Connected devices',sessionsTitle:'📱 Active Sessions',sessionsDesc:'Devices logged into your account:',logoutAll:'Log out all',changePassword:'Change Password',changePasswordDesc:'Set a new password',changePasswordTitle:'🔑 Change Password',newPassword:'New password',confirmPassword:'Confirm new password',aboutSection:'ℹ️ About',appVersion:'App Version',logoutBtn:'Log out',logoutDesc:'Sign out from this device',callStart:'Start Call',callGroup:'Group Call',callPrivate:'Private Call',callConnecting:'Connecting...',callConnected:'Connected',callError:'Call error',deleteForAll:'Delete for everyone',deleteForMe:'Delete for me only',deletedMsg:'This message was deleted',deleteConfirmAll:'OK = Delete for everyone, Cancel = Delete for me only',deleteConfirmMe:'Delete this message for you?',typing:'typing...',recordingVoice:'Recording voice...',uploadingFile:'Uploading file...',online:'Online',lastSeen:'Last seen',onlineCount:'online',youPrefix:'You: '}};
+const I18N={fa:{appName:'نکسوم',appTagline:'سوپر اپلیکیشن',welcome:'سلام!',welcomeSub:'به نکسوم خوش آمدید',groups:'گروه‌ها',channels:'کانال‌ها',contacts:'مخاطبین',chats:'گفتگوها',library:'کتابخانه',bots:'ربات‌ها',finance:'خدمات مالی',financeShort:'مالی',education:'آموزش',home:'خانه',more:'بیشتر',privateTab:'خصوصی',secTitle:'امنیت بالا',secSub:'با رمزنگاری پیشرفته',spdTitle:'سرعت بالا',spdSub:'ارسال و دریافت سریع',cldTitle:'فضای ابری',cldSub:'دسترسی از همه جا',freTitle:'رایگان',freSub:'بدون هزینه، همیشه',librarySub:'ویدیوها و محتوا',botsSub:'پاسخ خودکار',financeSub:'شارژ، بسته، پرداخت',classes:'کلاس‌ها',classPanel:'پنل مدیریت',wallet:'کیف پول',balance:'موجودی',chargeSection:'📱 شارژ و بسته اینترنت',mci:'همراه اول',irancell:'ایرانسل',rightel:'رایتل',otherOperators:'سایر اپراتورها',chargeDesc:'شارژ / بسته اینترنت',servicePortal:'سامانه خدمات',otherServices:'🧾 خدمات دیگر',payElectricity:'پرداخت برق',payGas:'پرداخت گاز',payWater:'پرداخت آب',payPhone:'پرداخت تلفن',newContact:'مخاطب',newGroup:'گروه',newChannel:'کانال',joinWithCode:'ورود با کد',createClass:'ساخت کلاس',newContactTitle:'👤 مخاطب جدید',newContactDesc:'ایمیل مخاطب را وارد کن',newGroupTitle:'گروه جدید',newGroupDesc:'اطلاعات را وارد کن',nameLbl:'نام',descLbl:'توضیحات',selectMembers:'انتخاب اعضا',searchPlaceholder:'جستجو...',newStoryTitle:'📸 استوری جدید',newStoryDesc:'عکس یا ویدیو انتخاب کن',nothingSelected:'چیزی انتخاب نشده',pickFile:'📷 انتخاب فایل',captionLbl:'کپشن',publish:'انتشار',storiesListTitle:'📸 استوری‌ها',pickUser:'یک کاربر انتخاب کن',close:'بستن',addStory:'افزودن استوری',editMsgTitle:'✏️ ویرایش پیام',editMsgDesc:'متن جدید را وارد کن',libAddTitle:'🎬 افزودن به کتابخانه',titleLbl:'عنوان',botNewTitle:'🤖 ربات جدید',autoReplyLbl:'پاسخ خودکار',newClassTitle:'📚 کلاس جدید',classNameLbl:'نام کلاس',joinTitle:'🔑 ورود به کلاس',joinDesc:'کد ۶ رقمی که معلم داده رو وارد کن',enter:'ورود',classCreated:'✅ کلاس ساخته شد!',giveCodeDesc:'این کد رو به دانش‌آموزان بده:',copyCode:'📋 کپی کد',addVideoTitle:'🎬 افزودن ویدیو',uploadFromDevice:'📤 آپلود از دستگاه',linkTab:'🔗 لینک',videoTitleLbl:'عنوان ویدیو',videoTitlePh:'مثلاً: جلسه ۱ - مقدمه',descOptional:'توضیحات (اختیاری)',descPh:'توضیح کوتاه...',pickVideo:'📹 انتخاب ویدیو از دستگاه',maxSize:'حداکثر حجم: ۵۰ مگابایت',videoUrlLbl:'لینک ویدیو (URL)',linkHint:'میتونی از یوتیوب، آپارات یا هر لینک mp4 استفاده کنی',msgPlaceholder:'پیام...',sendImage:'ارسال عکس',sendFile:'ارسال فایل',sendVoice:'ضبط ویس',recording:'در حال ضبط...',send:'ارسال',cancel:'انصراف',save:'ذخیره',delete:'حذف',add:'افزودن',create:'ساخت',ok:'باشه',copy:'کپی',videos:'🎬 ویدیوها',members:'👥 اعضا',addVideo:'➕ افزودن ویدیو',classCode:'کد کلاس',loading:'در حال بارگذاری...',noClasses:'هنوز کلاسی نیست',noContacts:'هنوز مخاطبی نداری',error:'خطا',teacher:'معلم',student:'دانش‌آموز',emptyChat:'هنوز پیامی نیست',emptyVideo:'هنوز ویدیویی نیست',emptyMembers:'هنوز دانش‌آموزی نیست',logoutConfirm:'خارج می‌شوی؟',justNow:'الان',minAgo:'دقیقه پیش',hrAgo:'ساعت پیش',dayAgo:'روز پیش',you:'شما',replyLabel:'پاسخ',editLabel:'✏️ ویرایش',voiceMsg:'🎤 ویس',imageMsg:'🖼️ عکس',fileMsg:'📄 فایل',edited:'ویرایش شده',invalidEmail:'ایمیل معتبر نیست',cantChatSelf:'نمی‌تونی با خودت چت کنی!',onlyTeacher:'فقط معلم می‌تونه ویدیو اضافه کنه',deleteVideo:'این ویدیو حذف شود؟',deleteStudent:'این دانش‌آموز از کلاس حذف شود؟',copySuccess:'کد کپی شد',profile:'پروفایل',editProfileTitle:'✏️ ویرایش پروفایل',usernameLbl:'نام کاربری',usernameHint:'فقط حروف انگلیسی، اعداد و _ (بدون @)',bioLbl:'درباره من',phoneLbl:'📱 شماره تماس',phoneLbl2:'شماره تماس (اختیاری)',emailLbl:'✉️ ایمیل',startChat:'شروع گفتگو',noBio:'درباره من چیزی ننوشتی',settings:'تنظیمات',accountSection:'👤 حساب کاربری',profileDesc:'نام، عکس، بیوگرافی',languageSection:'🌐 زبان',language:'زبان',languageDesc:'فارسی یا انگلیسی',securitySection:'🔒 امنیت',twoFA:'رمز دو مرحله‌ای',twoFADesc:'محافظت بیشتر از حساب',twoFATitle:'🔐 رمز دو مرحله‌ای',twoFADesc2:'با فعال‌سازی، هنگام ورود یک کد ۶ رقمی به ایمیلت فرستاده می‌شود.',twoFAEnable:'فعال‌سازی',twoFACodeLbl:'کد ۶ رقمی',verify:'تأیید',activeSessions:'نشست‌های فعال',activeSessionsDesc:'دستگاه‌های متصل',sessionsTitle:'📱 نشست‌های فعال',sessionsDesc:'دستگاه‌هایی که با حساب تو لاگین کردن:',logoutAll:'خروج از همه',changePassword:'تغییر رمز عبور',changePasswordDesc:'رمز جدید تنظیم کن',changePasswordTitle:'🔑 تغییر رمز عبور',newPassword:'رمز جدید',confirmPassword:'تکرار رمز جدید',aboutSection:'ℹ️ درباره',appVersion:'نسخه برنامه',logoutBtn:'خروج از حساب',logoutDesc:'خارج شدن از این دستگاه',callStart:'شروع تماس',callGroup:'تماس گروهی',callPrivate:'تماس خصوصی',callConnecting:'در حال اتصال...',callConnected:'متصل شد',callError:'خطا در تماس',deleteForAll:'حذف برای همه',deleteForMe:'حذف فقط برای من',deletedMsg:'این پیام حذف شد',deleteConfirmAll:'OK = حذف برای همه، Cancel = حذف فقط برای من',deleteConfirmMe:'این پیام برای تو حذف شود؟',typing:'در حال نوشتن...',recordingVoice:'در حال ضبط ویس...',uploadingFile:'در حال ارسال فایل...',online:'آنلاین',lastSeen:'آخرین بازدید',onlineCount:'آنلاین',youPrefix:'شما: ',onlyOwner:'فقط سازنده می‌تواند ویرایش کند',owner:'مالک',edit:'ویرایش',viewMembers:'مشاهده اعضا',editGroup:'ویرایش گروه',editChannel:'ویرایش کانال',changePhoto:'تغییر عکس',aboutLbl:'درباره / بیوگرافی',removeMember:'این عضو حذف شود؟',noMembers:'عضوی نیست',nameRequired:'نام الزامی است'},en:{appName:'Nexom',appTagline:'Super App',welcome:'Hello!',welcomeSub:'Welcome to Nexom',groups:'Groups',channels:'Channels',contacts:'Contacts',chats:'Chats',library:'Library',bots:'Bots',finance:'Finance',financeShort:'Finance',education:'Education',home:'Home',more:'More',privateTab:'Private',secTitle:'High Security',secSub:'Advanced encryption',spdTitle:'High Speed',spdSub:'Fast send & receive',cldTitle:'Cloud Space',cldSub:'Access anywhere',freTitle:'Free',freSub:'No cost, always',librarySub:'Videos & content',botsSub:'Auto reply',financeSub:'Top-up, packages, payments',classes:'Classes',classPanel:'Admin Panel',wallet:'Wallet',balance:'Balance',chargeSection:'📱 Top-up & Internet',mci:'MCI',irancell:'Irancell',rightel:'Rightel',otherOperators:'Other operators',chargeDesc:'Top-up / Internet',servicePortal:'Service portal',otherServices:'🧾 Other Services',payElectricity:'Pay Electricity',payGas:'Pay Gas',payWater:'Pay Water',payPhone:'Pay Phone',newContact:'Contact',newGroup:'Group',newChannel:'Channel',joinWithCode:'Join with Code',createClass:'Create Class',newContactTitle:'👤 New Contact',newContactDesc:'Enter the contact email',newGroupTitle:'New Group',newGroupDesc:'Enter the information',nameLbl:'Name',descLbl:'Description',selectMembers:'Select members',searchPlaceholder:'Search...',newStoryTitle:'📸 New Story',newStoryDesc:'Pick an image or video',nothingSelected:'Nothing selected',pickFile:'📷 Pick a file',captionLbl:'Caption',publish:'Publish',storiesListTitle:'📸 Stories',pickUser:'Pick a user',close:'Close',addStory:'Add Story',editMsgTitle:'✏️ Edit Message',editMsgDesc:'Enter new text',libAddTitle:'🎬 Add to Library',titleLbl:'Title',botNewTitle:'🤖 New Bot',autoReplyLbl:'Auto reply',newClassTitle:'📚 New Class',classNameLbl:'Class Name',joinTitle:'🔑 Join Class',joinDesc:'Enter the 6-digit code from your teacher',enter:'Enter',classCreated:'✅ Class Created!',giveCodeDesc:'Give this code to students:',copyCode:'📋 Copy Code',addVideoTitle:'🎬 Add Video',uploadFromDevice:'📤 Upload from device',linkTab:'🔗 Link',videoTitleLbl:'Video title',videoTitlePh:'E.g. Session 1 - Intro',descOptional:'Description (optional)',descPh:'Short description...',pickVideo:'📹 Pick video from device',maxSize:'Max size: 50 MB',videoUrlLbl:'Video URL',linkHint:'You can use YouTube, Aparat or any mp4 link',msgPlaceholder:'Message...',sendImage:'Send image',sendFile:'Send file',sendVoice:'Record voice',recording:'Recording...',send:'Send',cancel:'Cancel',save:'Save',delete:'Delete',add:'Add',create:'Create',ok:'OK',copy:'Copy',videos:'🎬 Videos',members:'👥 Members',addVideo:'➕ Add Video',classCode:'Class Code',loading:'Loading...',noClasses:'No classes yet',noContacts:'No contacts yet',error:'Error',teacher:'Teacher',student:'Student',emptyChat:'No messages yet',emptyVideo:'No videos yet',emptyMembers:'No students yet',logoutConfirm:'Log out?',justNow:'Just now',minAgo:'min ago',hrAgo:'hr ago',dayAgo:'day ago',you:'You',replyLabel:'Reply',editLabel:'✏️ Edit',voiceMsg:'🎤 Voice',imageMsg:'🖼️ Image',fileMsg:'📄 File',edited:'edited',invalidEmail:'Invalid email',cantChatSelf:"You can't chat with yourself!",onlyTeacher:'Only the teacher can add videos',deleteVideo:'Delete this video?',deleteStudent:'Remove this student from class?',copySuccess:'Code copied',profile:'Profile',editProfileTitle:'✏️ Edit Profile',usernameLbl:'Username',usernameHint:'Only a-z, 0-9, _ (no @)',bioLbl:'About me',phoneLbl:'📱 Phone',phoneLbl2:'Phone (optional)',emailLbl:'✉️ Email',startChat:'Start Chat',noBio:'No bio yet',settings:'Settings',accountSection:'👤 Account',profileDesc:'Name, photo, bio',languageSection:'🌐 Language',language:'Language',languageDesc:'Persian or English',securitySection:'🔒 Security',twoFA:'Two-Factor Auth',twoFADesc:'Extra account protection',twoFATitle:'🔐 Two-Factor Auth',twoFADesc2:'When enabled, a 6-digit code is sent to your email on login.',twoFAEnable:'Enable',twoFACodeLbl:'6-digit code',verify:'Verify',activeSessions:'Active Sessions',activeSessionsDesc:'Connected devices',sessionsTitle:'📱 Active Sessions',sessionsDesc:'Devices logged into your account:',logoutAll:'Log out all',changePassword:'Change Password',changePasswordDesc:'Set a new password',changePasswordTitle:'🔑 Change Password',newPassword:'New password',confirmPassword:'Confirm new password',aboutSection:'ℹ️ About',appVersion:'App Version',logoutBtn:'Log out',logoutDesc:'Sign out from this device',callStart:'Start Call',callGroup:'Group Call',callPrivate:'Private Call',callConnecting:'Connecting...',callConnected:'Connected',callError:'Call error',deleteForAll:'Delete for everyone',deleteForMe:'Delete for me only',deletedMsg:'This message was deleted',deleteConfirmAll:'OK = Delete for everyone, Cancel = Delete for me only',deleteConfirmMe:'Delete this message for you?',typing:'typing...',recordingVoice:'Recording voice...',uploadingFile:'Uploading file...',online:'Online',lastSeen:'Last seen',onlineCount:'online',youPrefix:'You: ',onlyOwner:'Only owner can edit',owner:'Owner',edit:'Edit',viewMembers:'View members',editGroup:'Edit group',editChannel:'Edit channel',changePhoto:'Change photo',aboutLbl:'About / Bio',removeMember:'Remove this member?',noMembers:'No members',nameRequired:'Name required'}};
 let lang=localStorage.getItem('lang')||'fa';
 function t(k){return(I18N[lang]&&I18N[lang][k])||(I18N.fa[k])||k}
 function applyLang(){document.documentElement.lang=lang;document.documentElement.dir=lang==='fa'?'rtl':'ltr';document.body.classList.toggle('lang-en',lang==='en');document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n)});document.querySelectorAll('[data-i18n-ph]').forEach(el=>{el.placeholder=t(el.dataset.i18nPh)});const lbl=document.getElementById('lang-lbl');if(lbl)lbl.textContent=lang==='fa'?'EN':'FA';const sel=document.getElementById('lang-select');if(sel)sel.value=lang;localStorage.setItem('lang',lang);if(typeof renderList==='function'&&document.getElementById('page-chats')?.classList.contains('active'))renderList()}
@@ -918,6 +955,7 @@ let curClass=null,curCpTab='videos',vMode='upload',vFile=null;
 let groupPrivacy='public';
 let searchTab='all';
 let searchTimer=null;
+let editGroupAvatarFile=null;
 const namesCache={};const avatarsCache={};let myProfile=null;
 async function getProfile(email){if(!email)return null;const{data}=await sb.from('profiles').select('*').eq('email',email).maybeSingle();if(data){namesCache[email]=data.name||email.split('@')[0];avatarsCache[email]=data.avatar_url||null}return data}
 async function getName(email){if(!email)return '?';if(namesCache[email])return namesCache[email];const{data}=await sb.from('profiles').select('name').eq('email',email).maybeSingle();const name=data?.name||email.split('@')[0];namesCache[email]=name;return name}
@@ -949,7 +987,7 @@ window.openGlobalSearch=()=>{document.getElementById('search-modal').classList.a
 window.closeGlobalSearch=()=>{document.getElementById('search-modal').classList.remove('show');document.getElementById('search-input').value=''};
 window.switchSearchTab=t=>{searchTab=t;document.querySelectorAll('[data-search]').forEach(el=>el.classList.toggle('active',el.dataset.search===t));doGlobalSearch()};
 window.doGlobalSearch=()=>{clearTimeout(searchTimer);searchTimer=setTimeout(runSearch,300)};
-async function runSearch(){const q=document.getElementById('search-input').value.trim();const results=document.getElementById('search-results');if(!q||q.length<2){results.innerHTML='<div class="search-empty"><div class="icon">🔍</div><h3>'+(q.length===1?'حداقل ۲ حرف':'جستجو کن...')+'</h3><p style="font-size:12px;margin-top:8px">نام گروه یا کانال رو تایپ کن</p></div>';return}results.innerHTML='<div class="search-empty"><div class="icon">⏳</div><h3>در حال جستجو...</h3></div>';try{let query=sb.from('chats').select('*').eq('is_public',true).ilike('name','%'+q+'%').limit(30);if(searchTab!=='all'){query=query.eq('type',searchTab)}const{data,error}=await query;if(error){results.innerHTML='<div class="search-empty"><div class="icon">❌</div><h3>خطا: '+esc(error.message)+'</h3></div>';return}if(!data||!data.length){results.innerHTML='<div class="search-empty"><div class="icon">🔍</div><h3>چیزی پیدا نشد</h3><p style="font-size:12px;margin-top:8px">با اسم دیگه‌ای امتحان کن</p></div>';return}const ids=data.map(c=>c.id);const{data:myMemberships}=await sb.from('chat_members').select('chat_id').eq('member_email',myEmail).in('chat_id',ids);const joinedSet=new Set((myMemberships||[]).map(m=>m.chat_id));const ownerEmails=[...new Set(data.map(c=>c.owner_email).filter(Boolean))];await loadAllNames(ownerEmails);results.innerHTML='';data.forEach(c=>{const isJoined=joinedSet.has(c.id);const isOwner=c.owner_email===myEmail;const it=document.createElement('div');it.className='search-result-item'+(isJoined?' joined':'');const typeLabel=c.type==='group'?'گروه':'کانال';const typeClass=c.type==='group'?'group':'channel';const icon=c.type==='group'?'👥':'📢';const ownerName=namesCache[c.owner_email]||(c.owner_email||'').split('@')[0]||'?';it.innerHTML=`<div class="search-result-avatar ${typeClass}">${icon}</div><div class="search-result-info"><div class="search-result-name">${esc(c.name||'بدون نام')} <span class="search-result-type ${typeClass}">${typeLabel}</span></div><div class="search-result-desc">${esc(c.description||'بدون توضیحات')}</div><div class="search-result-meta">👤 ${esc(ownerName)}</div></div><div class="search-result-btn-slot"></div>`;const btnSlot=it.querySelector('.search-result-btn-slot');const btn=document.createElement('button');if(isJoined||isOwner){btn.className='search-result-btn joined';btn.textContent='✓ عضو هستی';btn.onclick=(e)=>{e.stopPropagation();closeGlobalSearch();switchTab(c.type);openRoom(c.type,c)}}else{btn.className='search-result-btn join';btn.textContent='+ عضویت';btn.onclick=(e)=>{e.stopPropagation();joinPublicChat(c)}}btnSlot.appendChild(btn);it.onclick=()=>{if(isJoined||isOwner){closeGlobalSearch();switchTab(c.type);openRoom(c.type,c)}else{joinPublicChat(c)}};results.appendChild(it)})}catch(e){results.innerHTML='<div class="search-empty"><div class="icon">❌</div><h3>خطا</h3><p style="font-size:12px;margin-top:8px">'+esc(e.message)+'</p></div>'}}
+async function runSearch(){const q=document.getElementById('search-input').value.trim();const results=document.getElementById('search-results');if(!q||q.length<2){results.innerHTML='<div class="search-empty"><div class="icon">🔍</div><h3>'+(q.length===1?'حداقل ۲ حرف':'جستجو کن...')+'</h3><p style="font-size:12px;margin-top:8px">نام گروه یا کانال رو تایپ کن</p></div>';return}results.innerHTML='<div class="search-empty"><div class="icon">⏳</div><h3>در حال جستجو...</h3></div>';try{let query=sb.from('chats').select('*').eq('is_public',true).ilike('name','%'+q+'%').limit(30);if(searchTab!=='all'){query=query.eq('type',searchTab)}const{data,error}=await query;if(error){results.innerHTML='<div class="search-empty"><div class="icon">❌</div><h3>خطا: '+esc(error.message)+'</h3></div>';return}if(!data||!data.length){results.innerHTML='<div class="search-empty"><div class="icon">🔍</div><h3>چیزی پیدا نشد</h3><p style="font-size:12px;margin-top:8px">با اسم دیگه‌ای امتحان کن</p></div>';return}const ids=data.map(c=>c.id);const{data:myMemberships}=await sb.from('chat_members').select('chat_id').eq('member_email',myEmail).in('chat_id',ids);const joinedSet=new Set((myMemberships||[]).map(m=>m.chat_id));const ownerEmails=[...new Set(data.map(c=>c.owner_email).filter(Boolean))];await loadAllNames(ownerEmails);results.innerHTML='';data.forEach(c=>{const isJoined=joinedSet.has(c.id);const isOwner=c.owner_email===myEmail;const it=document.createElement('div');it.className='search-result-item'+(isJoined?' joined':'');const typeLabel=c.type==='group'?'گروه':'کانال';const typeClass=c.type==='group'?'group':'channel';const icon=c.type==='group'?'👥':'📢';const ownerName=namesCache[c.owner_email]||(c.owner_email||'').split('@')[0]||'?';it.innerHTML=`<div class="search-result-avatar ${typeClass}">${icon}</div><div class="search-result-info"><div class="search-result-name">${esc(c.name||'بدون نام')} <span class="search-result-type ${typeClass}">${typeLabel}</span></div><div class="search-result-desc">${esc(c.description||'بدون توضیحات')}</div><div class="search-result-meta">👤 ${esc(ownerName)}</div></div><div class="search-result-btn-slot"></div>`;if(c.avatar_url){const av=it.querySelector('.search-result-avatar');av.textContent='';av.style.backgroundImage=`url('${c.avatar_url}')`;av.style.backgroundSize='cover';av.style.backgroundPosition='center'}const btnSlot=it.querySelector('.search-result-btn-slot');const btn=document.createElement('button');if(isJoined||isOwner){btn.className='search-result-btn joined';btn.textContent='✓ عضو هستی';btn.onclick=(e)=>{e.stopPropagation();closeGlobalSearch();switchTab(c.type);openRoom(c.type,c)}}else{btn.className='search-result-btn join';btn.textContent='+ عضویت';btn.onclick=(e)=>{e.stopPropagation();joinPublicChat(c)}}btnSlot.appendChild(btn);it.onclick=()=>{if(isJoined||isOwner){closeGlobalSearch();switchTab(c.type);openRoom(c.type,c)}else{joinPublicChat(c)}};results.appendChild(it)})}catch(e){results.innerHTML='<div class="search-empty"><div class="icon">❌</div><h3>خطا</h3><p style="font-size:12px;margin-top:8px">'+esc(e.message)+'</p></div>'}}
 async function joinPublicChat(chat){if(!confirm((lang==='fa'?'به "'+(chat.name||'')+'" بپیوندی؟':'Join "'+(chat.name||'')+'"?')))return;try{const{error}=await sb.from('chat_members').insert({chat_id:chat.id,member_email:myEmail,role:'member'});if(error){if(error.code==='23505'){switchTab(chat.type);closeGlobalSearch();openRoom(chat.type,chat);return}alert(t('error')+': '+error.message);return}closeGlobalSearch();switchTab(chat.type);openRoom(chat.type,chat)}catch(e){alert(t('error')+': '+e.message)}}
 window.setGroupPrivacy=(p)=>{groupPrivacy=p;document.querySelectorAll('.privacy-option').forEach(el=>{el.classList.toggle('selected',el.dataset.privacy===p)})};
 let typingTimer=null;let statusChannel=null;let isCurrentlyTyping=false;let isCurrentlyRecording=false;let isCurrentlyUploading=false;const statusCache={};
@@ -972,12 +1010,55 @@ const listC=document.getElementById('list-container');
 async function renderList(){listC.innerHTML='<div class="empty-state"><div class="icon">⏳</div><h3>'+t('loading')+'</h3></div>';if(curTab==='private')await renderPrivate();else await renderGrpCh(curTab)}
 async function getLastMsgAndUnread(targetEmail){const{data:lastMsgs}=await sb.from('messages').select('*').is('chat_id',null).or(`and(sender_email.eq.${myEmail},receiver_email.eq.${targetEmail}),and(sender_email.eq.${targetEmail},receiver_email.eq.${myEmail})`).order('created_at',{ascending:false}).limit(1);const last=lastMsgs?.[0]||null;const{data:deletedArr}=await sb.from('deleted_messages').select('message_id').eq('user_email',myEmail);const deletedIds=new Set((deletedArr||[]).map(d=>d.message_id));const{data:unreadMsgs}=await sb.from('messages').select('id').is('chat_id',null).eq('sender_email',targetEmail).eq('receiver_email',myEmail).is('read_at',null);const unreadCount=(unreadMsgs||[]).filter(m=>!deletedIds.has(m.id)).length;return{last,unreadCount}}
 async function renderPrivate(){const{data,error}=await sb.from('messages').select('sender_email,receiver_email').is('chat_id',null).or(`sender_email.eq.${myEmail},receiver_email.eq.${myEmail}`);if(error){listC.innerHTML='<div class="empty-state"><div class="icon">❌</div><h3>'+t('error')+'</h3></div>';return}const set=new Set();data.forEach(m=>{if(m.sender_email!==myEmail)set.add(m.sender_email);if(m.receiver_email!==myEmail)set.add(m.receiver_email)});const cts=[...set];if(!cts.length){listC.innerHTML='<div class="empty-state"><div class="icon">👤</div><h3>'+t('noContacts')+'</h3></div>';return}await loadAllNames(cts);const infoMap={};await Promise.all(cts.map(async e=>{infoMap[e]=await getLastMsgAndUnread(e)}));cts.sort((a,b)=>{const ta=infoMap[a]?.last?.created_at;const tb=infoMap[b]?.last?.created_at;if(!ta&&!tb)return 0;if(!ta)return 1;if(!tb)return -1;return new Date(tb)-new Date(ta)});listC.innerHTML='';cts.forEach(e=>{const info=infoMap[e]||{};const last=info.last;const unread=info.unreadCount||0;const it=document.createElement('div');it.className='list-item'+(unread>0?' unread':'');const dispName=namesCache[e]||e.split('@')[0];let lastTxt='';if(last){const raw=previewMsg(last);const isMine=last.sender_email===myEmail;lastTxt=(isMine?t('youPrefix'):'')+raw}else{lastTxt=(lang==='fa'?'شروع گفتگو کن...':'Start chatting...')}const timeTxt=last?shortTime(new Date(last.created_at)):'';const badgeHTML=unread>0?`<div class="unread-badge">${unread>99?'99+':unread}</div>`:'';it.innerHTML=`<div class="list-avatar" data-email="${esc(e)}">${ini(dispName)}</div><div class="list-info"><div class="list-name">${esc(dispName)}</div><div class="list-last-msg${last&&last.sender_email===myEmail?' mine-prefix':''}">${esc(lastTxt)}</div></div>${timeTxt?`<div class="list-time${unread>0?' unread-time':''}">${esc(timeTxt)}</div>`:''}${badgeHTML}`;const av=it.querySelector('.list-avatar');if(avatarsCache[e]){av.textContent='';av.style.backgroundImage=`url('${avatarsCache[e]}')`}av.onclick=(ev)=>{ev.stopPropagation();openProfile(e)};it.onclick=()=>openRoom('private',e);const st=statusCache[e];if(st){const statusEl=document.createElement('div');statusEl.className='list-item-status';let txt='';if(st.is_recording)txt='🎤 '+(lang==='fa'?'در حال ضبط...':'Recording...');else if(st.is_uploading)txt='📎 '+(lang==='fa'?'در حال ارسال...':'Uploading...');else if(st.is_typing)txt='✍️ '+(lang==='fa'?'در حال نوشتن...':'typing...');else if(st.is_online)txt='🟢 '+(lang==='fa'?'آنلاین':'Online');if(txt){statusEl.textContent=txt;it.querySelector('.list-info').appendChild(statusEl)}}listC.appendChild(it)})}
-async function renderGrpCh(type){const{data:mem}=await sb.from('chat_members').select('chat_id').eq('member_email',myEmail);const emptyMsg=`<div class="empty-state"><div class="icon">${type==='group'?'👥':'📢'}</div><h3>${t('noClasses')}</h3></div>`;if(!mem?.length){listC.innerHTML=emptyMsg;return}const ids=mem.map(m=>m.chat_id);const{data:chs}=await sb.from('chats').select('*').in('id',ids).eq('type',type).order('created_at',{ascending:false});if(!chs?.length){listC.innerHTML=emptyMsg;return}const{data:deletedArr}=await sb.from('deleted_messages').select('message_id').eq('user_email',myEmail);const deletedIds=new Set((deletedArr||[]).map(d=>d.message_id));const infoMap={};await Promise.all(chs.map(async c=>{const{data:lastMsgs}=await sb.from('messages').select('*').eq('chat_id',c.id).order('created_at',{ascending:false}).limit(1);const last=lastMsgs?.[0]||null;const{data:unreadMsgs}=await sb.from('messages').select('id').eq('chat_id',c.id).neq('sender_email',myEmail);const unreadIds=(unreadMsgs||[]).map(m=>m.id).filter(id=>!deletedIds.has(id));let unreadCount=0;if(unreadIds.length){const{data:reads}=await sb.from('message_reads').select('message_id').eq('user_email',myEmail).in('message_id',unreadIds);const readSet=new Set((reads||[]).map(r=>r.message_id));unreadCount=unreadIds.filter(id=>!readSet.has(id)).length}infoMap[c.id]={last,unreadCount}}));chs.sort((a,b)=>{const ta=infoMap[a.id]?.last?.created_at;const tb=infoMap[b.id]?.last?.created_at;if(!ta&&!tb)return 0;if(!ta)return 1;if(!tb)return -1;return new Date(tb)-new Date(ta)});listC.innerHTML='';chs.forEach(c=>{const info=infoMap[c.id]||{};const last=info.last;const unread=info.unreadCount||0;const it=document.createElement('div');it.className='list-item'+(unread>0?' unread':'');let lastTxt='';if(last){const isMine=last.sender_email===myEmail;const senderName=isMine?t('youPrefix'):(namesCache[last.sender_email]||last.sender_email.split('@')[0])+': ';lastTxt=senderName+previewMsg(last)}else{lastTxt=c.description||(lang==='fa'?'گروه جدید':'New group')}const timeTxt=last?shortTime(new Date(last.created_at)):'';const badgeHTML=unread>0?`<div class="unread-badge">${unread>99?'99+':unread}</div>`:'';it.innerHTML=`<div class="list-avatar">${type==='group'?'👥':'📢'}</div><div class="list-info"><div class="list-name">${esc(c.name)}</div><div class="list-last-msg${last&&last.sender_email===myEmail?' mine-prefix':''}">${esc(lastTxt)}</div></div>${timeTxt?`<div class="list-time${unread>0?' unread-time':''}">${esc(timeTxt)}</div>`:''}${badgeHTML}`;it.onclick=()=>openRoom(type,c);listC.appendChild(it)})}
+async function renderGrpCh(type){const{data:mem}=await sb.from('chat_members').select('chat_id').eq('member_email',myEmail);const emptyMsg=`<div class="empty-state"><div class="icon">${type==='group'?'👥':'📢'}</div><h3>${t('noClasses')}</h3></div>`;if(!mem?.length){listC.innerHTML=emptyMsg;return}const ids=mem.map(m=>m.chat_id);const{data:chs}=await sb.from('chats').select('*').in('id',ids).eq('type',type).order('created_at',{ascending:false});if(!chs?.length){listC.innerHTML=emptyMsg;return}const{data:deletedArr}=await sb.from('deleted_messages').select('message_id').eq('user_email',myEmail);const deletedIds=new Set((deletedArr||[]).map(d=>d.message_id));const infoMap={};await Promise.all(chs.map(async c=>{const{data:lastMsgs}=await sb.from('messages').select('*').eq('chat_id',c.id).order('created_at',{ascending:false}).limit(1);const last=lastMsgs?.[0]||null;const{data:unreadMsgs}=await sb.from('messages').select('id').eq('chat_id',c.id).neq('sender_email',myEmail);const unreadIds=(unreadMsgs||[]).map(m=>m.id).filter(id=>!deletedIds.has(id));let unreadCount=0;if(unreadIds.length){const{data:reads}=await sb.from('message_reads').select('message_id').eq('user_email',myEmail).in('message_id',unreadIds);const readSet=new Set((reads||[]).map(r=>r.message_id));unreadCount=unreadIds.filter(id=>!readSet.has(id)).length}infoMap[c.id]={last,unreadCount}}));chs.sort((a,b)=>{const ta=infoMap[a.id]?.last?.created_at;const tb=infoMap[b.id]?.last?.created_at;if(!ta&&!tb)return 0;if(!ta)return 1;if(!tb)return -1;return new Date(tb)-new Date(ta)});listC.innerHTML='';chs.forEach(c=>{const info=infoMap[c.id]||{};const last=info.last;const unread=info.unreadCount||0;const it=document.createElement('div');it.className='list-item'+(unread>0?' unread':'');let lastTxt='';if(last){const isMine=last.sender_email===myEmail;const senderName=isMine?t('youPrefix'):(namesCache[last.sender_email]||last.sender_email.split('@')[0])+': ';lastTxt=senderName+previewMsg(last)}else{lastTxt=c.description||(lang==='fa'?'گروه جدید':'New group')}const timeTxt=last?shortTime(new Date(last.created_at)):'';const badgeHTML=unread>0?`<div class="unread-badge">${unread>99?'99+':unread}</div>`:'';it.innerHTML=`<div class="list-avatar">${type==='group'?'👥':'📢'}</div><div class="list-info"><div class="list-name">${esc(c.name)}</div><div class="list-last-msg${last&&last.sender_email===myEmail?' mine-prefix':''}">${esc(lastTxt)}</div></div>${timeTxt?`<div class="list-time${unread>0?' unread-time':''}">${esc(timeTxt)}</div>`:''}${badgeHTML}`;if(c.avatar_url){const _av=it.querySelector('.list-avatar');_av.textContent='';_av.style.backgroundImage=`url('${c.avatar_url}')`;_av.style.backgroundSize='cover';_av.style.backgroundPosition='center'}it.onclick=()=>openRoom(type,c);listC.appendChild(it)})}
 const room=document.getElementById('chat-room'),msgArea=document.getElementById('messages-area');
 const roomAv=document.getElementById('room-avatar'),roomNm=document.getElementById('room-name'),roomSub=document.getElementById('room-sub');
 const callStartBtn=document.getElementById('call-start-btn');
-window.openRoom=async(type,data)=>{if(type==='private'){curChat={type:'private',email:data};const dispName=await getName(data);roomAv.textContent=ini(dispName);roomNm.textContent=dispName;roomSub.textContent=data;if(avatarsCache[data]){roomAv.textContent='';roomAv.style.backgroundImage=`url('${avatarsCache[data]}')`}else{roomAv.style.backgroundImage=''}roomAv.onclick=()=>openProfile(data);document.getElementById('room-info-click').onclick=()=>openProfile(data);callStartBtn.style.display='flex';const sorted=[myEmail,data].sort();callStartBtn.dataset.room='private_'+sorted[0]+'_'+sorted[1];callStartBtn.dataset.name=dispName;callStartBtn.dataset.type='private'}else{curChat={type,id:data.id,name:data.name};roomAv.textContent=type==='group'?'👥':'📢';roomAv.style.backgroundImage='';roomNm.textContent=data.name;roomSub.textContent=data.description||'';document.getElementById('room-info-click').onclick=null;callStartBtn.style.display=type==='group'?'flex':'none';callStartBtn.dataset.room='room_'+data.id;callStartBtn.dataset.name=data.name;callStartBtn.dataset.type='group'}room.classList.add('active');await loadMsgs();setupRT();updateChatStatus()};
-window.closeRoom=()=>{room.classList.remove('active');curChat=null;if(rtCh)sb.removeChannel(rtCh);cancelReply();if(document.getElementById('page-chats')?.classList.contains('active'))renderList()};
+window.openRoom=async(type,data)=>{
+  const roomMenuBtn=document.getElementById('room-menu-btn');
+  if(type==='private'){
+    curChat={type:'private',email:data};
+    roomMenuBtn.style.display='none';
+    const dispName=await getName(data);
+    roomAv.textContent=ini(dispName);
+    roomNm.textContent=dispName;
+    roomSub.textContent=data;
+    if(avatarsCache[data]){roomAv.textContent='';roomAv.style.backgroundImage=`url('${avatarsCache[data]}')`;roomAv.style.backgroundSize='cover';roomAv.style.backgroundPosition='center'}else{roomAv.style.backgroundImage=''}
+    roomAv.onclick=()=>openProfile(data);
+    document.getElementById('room-info-click').onclick=()=>openProfile(data);
+    callStartBtn.style.display='flex';
+    const sorted=[myEmail,data].sort();
+    callStartBtn.dataset.room='private_'+sorted[0]+'_'+sorted[1];
+    callStartBtn.dataset.name=dispName;
+    callStartBtn.dataset.type='private'
+  }else{
+    curChat={type,id:data.id,name:data.name,data};
+    roomMenuBtn.style.display='flex';
+    if(data.avatar_url){roomAv.textContent='';roomAv.style.backgroundImage=`url('${data.avatar_url}')`;roomAv.style.backgroundSize='cover';roomAv.style.backgroundPosition='center'}
+    else{roomAv.textContent=type==='group'?'👥':'📢';roomAv.style.backgroundImage=''}
+    roomNm.textContent=data.name;
+    roomSub.textContent=data.description||'';
+    document.getElementById('room-info-click').onclick=null;
+    roomAv.onclick=null;
+    callStartBtn.style.display=type==='group'?'flex':'none';
+    callStartBtn.dataset.room='room_'+data.id;
+    callStartBtn.dataset.name=data.name;
+    callStartBtn.dataset.type='group'
+  }
+  room.classList.add('active');
+  await loadMsgs();
+  setupRT();
+  updateChatStatus()
+};
+window.closeRoom=()=>{
+  room.classList.remove('active');
+  curChat=null;
+  document.getElementById('room-menu-btn').style.display='none';
+  document.getElementById('room-menu').classList.remove('show');
+  if(rtCh)sb.removeChannel(rtCh);
+  cancelReply();
+  if(document.getElementById('page-chats')?.classList.contains('active'))renderList()
+};
 async function loadMsgs(){if(!curChat)return;let q;if(curChat.type==='private'){q=sb.from('messages').select('*').is('chat_id',null).or(`and(sender_email.eq.${myEmail},receiver_email.eq.${curChat.email}),and(sender_email.eq.${curChat.email},receiver_email.eq.${myEmail})`).order('created_at',{ascending:true})}else{q=sb.from('messages').select('*').eq('chat_id',curChat.id).order('created_at',{ascending:true})}const{data}=await q;const{data:myDeleted}=await sb.from('deleted_messages').select('message_id').eq('user_email',myEmail);const deletedIds=new Set((myDeleted||[]).map(d=>d.message_id));msgArea.innerHTML='';(data||[]).forEach(m=>{if(deletedIds.has(m.id))return;addMsg(m)});await markMessagesRead();await updateGroupChecks()}
 function addMsg(m){if(m.deleted_for_all){const d=document.createElement('div');d.className='msg deleted '+(m.sender_email===myEmail?'mine':'other');d.dataset.id=m.id;d.dataset.type='deleted';let h='';if(curChat.type!=='private'&&m.sender_email!==myEmail){const dispName=namesCache[m.sender_email]||m.sender_email.split('@')[0];h+=`<div class="msg-sender">${esc(dispName)}</div>`}h+=`<div class="msg-deleted-txt">🚫 ${t('deletedMsg')}</div>`;h+=`<div class="msg-actions" data-id="${m.id}">⋯</div>`;d.innerHTML=h;msgArea.appendChild(d);msgArea.scrollTop=msgArea.scrollHeight;return}const d=document.createElement('div');d.className='msg '+(m.sender_email===myEmail?'mine':'other');d.dataset.id=m.id;d.dataset.type=m.message_type;let h='';if(curChat.type!=='private'&&m.sender_email!==myEmail){const dispName=namesCache[m.sender_email]||m.sender_email.split('@')[0];h+=`<div class="msg-sender" onclick="openProfile('${esc(m.sender_email)}')" style="cursor:pointer">${esc(dispName)}</div>`}if(m.reply_to_id){const rt=m.reply_to_type||'text';let rtx=m.reply_to_content;if(!rtx||!rtx.trim()){if(rt==='voice')rtx=t('voiceMsg');else if(rt==='image')rtx=t('imageMsg');else if(rt==='file')rtx=t('fileMsg');else rtx='...'}h+=`<div class="reply-preview" data-rid="${esc(m.reply_to_id)}"><div class="reply-name">${esc((m.reply_to_sender||'').split('@')[0])}</div><div class="reply-text">${esc(rtx)}</div></div>`}if(m.message_type==='voice'&&m.audio_url){const du=m.audio_duration||0;h+=`<div class="voice-wrap"><button class="voice-play" data-url="${esc(m.audio_url)}">▶</button><div class="voice-wave">${Array.from({length:18},()=>`<span style="height:${Math.random()*18+6}px"></span>`).join('')}</div><div class="voice-dur">${fmtT(du)}</div></div>`}else if(m.message_type==='image'&&m.file_url){h+=`<div class="img-msg"><img src="${esc(m.file_url)}" data-full="${esc(m.file_url)}"></div>`}else if(m.message_type==='file'&&m.file_url){h+=`<div class="file-msg"><div class="file-icon">📄</div><div class="file-info"><div class="file-name">${esc(m.file_name||'file')}</div><div class="file-size">${fmtSz(m.file_size)}</div></div><a class="file-dl" href="${esc(m.file_url)}" download="${esc(m.file_name||'')}" target="_blank">⬇</a></div>`}else{h+=`<div>${esc(m.content||'')}</div>`}if(m.edited_at)h+=`<div class="msg-edited">${t('edited')}</div>`;if(m.sender_email===myEmail){if(curChat.type==='private'){const isRead=m.read_at?true:false;h+=`<div class="msg-meta">${isRead?'<span class="msg-check read">✓✓</span>':'<span class="msg-check sent">✓</span>'}</div>`}else{h+=`<div class="msg-meta" data-check="${m.id}"><span class="msg-check sent">✓</span></div>`}}h+=`<div class="msg-actions" data-id="${m.id}">⋯</div>`;d.innerHTML=h;msgArea.appendChild(d);msgArea.scrollTop=msgArea.scrollHeight}
 function setupRT(){if(rtCh)sb.removeChannel(rtCh);rtCh=sb.channel('r-'+Date.now()).on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},async p=>{const m=p.new;let ok=false;if(curChat.type==='private'){ok=(m.sender_email===myEmail&&m.receiver_email===curChat.email)||(m.sender_email===curChat.email&&m.receiver_email===myEmail);if(ok&&!m.chat_id){addMsg(m);if(m.sender_email===curChat.email){await markMessagesRead()}}}else{if(m.chat_id===curChat.id){addMsg(m);await markMessagesRead();updateGroupChecks()}}}).on('postgres_changes',{event:'UPDATE',schema:'public',table:'messages'},p=>{const m=p.new;let ok=false;if(curChat.type==='private'){ok=(m.sender_email===myEmail&&m.receiver_email===curChat.email)||(m.sender_email===curChat.email&&m.receiver_email===myEmail)}else{ok=m.chat_id===curChat.id}if(ok){const o=msgArea.querySelector(`[data-id="${m.id}"]`);if(o)o.remove();addMsg(m);updateGroupChecks()}}).on('postgres_changes',{event:'INSERT',schema:'public',table:'message_reads'},()=>{updateGroupChecks()}).on('postgres_changes',{event:'INSERT',schema:'public',table:'deleted_messages'},async p=>{const dd=p.new;if(dd.user_email===myEmail){const el=msgArea.querySelector(`[data-id="${dd.message_id}"]`);if(el)el.remove()}}).subscribe()}
@@ -1101,6 +1182,168 @@ window.setVcTool=tool=>{if(!canIWrite())return;vcTool=tool;document.querySelecto
 window.clearBoard=()=>{if(!vcIsTeacher){alert('فقط معلم می‌تواند تخته را پاک کند');return}if(!confirm('تخته (نوشته‌ها و عکس‌ها) پاک شود؟'))return;clearCanvasLocal();clearAllBoardImages();vcChannel?.send({type:'broadcast',event:'clear-board',payload:{}})};
 document.getElementById('vc-color')?.addEventListener('input',e=>{vcColor=e.target.value;if(vcTool==='eraser')setVcTool('pen')});
 document.getElementById('vc-chat-input')?.addEventListener('keypress',e=>{if(e.key==='Enter')sendVcChat()});
+
+/* ============ ویرایش گروه/کانال ============ */
+window.toggleRoomMenu = () => {
+  const menu = document.getElementById('room-menu');
+  if (menu.classList.contains('show')) { menu.classList.remove('show'); return; }
+  if (!curChat || curChat.type === 'private' || !curChat.data) return;
+  const isOwner = curChat.data.owner_email === myEmail;
+  let h = `<button class="msg-menu-item" data-ra="members">👥 ${t('viewMembers')}</button>`;
+  if (isOwner) {
+    h += `<button class="msg-menu-item" data-ra="edit">✏️ ${curChat.type === 'group' ? t('editGroup') : t('editChannel')}</button>`;
+  }
+  menu.innerHTML = h;
+  const btn = document.getElementById('room-menu-btn');
+  const r = btn.getBoundingClientRect();
+  const w = 190;
+  let left = r.right - w;
+  if (left < 10) left = 10;
+  menu.style.top = (r.bottom + 6) + 'px';
+  menu.style.left = left + 'px';
+  menu.classList.add('show');
+};
+
+document.addEventListener('click', e => {
+  const rm = document.getElementById('room-menu');
+  if (!rm || !rm.classList.contains('show')) return;
+  if (e.target.closest('#room-menu') || e.target.closest('#room-menu-btn')) return;
+  rm.classList.remove('show');
+});
+
+document.getElementById('room-menu')?.addEventListener('click', e => {
+  const it = e.target.closest('.msg-menu-item');
+  if (!it) return;
+  const a = it.dataset.ra;
+  document.getElementById('room-menu').classList.remove('show');
+  if (a === 'members') openGroupMembers();
+  if (a === 'edit') openEditGroup();
+});
+
+window.openEditGroup = async () => {
+  if (!curChat || curChat.type === 'private' || !curChat.data) return;
+  if (curChat.data.owner_email !== myEmail) {
+    alert(t('onlyOwner'));
+    return;
+  }
+  editGroupAvatarFile = null;
+  const av = document.getElementById('eg-avatar');
+  if (curChat.data.avatar_url) {
+    av.textContent = '';
+    av.style.backgroundImage = `url('${curChat.data.avatar_url}')`;
+    av.style.backgroundSize = 'cover';
+    av.style.backgroundPosition = 'center';
+  } else {
+    av.textContent = curChat.type === 'group' ? '👥' : '📢';
+    av.style.backgroundImage = '';
+  }
+  document.getElementById('eg-title').textContent = '✏️ ' + (curChat.type === 'group' ? t('editGroup') : t('editChannel'));
+  document.getElementById('eg-name').value = curChat.data.name || '';
+  document.getElementById('eg-desc').value = curChat.data.description || '';
+  document.getElementById('edit-group-modal').classList.add('show');
+};
+
+document.getElementById('group-avatar-file')?.addEventListener('change', e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  e.target.value = '';
+  if (!f.type.startsWith('image/')) { alert(lang === 'fa' ? 'فقط عکس مجاز است' : 'Images only'); return; }
+  if (f.size > 5 * 1024 * 1024) { alert(lang === 'fa' ? 'حجم عکس زیاد است' : 'Image too large'); return; }
+  editGroupAvatarFile = f;
+  const r = new FileReader();
+  r.onload = ev => {
+    const av = document.getElementById('eg-avatar');
+    av.textContent = '';
+    av.style.backgroundImage = `url('${ev.target.result}')`;
+    av.style.backgroundSize = 'cover';
+    av.style.backgroundPosition = 'center';
+  };
+  r.readAsDataURL(f);
+});
+
+document.getElementById('eg-save')?.addEventListener('click', async () => {
+  if (!curChat || !curChat.data) return;
+  const name = document.getElementById('eg-name').value.trim();
+  const desc = document.getElementById('eg-desc').value.trim();
+  if (!name) { alert(t('nameRequired')); return; }
+  const btn = document.getElementById('eg-save');
+  btn.disabled = true; btn.textContent = '...';
+  try {
+    let avatarUrl = curChat.data.avatar_url || null;
+    if (editGroupAvatarFile) {
+      const ext = editGroupAvatarFile.name.split('.').pop() || 'jpg';
+      const fn = `chat-${curChat.id}-${Date.now()}.${ext}`;
+      const { error: ue } = await sb.storage.from('avatars').upload(fn, editGroupAvatarFile, { contentType: editGroupAvatarFile.type, upsert: true });
+      if (ue) { alert(t('error') + ': ' + ue.message); btn.disabled = false; btn.textContent = t('save'); return; }
+      const { data: ud } = sb.storage.from('avatars').getPublicUrl(fn);
+      avatarUrl = ud.publicUrl;
+    }
+    const updates = { name, description: desc };
+    if (avatarUrl) updates.avatar_url = avatarUrl;
+    const { error } = await sb.from('chats').update(updates).eq('id', curChat.id);
+    if (error) { alert(t('error') + ': ' + error.message); btn.disabled = false; btn.textContent = t('save'); return; }
+    curChat.data.name = name;
+    curChat.data.description = desc;
+    curChat.data.avatar_url = avatarUrl;
+    curChat.name = name;
+    document.getElementById('room-name').textContent = name;
+    document.getElementById('room-sub').textContent = desc;
+    const av = document.getElementById('room-avatar');
+    if (avatarUrl) { av.textContent = ''; av.style.backgroundImage = `url('${avatarUrl}')`; av.style.backgroundSize = 'cover'; av.style.backgroundPosition = 'center'; }
+    else { av.textContent = curChat.type === 'group' ? '👥' : '📢'; av.style.backgroundImage = ''; }
+    closeModal('edit-group-modal');
+    if (document.getElementById('page-chats')?.classList.contains('active')) renderList();
+  } catch (e) {
+    alert(t('error') + ': ' + e.message);
+  }
+  btn.disabled = false; btn.textContent = t('save');
+});
+
+window.openGroupMembers = async () => {
+  if (!curChat || curChat.type === 'private') return;
+  const list = document.getElementById('gm-list');
+  list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--mut)">...</div>';
+  document.getElementById('group-members-modal').classList.add('show');
+  const { data: members, error } = await sb.from('chat_members').select('*').eq('chat_id', curChat.id);
+  if (error) {
+    list.innerHTML = '<div style="text-align:center;padding:20px;color:#ef4444">' + esc(error.message) + '</div>';
+    return;
+  }
+  if (!members?.length) {
+    list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--mut)">' + t('noMembers') + '</div>';
+    return;
+  }
+  await loadAllNames(members.map(m => m.member_email));
+  list.innerHTML = '';
+  const isOwner = curChat.data.owner_email === myEmail;
+  members.forEach(m => {
+    const em = m.member_email;
+    const dispName = namesCache[em] || em.split('@')[0];
+    const isMemberOwner = em === curChat.data.owner_email;
+    const it = document.createElement('div');
+    it.className = 'list-item';
+    it.innerHTML = `<div class="list-avatar" data-email="${esc(em)}">${ini(dispName)}</div>
+      <div class="list-info">
+        <div class="list-name">${esc(dispName)} ${isMemberOwner ? '<span style="font-size:10px;background:var(--p);color:#000;padding:2px 8px;border-radius:8px;font-weight:700;margin-inline-start:6px">' + t('owner') + '</span>' : ''}</div>
+        <div class="list-sub">${esc(em)}</div>
+      </div>
+      ${(isOwner && !isMemberOwner) ? `<button class="bot-del" style="padding:6px 12px;border:none;border-radius:8px;font-family:inherit;font-size:11px;font-weight:600;cursor:pointer;background:rgba(239,68,68,.2);color:#fca5a5">${t('delete')}</button>` : ''}`;
+    const av = it.querySelector('.list-avatar');
+    if (avatarsCache[em]) { av.textContent = ''; av.style.backgroundImage = `url('${avatarsCache[em]}')`; av.style.backgroundSize = 'cover'; av.style.backgroundPosition = 'center'; }
+    const delBtn = it.querySelector('.bot-del');
+    if (delBtn) {
+      delBtn.onclick = async (ev) => {
+        ev.stopPropagation();
+        if (!confirm(t('removeMember'))) return;
+        const { error } = await sb.from('chat_members').delete().eq('chat_id', curChat.id).eq('member_email', em);
+        if (error) { alert(t('error') + ': ' + error.message); return; }
+        openGroupMembers();
+      };
+    }
+    list.appendChild(it);
+  });
+};
+
 (async()=>{applyLang();await loadMyProfile();await registerSession();await loadStories();await setOnline();await loadAllStatus();setupStatusRealtime();const homeAv=document.getElementById('home-avatar');if(homeAv&&avatarsCache[myEmail]){homeAv.textContent='';homeAv.style.backgroundImage=`url('${avatarsCache[myEmail]}')`}const greeting=document.getElementById('home-greeting');if(greeting&&namesCache[myEmail]){greeting.textContent=(lang==='fa'?'سلام، ':'Hi, ')+namesCache[myEmail]+'!'}stRt=sb.channel('stories-rt').on('postgres_changes',{event:'*',schema:'public',table:'stories'},()=>loadStories()).subscribe();setInterval(()=>{if(document.getElementById('page-chats')?.classList.contains('active') && !curChat){renderList()}},10000)})();
 window.addEventListener('beforeunload',()=>{try{setOffline()}catch(e){}if(rtCh)sb.removeChannel(rtCh);if(stRt)sb.removeChannel(stRt);if(statusChannel)sb.removeChannel(statusChannel);if(vcChannel)sb.removeChannel(vcChannel);if(lkRoom){try{lkRoom.disconnect()}catch(e){}}if(vcRoom){try{vcRoom.disconnect()}catch(e){}}});
 </script>
