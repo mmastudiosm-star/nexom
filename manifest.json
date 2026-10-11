@@ -1,0 +1,42 @@
+{
+  "name": "نکسوم | Nexom",
+  "short_name": "نکسوم",
+  "description": "سوپر اپلیکیشن نکسوم - پیام‌رسان، آموزش، خدمات مالی",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0e1621",
+  "theme_color": "#2ecc9b",
+  "lang": "fa",
+  "dir": "rtl",
+  "categories": ["social", "communication", "productivity"],
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "گفتگوها",
+      "short_name": "چت‌ها",
+      "description": "ورود به لیست گفتگوها",
+      "url": "./chat.html"
+    },
+    {
+      "name": "آموزش",
+      "short_name": "آموزش",
+      "description": "کلاس‌های آموزشی",
+      "url": "./chat.html#education"
+    }
+  ]
+}
