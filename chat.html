@@ -425,6 +425,78 @@ body::after{
 .privacy-icon{font-size:28px;margin-bottom:6px;display:block}
 .privacy-title{font-size:13px;font-weight:700;margin-bottom:3px}
 .privacy-desc{font-size:10.5px;color:var(--mut);line-height:1.4}
+
+/* ============================================================ */
+/* پنل ایموجی */
+/* ============================================================ */
+.emoji-picker{
+  position:fixed;
+  bottom:70px;
+  right:14px;
+  left:14px;
+  max-width:420px;
+  margin:0 auto;
+  background:#fff;
+  border-radius:18px;
+  box-shadow:0 10px 40px rgba(0,0,0,.2);
+  z-index:600;
+  display:none;
+  flex-direction:column;
+  overflow:hidden;
+  max-height:60vh;
+  animation:emojiIn .25s cubic-bezier(.2,.9,.3,1.3);
+}
+[dir="ltr"] .emoji-picker{right:auto;left:14px}
+.emoji-picker.show{display:flex}
+@keyframes emojiIn{
+  from{opacity:0;transform:translateY(20px) scale(.95)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+.emoji-tabs{
+  display:flex;gap:4px;padding:8px 10px;
+  background:#f7fbf7;border-bottom:1px solid #e0e8e0;
+  overflow-x:auto;scrollbar-width:none;flex-shrink:0;
+}
+.emoji-tabs::-webkit-scrollbar{display:none}
+.emoji-tab{
+  width:38px;height:38px;border-radius:10px;
+  background:transparent;border:none;font-size:20px;cursor:pointer;
+  flex-shrink:0;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;
+}
+.emoji-tab:hover{background:#e7f5e7}
+.emoji-tab.active{background:#5bae6e;transform:scale(1.05)}
+.emoji-search-wrap{padding:8px 12px 4px;flex-shrink:0}
+.emoji-search{
+  width:100%;padding:9px 14px;background:#f0f5f0;
+  border:none;border-radius:20px;font-family:inherit;
+  font-size:13px;outline:none;color:#1a2b1a;
+}
+.emoji-search:focus{background:#e7f0e7}
+.emoji-search::placeholder{color:#9aaa9a}
+.emoji-grid{
+  display:grid;grid-template-columns:repeat(8,1fr);
+  gap:2px;padding:10px;overflow-y:auto;flex:1;scrollbar-width:thin;
+}
+.emoji-grid::-webkit-scrollbar{width:4px}
+.emoji-grid::-webkit-scrollbar-thumb{background:rgba(91,174,110,.3);border-radius:2px}
+.emoji-item{
+  aspect-ratio:1;border:none;background:transparent;
+  font-size:24px;cursor:pointer;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+  font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif;
+}
+.emoji-item:hover{background:#e7f5e7;transform:scale(1.2)}
+.emoji-item:active{transform:scale(.95)}
+.emoji-empty{
+  grid-column:1/-1;text-align:center;padding:30px 20px;
+  color:#8a988a;font-size:13px;
+}
+@media(max-width:480px){
+  .emoji-grid{grid-template-columns:repeat(7,1fr)}
+  .emoji-item{font-size:22px}
+}
 </style>
 </head>
 <body>
@@ -590,6 +662,7 @@ body::after{
 </div>
 <div class="input-area" id="input-area">
 <button class="attach" id="attach-btn">📎</button>
+<button class="attach" id="emoji-btn" style="font-size:22px">😊</button>
 <input type="text" class="msg-input" id="msg-input" placeholder="پیام..." data-i18n-ph="msgPlaceholder">
 <button class="send-btn" id="send-btn">➤</button>
 </div>
@@ -606,6 +679,24 @@ body::after{
 <button class="menu-item" onclick="pickImage()"><span class="menu-icon img">🖼️</span><span data-i18n="sendImage">ارسال عکس</span></button>
 <button class="menu-item" onclick="pickFile()"><span class="menu-icon fl">📄</span><span data-i18n="sendFile">ارسال فایل</span></button>
 <button class="menu-item" onclick="startRec()"><span class="menu-icon vc">🎤</span><span data-i18n="sendVoice">ضبط ویس</span></button>
+</div>
+
+<!-- پنل ایموجی -->
+<div class="emoji-picker" id="emoji-picker">
+  <div class="emoji-tabs">
+    <button class="emoji-tab active" data-cat="smileys" onclick="switchEmojiCat('smileys')">😊</button>
+    <button class="emoji-tab" data-cat="gestures" onclick="switchEmojiCat('gestures')">👍</button>
+    <button class="emoji-tab" data-cat="hearts" onclick="switchEmojiCat('hearts')">❤️</button>
+    <button class="emoji-tab" data-cat="animals" onclick="switchEmojiCat('animals')">🐶</button>
+    <button class="emoji-tab" data-cat="food" onclick="switchEmojiCat('food')">🍕</button>
+    <button class="emoji-tab" data-cat="activities" onclick="switchEmojiCat('activities')">⚽</button>
+    <button class="emoji-tab" data-cat="objects" onclick="switchEmojiCat('objects')">💡</button>
+    <button class="emoji-tab" data-cat="symbols" onclick="switchEmojiCat('symbols')">⭐</button>
+  </div>
+  <div class="emoji-search-wrap">
+    <input type="text" class="emoji-search" id="emoji-search" placeholder="جستجوی ایموجی..." oninput="searchEmoji()">
+  </div>
+  <div class="emoji-grid" id="emoji-grid"></div>
 </div>
 
 <input type="file" id="file-img" accept="image/*" style="display:none">
@@ -1310,6 +1401,91 @@ async function loadAllStatus(){try{const{data}=await sb.from('user_status').sele
 function setupStatusRealtime(){if(statusChannel)sb.removeChannel(statusChannel);statusChannel=sb.channel('status-rt').on('postgres_changes',{event:'*',schema:'public',table:'user_status'},p=>{const s=p.new;statusCache[s.user_email]=s;if(curChat){if(curChat.type==='private'&&s.user_email===curChat.email){updateChatStatus()}if(curChat.type!=='private'){updateChatStatus()}}updateListStatus()}).subscribe()}
 function updateListStatus(){document.querySelectorAll('.list-item').forEach(it=>{const av=it.querySelector('.list-avatar');if(!av)return;const email=av.dataset.email;if(!email)return;const st=statusCache[email];let statusEl=it.querySelector('.list-item-status');if(!st||(!st.is_online&&!st.is_typing&&!st.is_recording&&!st.is_uploading)){if(statusEl)statusEl.remove();return}let txt='';if(st.is_recording)txt='🎤 '+(lang==='fa'?'در حال ضبط...':'Recording...');else if(st.is_uploading)txt='📎 '+(lang==='fa'?'در حال ارسال...':'Uploading...');else if(st.is_typing)txt='✍️ '+(lang==='fa'?'در حال نوشتن...':'typing...');else if(st.is_online)txt='🟢 '+(lang==='fa'?'آنلاین':'Online');if(!statusEl){statusEl=document.createElement('div');statusEl.className='list-item-status';const info=it.querySelector('.list-info');if(info)info.appendChild(statusEl)}statusEl.textContent=txt})}
 setInterval(()=>{updateChatStatus();updateListStatus()},10000);
+
+// ============================================================
+// پنل ایموجی
+// ============================================================
+const EMOJI_DATA = {
+  smileys:['😀','😃','😄','😁','😆','😅','🤣','😂','🙂','🙃','😉','😊','😇','🥰','😍','🤩','😘','😗','😚','😙','🥲','😋','😛','😜','🤪','😝','🤑','🤗','🤭','🤫','🤔','🤐','🤨','😐','😑','😶','😏','😒','🙄','😬','🤥','😌','😔','😪','🤤','😴','😷','🤒','🤕','🤢','🤮','🤧','🥵','🥶','🥴','😵','🤯','🤠','🥳','🥸','😎','🤓','🧐','😕','😟','🙁','😮','😯','😲','😳','🥺','😦','😧','😨','😰','😥','😢','😭','😱','😖','😣','😞','😓','😩','😫','🥱','😤','😡','😠','🤬','😈','👿','💀','💩','🤡','👹','👺','👻','👽','👾','🤖','😺','😸','😹','😻','😼','😽','🙀','😿','😾'],
+  gestures:['👋','🤚','🖐','✋','🖖','👌','🤌','🤏','✌️','🤞','🤟','🤘','🤙','👈','👉','👆','🖕','👇','☝️','👍','👎','✊','👊','🤛','🤜','👏','🙌','👐','🤲','🤝','🙏','✍️','💅','🤳','💪','🦾','🦿','🦵','🦶','👂','🦻','👃','🧠','🦷','🦴','👀','👁','👅','👄','💋','🩸','🫀','🫁','🦠','💐','🌸','💮','🏵️','🌹','🥀','🌺','🌻','🌼','🌷'],
+  hearts:['❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❣️','💕','💞','💓','💗','💖','💘','💝','💟','♥️','💌','💋','👨‍❤️‍👨','👩‍❤️‍👩','👩‍❤️‍👨','💑','👨‍❤️‍💋‍👨','👩‍❤️‍💋‍👩','👩‍❤️‍💋‍👨'],
+  animals:['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐽','🐸','🐵','🙈','🙉','🙊','🐒','🐔','🐧','🐦','🐤','🐣','🐥','🦆','🦅','🦉','🦇','🐺','🐗','🐴','🦄','🐝','🐛','🦋','🐌','🐞','🐜','🦟','🦗','🕷','🕸','🦂','🐢','🐍','🦎','🦖','🦕','🐙','🦑','🦐','🦞','🦀','🐡','🐠','🐟','🐬','🐳','🐋','🦈','🐊','🐅','🐆','🦓','🦍','🦧','🐘','🦛','🦏','🐪','🐫','🦒','🦘','🐃','🐂','🐄','🐎','🐖','🐏','🐑','🦙','🐐','🦌','🐕','🐩','🦮','🐕‍🦺','🐈','🐈‍⬛','🪶','🐓','🦃','🦚','🦜'],
+  food:['🍏','🍎','🍐','🍊','🍋','🍌','🍉','🍇','🍓','🫐','🍈','🍒','🍑','🥭','🍍','🥥','🥝','🍅','🍆','🥑','🥦','🥬','🥒','🌶','🫑','🌽','🥕','🫒','🧄','🧅','🥔','🍠','🥐','🥯','🍞','🥖','🥨','🧀','🥚','🍳','🧈','🥞','🧇','🥓','🥩','🍗','🍖','🦴','🌭','🍔','🍟','🍕','🫓','🥪','🥙','🧆','🌮','🌯','🫔','🥗','🥘','🫕','🥫','🍝','🍜','🍲','🍛','🍣','🍱','🥟','🦪','🍤','🍙','🍚','🍘','🍥','🥠','🥮','🍢','🍡','🍧','🍨','🍦','🥧','🧁','🍰','🎂','🍮','🍭','🍬','🍫','🍿','🍩','🍪','🌰','🥜'],
+  activities:['⚽','🏀','🏈','⚾','🥎','🎾','🏐','🏉','🥏','🎱','🪀','🏓','🏸','🏒','🏑','🥍','🏏','🪃','🥅','⛳','🪁','🏹','🎣','🤿','🥊','🥋','🎽','🛹','🛼','🛷','⛸','🥌','🎿','⛷','🏂','🪂','🏋️','🤼','🤸','⛹️','🤺','🤾','🏌️','🏇','🧘','🏄','🏊','🤽','🚣','🧗','🚵','🚴','🏆','🥇','🥈','🥉','🏅','🎖','🏵','🎗','🎫','🎟','🎪','🤹','🎭','🩰','🎨','🎬','🎤','🎧','🎼','🎹','🥁','🎷','🎺','🎸','🪕','🎻','🎲','♟','🎯','🎳','🎮','🎰','🧩'],
+  objects:['⌚','📱','📲','💻','⌨️','🖥','🖨','🖱','🖲','🕹','🗜','💽','💾','💿','📀','📼','📷','📸','📹','🎥','📽','🎞','📞','☎️','📟','📠','📺','📻','🎙','🎚','🎛','🧭','⏱','⏲','⏰','🕰','⌛','⏳','📡','🔋','🔌','💡','🔦','🕯','🪔','🧯','🛢','💸','💵','💴','💶','💷','🪙','💰','💳','💎','⚖️','🪜','🧰','🪛','🔧','🔨','⚒','🛠','⛏','🪚','🔩','⚙️','🪤','🧱','⛓','🧲','🔫','💣','🧨','🪓','🔪','🗡','⚔️','🛡','🚬','⚰️','🪦','⚱️','🏺','🔮','📿','🧿','💈','⚗️','🔭','🔬','🕳','🩹','🩺','💊','💉','🩸','🧬','🦠','🧫','🧪','🌡','🧹','🧺','🧻','🚽','🚰','🚿','🛁','🛀','🧼','🪥','🪒','🧽','🪣','🧴','🛎','🔑','🗝','🚪','🪑','🛋','🛏','🛌','🧸','🪆','🖼','🪞','🪟','🛍','🛒','🎁','🎈','🎏','🎀','🪄','🪅','🎊','🎉','🎎','🏮','🎐','🧧','✉️','📩','📨','📧','💌','📥','📤','📦','🏷','📪','📫','📬','📭','📮','📯','📜','📃','📄','📑','🧾','📊','📈','📉','🗒','🗓','📆','📅','🗑','📇','🗃','🗳','🗄','📋','📁','📂','🗂','🗞','📰','📓','📔','📒','📕','📗','📘','📙','📚','📖','🔖','🧷','🔗','📎','🖇','📐','📏','🧮','📌','📍','✂️','🖊','🖋','✒️','🖌','🖍','📝','✏️','🔍','🔎','🔏','🔐','🔒','🔓'],
+  symbols:['❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❣️','💕','💞','💓','💗','💖','💘','💝','💟','☮️','✝️','☪️','🕉','☸️','✡️','🔯','🕎','☯️','☦️','🛐','⛎','♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓','🆔','⚛️','🉑','☢️','☣️','📴','📳','🈶','🈚','🈸','🈺','🈷️','✴️','🆚','💮','🉐','㊙️','㊗️','🈴','🈵','🈹','🈲','🅰️','🅱️','🆎','🆑','🅾️','🆘','❌','⭕','🛑','⛔','📛','🚫','💯','💢','♨️','🚷','🚯','🚳','🚱','🔞','📵','🚭','❗','❕','❓','❔','‼️','⁉️','🔅','🔆','〽️','⚠️','🚸','🔱','⚜️','🔰','♻️','✅','🈯','💹','❇️','✳️','❎','🌐','💠','Ⓜ️','🌀','💤','🏧','🚾','♿','🅿️','🈳','🈂️','🛂','🛃','🛄','🛅','🚹','🚺','🚼','🚻','🚮','🎦','📶','🈁','🔣','ℹ️','🔤','🔡','🔠','🆖','🆗','🆙','🆒','🆕','🆓','0️⃣','1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟','🔢','#️⃣','*️⃣','⏏️','▶️','⏸','⏯','⏹','⏺','⏭','⏮','⏩','⏪','⏫','⏬','◀️','🔼','🔽','➡️','⬅️','⬆️','⬇️','↗️','↘️','↙️','↖️','↕️','↔️','↪️','↩️','⤴️','⤵️','🔀','🔁','🔂','🔄','🔃','🎵','🎶','➕','➖','➗','✖️','♾','💲','💱','™️','©️','®️','〰️','➰','➿','🔚','🔙','🔛','🔝','🔜','✔️','☑️','🔘','🔴','🟠','🟡','🟢','🔵','🟣','⚫','⚪','🟤','🔺','🔻','🔸','🔹','🔶','🔷','🔳','🔲','▪️','▫️','◾','◽','◼️','◻️','🟥','🟧','🟨','🟩','🟦','🟪','⬛','⬜','🟫','🔈','🔇','🔉','🔊','🔔','🔕','📣','📢','👁‍🗨','💬','💭','🗯']
+};
+
+let currentEmojiCat = 'smileys';
+
+function renderEmojiGrid(cat) {
+  const grid = document.getElementById('emoji-grid');
+  if (!grid) return;
+  const emojis = EMOJI_DATA[cat] || [];
+  grid.innerHTML = emojis.map(e =>
+    `<button class="emoji-item" onclick="insertEmoji('${e}')">${e}</button>`
+  ).join('');
+}
+
+window.insertEmoji = (emoji) => {
+  const inp = document.getElementById('msg-input');
+  if (!inp) return;
+  const start = inp.selectionStart || inp.value.length;
+  const end = inp.selectionEnd || inp.value.length;
+  inp.value = inp.value.substring(0, start) + emoji + inp.value.substring(end);
+  inp.selectionStart = inp.selectionEnd = start + emoji.length;
+  inp.focus();
+  if (typeof onTyping === 'function') onTyping();
+};
+
+window.switchEmojiCat = (cat) => {
+  currentEmojiCat = cat;
+  document.querySelectorAll('.emoji-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.cat === cat);
+  });
+  const searchInp = document.getElementById('emoji-search');
+  if (searchInp) searchInp.value = '';
+  renderEmojiGrid(cat);
+};
+
+window.searchEmoji = () => {
+  const q = document.getElementById('emoji-search').value.trim();
+  const grid = document.getElementById('emoji-grid');
+  if (!grid) return;
+  if (!q) { renderEmojiGrid(currentEmojiCat); return; }
+  const allEmojis = Object.values(EMOJI_DATA).flat();
+  const unique = [...new Set(allEmojis)];
+  const filtered = unique.filter(e => e.includes(q));
+  if (!filtered.length) { grid.innerHTML = '<div class="emoji-empty">ایموجی پیدا نشد 🤷</div>'; return; }
+  grid.innerHTML = filtered.map(e => `<button class="emoji-item" onclick="insertEmoji('${e}')">${e}</button>`).join('');
+};
+
+const emojiBtn = document.getElementById('emoji-btn');
+const emojiPicker = document.getElementById('emoji-picker');
+if (emojiBtn && emojiPicker) {
+  emojiBtn.onclick = (e) => {
+    e.stopPropagation();
+    const attachM = document.getElementById('attach-menu');
+    if (attachM) attachM.classList.remove('show');
+    if (emojiPicker.classList.contains('show')) {
+      emojiPicker.classList.remove('show');
+    } else {
+      emojiPicker.classList.add('show');
+      renderEmojiGrid(currentEmojiCat);
+    }
+  };
+  document.addEventListener('click', (e) => {
+    if (!emojiPicker.classList.contains('show')) return;
+    if (e.target.closest('#emoji-picker') || e.target.closest('#emoji-btn')) return;
+    emojiPicker.classList.remove('show');
+  });
+}
+
+const originalOpenRoom = window.openRoom;
+window.openRoom = async function(type, data) {
+  if (emojiPicker) emojiPicker.classList.remove('show');
+  return originalOpenRoom(type, data);
+};
 const listC=document.getElementById('list-container');
 async function renderList(){listC.innerHTML='<div class="empty-state"><div class="icon">⏳</div><h3>'+t('loading')+'</h3></div>';if(curTab==='private')await renderPrivate();else await renderGrpCh(curTab)}
 async function getLastMsgAndUnread(targetEmail){const{data:lastMsgs}=await sb.from('messages').select('*').is('chat_id',null).or(`and(sender_email.eq.${myEmail},receiver_email.eq.${targetEmail}),and(sender_email.eq.${targetEmail},receiver_email.eq.${myEmail})`).order('created_at',{ascending:false}).limit(1);const last=lastMsgs?.[0]||null;const{data:deletedArr}=await sb.from('deleted_messages').select('message_id').eq('user_email',myEmail);const deletedIds=new Set((deletedArr||[]).map(d=>d.message_id));const{data:unreadMsgs}=await sb.from('messages').select('id').is('chat_id',null).eq('sender_email',targetEmail).eq('receiver_email',myEmail).is('read_at',null);const unreadCount=(unreadMsgs||[]).filter(m=>!deletedIds.has(m.id)).length;return{last,unreadCount}}
@@ -1387,7 +1563,7 @@ sendBtn.onclick=sendTxt;
 msgIn.addEventListener('input',()=>{if(msgIn.value.trim().length>0)onTyping()});
 msgIn.addEventListener('keypress',e=>{if(e.key==='Enter')sendTxt()});
 const attachM=document.getElementById('attach-menu'),attachB=document.getElementById('attach-btn');
-attachB.onclick=e=>{e.stopPropagation();attachM.classList.toggle('show')};
+attachB.onclick=e=>{e.stopPropagation();const emojiPicker=document.getElementById('emoji-picker');if(emojiPicker)emojiPicker.classList.remove('show');attachM.classList.toggle('show')};
 document.addEventListener('click',e=>{if(!attachM.classList.contains('show'))return;if(e.target.closest('#attach-menu')||e.target.closest('#attach-btn'))return;attachM.classList.remove('show')});
 window.pickImage=()=>{attachM.classList.remove('show');document.getElementById('file-img').click()};
 window.pickFile=()=>{attachM.classList.remove('show');document.getElementById('file-doc').click()};
@@ -1424,16 +1600,13 @@ function showStory(){if(!curStUser)return;const sts=stByUser[curStUser];if(!sts?
 window.nextStory=()=>{if(!curStUser)return;const sts=stByUser[curStUser];if(curStIdx<sts.length-1){curStIdx++;showStory()}else{const us=Object.keys(stByUser);const i=us.indexOf(curStUser);if(i<us.length-1){curStUser=us[i+1];curStIdx=0;showStory()}else closeStory()}};
 window.prevStory=()=>{if(!curStUser)return;if(curStIdx>0){curStIdx--;showStory()}else{const us=Object.keys(stByUser);const i=us.indexOf(curStUser);if(i>0){curStUser=us[i-1];curStIdx=stByUser[curStUser].length-1;showStory()}}};
 window.closeStory=()=>{document.getElementById('story-viewer').classList.remove('show');if(stTmr){clearInterval(stTmr);stTmr=null}document.getElementById('story-media').innerHTML='';curStUser=null;curStIdx=0};
-
 async function loadLib(){const list=document.getElementById('lib-list');list.innerHTML='<div class="empty-state"><div class="icon">⏳</div></div>';const{data}=await sb.from('library').select('*').order('created_at',{ascending:false});if(!data?.length){list.innerHTML='<div class="empty-state"><div class="icon">🎬</div><h3>'+(lang==='fa'?'هنوز محتوایی نیست':'No content yet')+'</h3></div>';return}list.innerHTML='';data.forEach(l=>{const it=document.createElement('div');it.className='list-item';const thumb=l.media_type==='video'?`<div class="list-avatar" style="font-size:22px">🎬</div>`:`<div class="list-avatar" style="background-image:url('${esc(l.media_url)}')"></div>`;it.innerHTML=`${thumb}<div class="list-info"><div class="list-name">${esc(l.title||'—')}</div><div class="list-sub">${esc(l.description||'—')}</div></div>`;it.onclick=()=>{if(l.media_type==='video'){const w=window.open('','_blank');w.document.write(`<video src="${l.media_url}" autoplay controls style="width:100%;height:100%;background:#000"></video>`)}else window.open(l.media_url,'_blank')};list.appendChild(it)})}
 window.openLibModal=()=>{selLibFile=null;document.getElementById('lib-title').value='';document.getElementById('lib-desc').value='';const p=document.getElementById('lib-preview');p.innerHTML=t('nothingSelected');p.classList.add('empty');document.getElementById('lib-modal').classList.add('show')};
 document.getElementById('file-lib').onchange=e=>{const f=e.target.files[0];if(!f)return;e.target.value='';selLibFile=f;const p=document.getElementById('lib-preview');p.classList.remove('empty');if(f.type.startsWith('image/')){const r=new FileReader();r.onload=ev=>{p.innerHTML=`<img src="${ev.target.result}">`};r.readAsDataURL(f)}else{const u=URL.createObjectURL(f);p.innerHTML=`<video src="${u}" controls></video>`}};
 document.getElementById('lib-pub').onclick=async()=>{if(!selLibFile){alert(t('nothingSelected'));return}const ti=document.getElementById('lib-title').value.trim()||(lang==='fa'?'بدون عنوان':'Untitled');const d=document.getElementById('lib-desc').value.trim();const isV=selLibFile.type.startsWith('video/');const mt=isV?'video':'image';const btn=document.getElementById('lib-pub');btn.disabled=true;btn.textContent='...';const fn=`lib-${Date.now()}-${Math.random().toString(36).slice(2)}.${selLibFile.name.split('.').pop()}`;const{error:ue}=await sb.storage.from('chat-files').upload(fn,selLibFile,{contentType:selLibFile.type});if(ue){alert(t('error')+': '+ue.message);btn.disabled=false;btn.textContent=t('add');return}const{data:ud}=sb.storage.from('chat-files').getPublicUrl(fn);await sb.from('library').insert({title:ti,description:d,media_url:ud.publicUrl,media_type:mt,owner_email:myEmail});closeModal('lib-modal');loadLib();btn.disabled=false;btn.textContent=t('add')};
-
 async function loadBots(){const list=document.getElementById('bots-list');list.innerHTML='<div class="empty-state"><div class="icon">⏳</div></div>';const{data}=await sb.from('bots').select('*').order('created_at',{ascending:false});if(!data?.length){list.innerHTML='<div class="empty-state"><div class="icon">🤖</div><h3>'+(lang==='fa'?'هنوز رباتی نیست':'No bots yet')+'</h3></div>';return}list.innerHTML='';data.forEach(b=>{const it=document.createElement('div');it.className='bot-card';it.innerHTML=`<div class="bot-head"><div class="bot-avatar">🤖</div><div class="bot-name">${esc(b.name)}</div></div><div class="bot-desc">${esc(b.description||'—')}</div><div class="bot-desc" style="color:var(--p)">${lang==='fa'?'پاسخ':'Reply'}: ${esc(b.reply||'—')}</div><div class="bot-actions"><button class="bot-start">${lang==='fa'?'شروع':'Start'}</button>${b.owner_email===myEmail?'<button class="bot-del">'+t('delete')+'</button>':''}</div>`;it.querySelector('.bot-start').onclick=()=>alert((lang==='fa'?'ربات "'+b.name+'" فعال شد. پاسخ: ':'Bot "'+b.name+'" activated. Reply: ')+b.reply);if(b.owner_email===myEmail){it.querySelector('.bot-del').onclick=async()=>{if(!confirm(lang==='fa'?'حذف شود؟':'Delete?'))return;await sb.from('bots').delete().eq('id',b.id);loadBots()}}list.appendChild(it)})}
 window.openBotModal=()=>{document.getElementById('bot-name').value='';document.getElementById('bot-desc').value='';document.getElementById('bot-reply').value='';document.getElementById('bot-modal').classList.add('show')};
 document.getElementById('bot-create').onclick=async()=>{const n=document.getElementById('bot-name').value.trim();const d=document.getElementById('bot-desc').value.trim();const r=document.getElementById('bot-reply').value.trim();if(!n){alert(t('nameLbl'));return}if(!r){alert(t('autoReplyLbl'));return}const{error}=await sb.from('bots').insert({name:n,description:d,reply:r,owner_email:myEmail});if(error){alert(t('error')+': '+error.message);return}closeModal('bot-modal');loadBots()};
-
 async function loadEdu(){const list=document.getElementById('edu-list');list.innerHTML='<div class="empty-state"><div class="icon">⏳</div></div>';const{data,error}=await sb.from('education').select('*').order('created_at',{ascending:false});if(error){list.innerHTML='<div class="empty-state"><div class="icon">❌</div><h3>'+t('error')+'</h3></div>';return}if(!data?.length){list.innerHTML='<div class="empty-state"><div class="icon">📚</div><h3>'+t('noClasses')+'</h3></div>';return}const myClasses=data.filter(c=>c.owner_email===myEmail||(c.members||[]).includes(myEmail));if(!myClasses.length){list.innerHTML='<div class="empty-state"><div class="icon">🔒</div><h3>'+(lang==='fa'?'هنوز عضو هیچ کلاسی نیستی':'Not a member of any class')+'</h3><p style="font-size:12px;margin-top:6px;line-height:1.6">'+(lang==='fa'?'با دکمه <b>🔑 ورود با کد</b> کد کلاس رو وارد کن<br>یا اگه معلمی، با دکمه <b>➕ ساخت کلاس</b> کلاس بساز':'Use <b>🔑 Join with Code</b> to enter<br>or <b>➕ Create Class</b> if you teach')+'</p></div>';return}list.innerHTML='';myClasses.forEach(c=>{const it=document.createElement('div');it.className='edu-class';const isOwner=c.owner_email===myEmail;const codeValid=/^\d{6}$/.test(c.code||'');const codeDisplay=codeValid?esc(c.code):'<span style="color:#ef4444">'+(lang==='fa'?'نامعتبر':'Invalid')+'</span>';it.innerHTML=`<div class="edu-head"><div class="edu-avatar">📚</div><div class="edu-name">${esc(c.name)}</div>${isOwner?'<span style="font-size:10px;background:#5bae6e;color:#fff;padding:2px 8px;border-radius:8px;font-weight:700">'+t('teacher')+'</span>':'<span style="font-size:10px;background:#5bae6e;color:#fff;padding:2px 8px;border-radius:8px;font-weight:700">'+t('student')+'</span>'}</div><div class="edu-info">${esc(c.description||'—')}</div><div class="edu-info" style="margin-top:6px;color:var(--p);font-size:11px">👥 ${(c.members||[]).length+1} ${lang==='fa'?'عضو':'members'}${isOwner?` • ${lang==='fa'?'کد':'Code'}: <b style="direction:ltr;display:inline-block">${codeDisplay}</b>`:''}</div><div style="margin-top:8px"><button class="edu-enter-btn" style="width:100%;padding:8px;border:none;border-radius:8px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;background:#5bae6e;color:#fff">${isOwner?'⚙️ '+t('classPanel'):'📖 '+(lang==='fa'?'ورود به کلاس':'Enter Class')}</button></div>`;it.querySelector('.edu-enter-btn').onclick=(ev)=>{ev.stopPropagation();openClassPanel(c.id)};list.appendChild(it)})}
 window.openEduModal=()=>{document.getElementById('edu-name').value='';document.getElementById('edu-desc').value='';document.getElementById('edu-modal').classList.add('show')};
 function genCode(){return String(Math.floor(100000+Math.random()*900000))}
@@ -1472,7 +1645,7 @@ document.getElementById('call-mic-btn').onclick=toggleMic;
 document.getElementById('call-end-btn').onclick=endCall;
 
 // ============================================================
-// کلاس مجازی (تخته سفید + چت + صدا)
+// کلاس مجازی
 // ============================================================
 let vcRoom=null;let vcChannel=null;let vcClass=null;let vcIsTeacher=false;
 let vcCanvas,vcCtx;let vcDrawing=false,vcLastX=0,vcLastY=0;let vcTool='pen';let vcColor='#5bae6e';
@@ -1513,7 +1686,7 @@ document.getElementById('vc-color')?.addEventListener('input',e=>{vcColor=e.targ
 document.getElementById('vc-chat-input')?.addEventListener('keypress',e=>{if(e.key==='Enter')sendVcChat()});
 
 // ============================================================
-// منوی اتاق (ویرایش گروه/کانال، اعضا، دعوت)
+// منوی اتاق
 // ============================================================
 window.toggleRoomMenu = () => {
   const menu = document.getElementById('room-menu');
@@ -1718,10 +1891,6 @@ async function checkInviteCodeInURL() {
   if (!myEmail) { localStorage.setItem('pending_invite', code); return; }
   await processInviteJoin(code);
 }
-
-// ============================================================
-// Realtime سراسری برای اعلان پیام‌های خارج از چت باز
-// ============================================================
 const globalMsgChannel = sb.channel('global-msg-notif')
   .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, async (payload) => {
     const m = payload.new;
@@ -1731,16 +1900,10 @@ const globalMsgChannel = sb.channel('global-msg-notif')
       if (curChat.type !== 'private' && m.chat_id === curChat.id) return;
     }
     if (!m.chat_id) {
-      if (m.receiver_email === myEmail) {
-        if (!namesCache[m.sender_email]) await getName(m.sender_email);
-        notifyNewMessage(m);
-      }
+      if (m.receiver_email === myEmail) { if (!namesCache[m.sender_email]) await getName(m.sender_email); notifyNewMessage(m); }
     } else {
       const { data: member } = await sb.from('chat_members').select('chat_id').eq('chat_id', m.chat_id).eq('member_email', myEmail).maybeSingle();
-      if (member) {
-        const { data: chat } = await sb.from('chats').select('name').eq('id', m.chat_id).maybeSingle();
-        if (chat) notifyGroupMessage(m, chat.name);
-      }
+      if (member) { const { data: chat } = await sb.from('chats').select('name').eq('id', m.chat_id).maybeSingle(); if (chat) notifyGroupMessage(m, chat.name); }
     }
   })
   .subscribe();
@@ -1749,16 +1912,11 @@ const globalMsgChannel = sb.channel('global-msg-notif')
 // راه‌اندازی اولیه
 // ============================================================
 (async()=>{applyLang();await loadMyProfile();await registerSession();await loadStories();await setOnline();await loadAllStatus();setupStatusRealtime();const homeAv=document.getElementById('home-avatar');if(homeAv&&avatarsCache[myEmail]){homeAv.textContent='';homeAv.style.backgroundImage=`url('${avatarsCache[myEmail]}')`}const greeting=document.getElementById('home-greeting');if(greeting&&namesCache[myEmail]){greeting.textContent=(lang==='fa'?'سلام، ':'Hi, ')+namesCache[myEmail]+'!'}stRt=sb.channel('stories-rt').on('postgres_changes',{event:'*',schema:'public',table:'stories'},()=>loadStories()).subscribe();setInterval(()=>{if(document.getElementById('page-chats')?.classList.contains('active') && !curChat){renderList()}},10000);setTimeout(checkInviteCodeInURL,500);const pendingInvite=localStorage.getItem('pending_invite');if(pendingInvite){localStorage.removeItem('pending_invite');setTimeout(()=>processInviteJoin(pendingInvite),1000)}})();
-
-// درخواست خودکار مجوز اعلان
 setTimeout(() => {
   if ('Notification' in window && Notification.permission === 'default') {
-    if (confirm(lang==='fa'?'می‌خوای اعلان پیام‌ها و تماس‌ها رو دریافت کنی؟':'Do you want to receive message and call notifications?')) {
-      askNotificationPermission();
-    }
+    if (confirm(lang==='fa'?'می‌خوای اعلان پیام‌ها و تماس‌ها رو دریافت کنی؟':'Do you want to receive message and call notifications?')) { askNotificationPermission(); }
   }
 }, 3000);
-
 window.addEventListener('beforeunload',()=>{try{setOffline()}catch(e){}if(rtCh)sb.removeChannel(rtCh);if(stRt)sb.removeChannel(stRt);if(statusChannel)sb.removeChannel(statusChannel);if(vcChannel)sb.removeChannel(vcChannel);if(globalMsgChannel)sb.removeChannel(globalMsgChannel);if(lkRoom){try{lkRoom.disconnect()}catch(e){}}if(vcRoom){try{vcRoom.disconnect()}catch(e){}}});
 </script>
 </body>
