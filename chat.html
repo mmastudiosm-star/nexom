@@ -124,6 +124,11 @@ body::after{
 .empty-state .icon{font-size:70px;margin-bottom:16px;opacity:.5}
 .empty-state h3{font-size:15px;font-weight:700;color:#2a3b2a;margin-bottom:8px}
 .empty-state p{font-size:12.5px;line-height:1.7;color:var(--mut)}
+</style>
+</head>
+<body>
+  <style>
+/* ادامه استایل‌ها */
 .chat-room{display:none;flex-direction:column;position:fixed;inset:0;z-index:200;background:#d4e8d4;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'><g fill='none' stroke='%234a9d5d' stroke-width='1.5' opacity='0.13'><rect x='18' y='28' width='24' height='30' rx='3'/><path d='M24 34 L36 34 M24 42 L36 42'/><circle cx='88' cy='40' r='10'/><path d='M82 40 L94 40 M88 34 L88 46'/><path d='M24 88 L42 106 L24 106 Z'/><rect x='88' y='88' width='26' height='20' rx='2'/><circle cx='101' cy='98' r='3'/></g></svg>");background-size:140px 140px;padding:0}
 .chat-room.active{display:flex}
 .chat-header{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#ffffff;box-shadow:0 1px 4px rgba(0,0,0,.08);flex-shrink:0;position:relative;z-index:5}
@@ -1221,6 +1226,93 @@ if ('permissions' in navigator) {
 }
 
 // ============================================================
+// پخش صدای زنگ تماس (Web Audio API - بدون فایل جداگانه)
+// ============================================================
+let ringtoneCtx = null;
+let ringtoneInterval = null;
+let ringtoneOscillators = [];
+
+function startRingtone() {
+  stopRingtone();
+  try {
+    if (!ringtoneCtx) {
+      ringtoneCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (ringtoneCtx.state === 'suspended') {
+      ringtoneCtx.resume().catch(() => {});
+    }
+    const playBeep = () => {
+      if (!ringtoneCtx) return;
+      const now = ringtoneCtx.currentTime;
+      // بوق اول
+      const osc1 = ringtoneCtx.createOscillator();
+      const gain1 = ringtoneCtx.createGain();
+      osc1.type = 'sine';
+      osc1.frequency.value = 800;
+      gain1.gain.setValueAtTime(0, now);
+      gain1.gain.linearRampToValueAtTime(0.3, now + 0.05);
+      gain1.gain.linearRampToValueAtTime(0, now + 0.4);
+      osc1.connect(gain1);
+      gain1.connect(ringtoneCtx.destination);
+      osc1.start(now);
+      osc1.stop(now + 0.5);
+      ringtoneOscillators.push(osc1);
+      // بوق دوم
+      const osc2 = ringtoneCtx.createOscillator();
+      const gain2 = ringtoneCtx.createGain();
+      osc2.type = 'sine';
+      osc2.frequency.value = 1000;
+      gain2.gain.setValueAtTime(0, now + 0.5);
+      gain2.gain.linearRampToValueAtTime(0.3, now + 0.55);
+      gain2.gain.linearRampToValueAtTime(0, now + 0.9);
+      osc2.connect(gain2);
+      gain2.connect(ringtoneCtx.destination);
+      osc2.start(now + 0.5);
+      osc2.stop(now + 1.0);
+      ringtoneOscillators.push(osc2);
+    };
+    playBeep();
+    ringtoneInterval = setInterval(playBeep, 2000);
+    if (navigator.vibrate) {
+      navigator.vibrate([500, 200, 500, 200]);
+    }
+    console.log('🔔 پخش زنگ شروع شد');
+  } catch (e) {
+    console.warn('⚠️ خطا در پخش زنگ:', e);
+  }
+}
+
+function stopRingtone() {
+  try {
+    ringtoneOscillators.forEach(osc => {
+      try { osc.stop(); osc.disconnect(); } catch (e) {}
+    });
+    ringtoneOscillators = [];
+    if (ringtoneInterval) {
+      clearInterval(ringtoneInterval);
+      ringtoneInterval = null;
+    }
+    if (navigator.vibrate) {
+      navigator.vibrate(0);
+    }
+    console.log('🔕 پخش زنگ قطع شد');
+  } catch (e) {}
+}
+
+// باز کردن AudioContext با اولین کلیک کاربر (برای اجازه پخش صدا)
+document.addEventListener('click', function initAudioOnce() {
+  try {
+    if (!ringtoneCtx) {
+      ringtoneCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (ringtoneCtx.state === 'suspended') {
+      ringtoneCtx.resume();
+    }
+  } catch (e) {}
+  document.removeEventListener('click', initAudioOnce);
+}, { once: true });
+
+// ============================================================
 // توابع کمکی
 // ============================================================
 const esc=s=>{const d=document.createElement('div');d.textContent=s||'';return d.innerHTML};
@@ -1424,16 +1516,13 @@ function showStory(){if(!curStUser)return;const sts=stByUser[curStUser];if(!sts?
 window.nextStory=()=>{if(!curStUser)return;const sts=stByUser[curStUser];if(curStIdx<sts.length-1){curStIdx++;showStory()}else{const us=Object.keys(stByUser);const i=us.indexOf(curStUser);if(i<us.length-1){curStUser=us[i+1];curStIdx=0;showStory()}else closeStory()}};
 window.prevStory=()=>{if(!curStUser)return;if(curStIdx>0){curStIdx--;showStory()}else{const us=Object.keys(stByUser);const i=us.indexOf(curStUser);if(i>0){curStUser=us[i-1];curStIdx=stByUser[curStUser].length-1;showStory()}}};
 window.closeStory=()=>{document.getElementById('story-viewer').classList.remove('show');if(stTmr){clearInterval(stTmr);stTmr=null}document.getElementById('story-media').innerHTML='';curStUser=null;curStIdx=0};
-
 async function loadLib(){const list=document.getElementById('lib-list');list.innerHTML='<div class="empty-state"><div class="icon">⏳</div></div>';const{data}=await sb.from('library').select('*').order('created_at',{ascending:false});if(!data?.length){list.innerHTML='<div class="empty-state"><div class="icon">🎬</div><h3>'+(lang==='fa'?'هنوز محتوایی نیست':'No content yet')+'</h3></div>';return}list.innerHTML='';data.forEach(l=>{const it=document.createElement('div');it.className='list-item';const thumb=l.media_type==='video'?`<div class="list-avatar" style="font-size:22px">🎬</div>`:`<div class="list-avatar" style="background-image:url('${esc(l.media_url)}')"></div>`;it.innerHTML=`${thumb}<div class="list-info"><div class="list-name">${esc(l.title||'—')}</div><div class="list-sub">${esc(l.description||'—')}</div></div>`;it.onclick=()=>{if(l.media_type==='video'){const w=window.open('','_blank');w.document.write(`<video src="${l.media_url}" autoplay controls style="width:100%;height:100%;background:#000"></video>`)}else window.open(l.media_url,'_blank')};list.appendChild(it)})}
 window.openLibModal=()=>{selLibFile=null;document.getElementById('lib-title').value='';document.getElementById('lib-desc').value='';const p=document.getElementById('lib-preview');p.innerHTML=t('nothingSelected');p.classList.add('empty');document.getElementById('lib-modal').classList.add('show')};
 document.getElementById('file-lib').onchange=e=>{const f=e.target.files[0];if(!f)return;e.target.value='';selLibFile=f;const p=document.getElementById('lib-preview');p.classList.remove('empty');if(f.type.startsWith('image/')){const r=new FileReader();r.onload=ev=>{p.innerHTML=`<img src="${ev.target.result}">`};r.readAsDataURL(f)}else{const u=URL.createObjectURL(f);p.innerHTML=`<video src="${u}" controls></video>`}};
 document.getElementById('lib-pub').onclick=async()=>{if(!selLibFile){alert(t('nothingSelected'));return}const ti=document.getElementById('lib-title').value.trim()||(lang==='fa'?'بدون عنوان':'Untitled');const d=document.getElementById('lib-desc').value.trim();const isV=selLibFile.type.startsWith('video/');const mt=isV?'video':'image';const btn=document.getElementById('lib-pub');btn.disabled=true;btn.textContent='...';const fn=`lib-${Date.now()}-${Math.random().toString(36).slice(2)}.${selLibFile.name.split('.').pop()}`;const{error:ue}=await sb.storage.from('chat-files').upload(fn,selLibFile,{contentType:selLibFile.type});if(ue){alert(t('error')+': '+ue.message);btn.disabled=false;btn.textContent=t('add');return}const{data:ud}=sb.storage.from('chat-files').getPublicUrl(fn);await sb.from('library').insert({title:ti,description:d,media_url:ud.publicUrl,media_type:mt,owner_email:myEmail});closeModal('lib-modal');loadLib();btn.disabled=false;btn.textContent=t('add')};
-
 async function loadBots(){const list=document.getElementById('bots-list');list.innerHTML='<div class="empty-state"><div class="icon">⏳</div></div>';const{data}=await sb.from('bots').select('*').order('created_at',{ascending:false});if(!data?.length){list.innerHTML='<div class="empty-state"><div class="icon">🤖</div><h3>'+(lang==='fa'?'هنوز رباتی نیست':'No bots yet')+'</h3></div>';return}list.innerHTML='';data.forEach(b=>{const it=document.createElement('div');it.className='bot-card';it.innerHTML=`<div class="bot-head"><div class="bot-avatar">🤖</div><div class="bot-name">${esc(b.name)}</div></div><div class="bot-desc">${esc(b.description||'—')}</div><div class="bot-desc" style="color:var(--p)">${lang==='fa'?'پاسخ':'Reply'}: ${esc(b.reply||'—')}</div><div class="bot-actions"><button class="bot-start">${lang==='fa'?'شروع':'Start'}</button>${b.owner_email===myEmail?'<button class="bot-del">'+t('delete')+'</button>':''}</div>`;it.querySelector('.bot-start').onclick=()=>alert((lang==='fa'?'ربات "'+b.name+'" فعال شد. پاسخ: ':'Bot "'+b.name+'" activated. Reply: ')+b.reply);if(b.owner_email===myEmail){it.querySelector('.bot-del').onclick=async()=>{if(!confirm(lang==='fa'?'حذف شود؟':'Delete?'))return;await sb.from('bots').delete().eq('id',b.id);loadBots()}}list.appendChild(it)})}
 window.openBotModal=()=>{document.getElementById('bot-name').value='';document.getElementById('bot-desc').value='';document.getElementById('bot-reply').value='';document.getElementById('bot-modal').classList.add('show')};
 document.getElementById('bot-create').onclick=async()=>{const n=document.getElementById('bot-name').value.trim();const d=document.getElementById('bot-desc').value.trim();const r=document.getElementById('bot-reply').value.trim();if(!n){alert(t('nameLbl'));return}if(!r){alert(t('autoReplyLbl'));return}const{error}=await sb.from('bots').insert({name:n,description:d,reply:r,owner_email:myEmail});if(error){alert(t('error')+': '+error.message);return}closeModal('bot-modal');loadBots()};
-
 async function loadEdu(){const list=document.getElementById('edu-list');list.innerHTML='<div class="empty-state"><div class="icon">⏳</div></div>';const{data,error}=await sb.from('education').select('*').order('created_at',{ascending:false});if(error){list.innerHTML='<div class="empty-state"><div class="icon">❌</div><h3>'+t('error')+'</h3></div>';return}if(!data?.length){list.innerHTML='<div class="empty-state"><div class="icon">📚</div><h3>'+t('noClasses')+'</h3></div>';return}const myClasses=data.filter(c=>c.owner_email===myEmail||(c.members||[]).includes(myEmail));if(!myClasses.length){list.innerHTML='<div class="empty-state"><div class="icon">🔒</div><h3>'+(lang==='fa'?'هنوز عضو هیچ کلاسی نیستی':'Not a member of any class')+'</h3><p style="font-size:12px;margin-top:6px;line-height:1.6">'+(lang==='fa'?'با دکمه <b>🔑 ورود با کد</b> کد کلاس رو وارد کن<br>یا اگه معلمی، با دکمه <b>➕ ساخت کلاس</b> کلاس بساز':'Use <b>🔑 Join with Code</b> to enter<br>or <b>➕ Create Class</b> if you teach')+'</p></div>';return}list.innerHTML='';myClasses.forEach(c=>{const it=document.createElement('div');it.className='edu-class';const isOwner=c.owner_email===myEmail;const codeValid=/^\d{6}$/.test(c.code||'');const codeDisplay=codeValid?esc(c.code):'<span style="color:#ef4444">'+(lang==='fa'?'نامعتبر':'Invalid')+'</span>';it.innerHTML=`<div class="edu-head"><div class="edu-avatar">📚</div><div class="edu-name">${esc(c.name)}</div>${isOwner?'<span style="font-size:10px;background:#5bae6e;color:#fff;padding:2px 8px;border-radius:8px;font-weight:700">'+t('teacher')+'</span>':'<span style="font-size:10px;background:#5bae6e;color:#fff;padding:2px 8px;border-radius:8px;font-weight:700">'+t('student')+'</span>'}</div><div class="edu-info">${esc(c.description||'—')}</div><div class="edu-info" style="margin-top:6px;color:var(--p);font-size:11px">👥 ${(c.members||[]).length+1} ${lang==='fa'?'عضو':'members'}${isOwner?` • ${lang==='fa'?'کد':'Code'}: <b style="direction:ltr;display:inline-block">${codeDisplay}</b>`:''}</div><div style="margin-top:8px"><button class="edu-enter-btn" style="width:100%;padding:8px;border:none;border-radius:8px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;background:#5bae6e;color:#fff">${isOwner?'⚙️ '+t('classPanel'):'📖 '+(lang==='fa'?'ورود به کلاس':'Enter Class')}</button></div>`;it.querySelector('.edu-enter-btn').onclick=(ev)=>{ev.stopPropagation();openClassPanel(c.id)};list.appendChild(it)})}
 window.openEduModal=()=>{document.getElementById('edu-name').value='';document.getElementById('edu-desc').value='';document.getElementById('edu-modal').classList.add('show')};
 function genCode(){return String(Math.floor(100000+Math.random()*900000))}
@@ -1455,19 +1544,69 @@ async function loadClassMembers(){if(!curClass)return;if(curClass.owner_email!==
 async function loadWallet(){const el=document.getElementById('wallet-bal');if(!el)return;const{data}=await sb.from('wallets').select('balance').eq('user_email',myEmail).maybeSingle();const bal=data?.balance||0;el.textContent=Number(bal).toLocaleString(lang==='fa'?'fa-IR':'en-US')+(lang==='fa'?' تومان':' Toman')}
 
 // ============================================================
-// تماس (LiveKit)
+// تماس (LiveKit) - با پخش زنگ
 // ============================================================
 const LK_URL='wss://tms-bxlk0q2o.livekit.cloud';
 const LK_KEY='APIBhvnBREQa54D';
 const LK_SECRET='18fup4uYJKd3zv7JLeY2JLAPpxtlpi7RvGOEBZcGrQh';
 let lkRoom=null;
 async function generateLKToken(roomName,identity){const header={alg:'HS256',typ:'JWT'};const now=Math.floor(Date.now()/1000);const payload={exp:now+3600,iss:LK_KEY,sub:identity,nbf:now-10,name:identity,video:{roomJoin:true,room:roomName,canPublish:true,canSubscribe:true,canPublishData:true}};const enc=s=>btoa(JSON.stringify(s)).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');const headerB64=enc(header);const payloadB64=enc(payload);const data=headerB64+'.'+payloadB64;const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(LK_SECRET),{name:'HMAC',hash:'SHA-256'},false,['sign']);const sig=await crypto.subtle.sign('HMAC',key,new TextEncoder().encode(data));const sigB64=btoa(String.fromCharCode(...new Uint8Array(sig))).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');return data+'.'+sigB64}
-window.startCall=async(roomName,displayName,callType)=>{if(!roomName){alert(t('error'));return}try{document.getElementById('call-modal').classList.add('show');document.getElementById('call-title').textContent=callType==='private'?('📞 '+t('callPrivate')+' - '+displayName):('📞 '+(displayName||t('callGroup')));document.getElementById('call-sub').textContent=t('callConnecting');document.getElementById('call-status').textContent='';document.getElementById('call-participants').innerHTML='';const identity=myEmail.split('@')[0]+'_'+Date.now();const token=await generateLKToken(roomName,identity);lkRoom=new LivekitClient.Room({adaptiveStream:true,dynacast:true,autoSubscribe:true,audioCaptureDefaults:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});lkRoom.on(LivekitClient.RoomEvent.ParticipantConnected,(participant)=>{renderParticipants();const rawName=participant.identity.split('_')[0];const callerName=namesCache[rawName]||rawName;const cType=callStartBtn.dataset.type;if(cType==='private'){notifyIncomingCall(callerName,rawName)}});lkRoom.on(LivekitClient.RoomEvent.ParticipantDisconnected,()=>renderParticipants());lkRoom.on(LivekitClient.RoomEvent.TrackSubscribed,(track)=>{if(track.kind==='audio'){const el=track.attach();el.autoplay=true;el.style.display='none';document.body.appendChild(el);el.play().catch(()=>{})}renderParticipants()});lkRoom.on(LivekitClient.RoomEvent.TrackUnsubscribed,(track)=>{track.detach();renderParticipants()});lkRoom.on(LivekitClient.RoomEvent.ActiveSpeakersChanged,()=>renderParticipants());lkRoom.on(LivekitClient.RoomEvent.Disconnected,()=>endCall());await lkRoom.connect(LK_URL,token);document.getElementById('call-sub').textContent=t('callConnected');await lkRoom.localParticipant.setMicrophoneEnabled(true);renderParticipants();updateMicBtn()}catch(e){alert(t('callError')+': '+e.message);endCall()}};
+
+window.startCall=async(roomName,displayName,callType)=>{
+  if(!roomName){alert(t('error'));return}
+  try{
+    document.getElementById('call-modal').classList.add('show');
+    startRingtone(); // 🔔 پخش زنگ
+    document.getElementById('call-title').textContent=callType==='private'?('📞 '+t('callPrivate')+' - '+displayName):('📞 '+(displayName||t('callGroup')));
+    document.getElementById('call-sub').textContent=t('callConnecting');
+    document.getElementById('call-status').textContent='';
+    document.getElementById('call-participants').innerHTML='';
+    const identity=myEmail.split('@')[0]+'_'+Date.now();
+    const token=await generateLKToken(roomName,identity);
+    lkRoom=new LivekitClient.Room({adaptiveStream:true,dynacast:true,autoSubscribe:true,audioCaptureDefaults:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
+    lkRoom.on(LivekitClient.RoomEvent.ParticipantConnected,(participant)=>{
+      renderParticipants();
+      const rawName=participant.identity.split('_')[0];
+      const callerName=namesCache[rawName]||rawName;
+      const cType=callStartBtn.dataset.type;
+      if(cType==='private'){notifyIncomingCall(callerName,rawName)}
+    });
+    lkRoom.on(LivekitClient.RoomEvent.ParticipantDisconnected,()=>renderParticipants());
+    lkRoom.on(LivekitClient.RoomEvent.TrackSubscribed,(track)=>{
+      if(track.kind==='audio'){
+        stopRingtone(); // 🔕 وقتی صدا رسید، زنگ قطع کن
+        const el=track.attach();
+        el.autoplay=true;
+        el.style.display='none';
+        document.body.appendChild(el);
+        el.play().catch(()=>{})
+      }
+      renderParticipants()
+    });
+    lkRoom.on(LivekitClient.RoomEvent.TrackUnsubscribed,(track)=>{track.detach();renderParticipants()});
+    lkRoom.on(LivekitClient.RoomEvent.ActiveSpeakersChanged,()=>renderParticipants());
+    lkRoom.on(LivekitClient.RoomEvent.Disconnected,()=>endCall());
+    await lkRoom.connect(LK_URL,token);
+    stopRingtone(); // 🔕 تماس وصل شد، زنگ قطع
+    document.getElementById('call-sub').textContent=t('callConnected');
+    await lkRoom.localParticipant.setMicrophoneEnabled(true);
+    renderParticipants();
+    updateMicBtn()
+  }catch(e){
+    alert(t('callError')+': '+e.message);
+    endCall()
+  }
+};
 window.startCallFromChat=()=>{const btn=document.getElementById('call-start-btn');if(!btn.dataset.room){alert(t('error'));return}startCall(btn.dataset.room,btn.dataset.name,btn.dataset.type||'group')};
 function renderParticipants(){if(!lkRoom)return;const cont=document.getElementById('call-participants');cont.innerHTML='';const all=[lkRoom.localParticipant,...Array.from(lkRoom.remoteParticipants.values())];all.forEach(p=>{const isLocal=p===lkRoom.localParticipant;const isSpeaking=p.isSpeaking;const isMuted=!p.isMicrophoneEnabled;const rawName=p.identity.split('_')[0];const name=isLocal?t('you'):(namesCache[rawName]||rawName);const initial=(name||'?').charAt(0).toUpperCase();const d=document.createElement('div');d.className='participant'+(isSpeaking?' speaking':'');d.innerHTML=`<div class="participant-avatar">${initial}${isMuted?'<div class="participant-muted">🔇</div>':''}</div><div class="participant-name">${esc(name)}</div>`;cont.appendChild(d)})}
 window.toggleMic=async()=>{if(!lkRoom)return;const enabled=lkRoom.localParticipant.isMicrophoneEnabled;await lkRoom.localParticipant.setMicrophoneEnabled(!enabled);updateMicBtn();renderParticipants()};
 function updateMicBtn(){const btn=document.getElementById('call-mic-btn');if(!lkRoom)return;if(lkRoom.localParticipant.isMicrophoneEnabled){btn.classList.remove('muted');btn.textContent='🎤'}else{btn.classList.add('muted');btn.textContent='🔇'}}
-window.endCall=async()=>{try{if(lkRoom){await lkRoom.disconnect();lkRoom=null}}catch(e){}document.querySelectorAll('audio').forEach(a=>{if(a.srcObject)a.remove()});document.getElementById('call-modal').classList.remove('show')};
+window.endCall=async()=>{
+  try{if(lkRoom){await lkRoom.disconnect();lkRoom=null}}catch(e){}
+  stopRingtone(); // 🔕 قطع زنگ
+  document.querySelectorAll('audio').forEach(a=>{if(a.srcObject)a.remove()});
+  document.getElementById('call-modal').classList.remove('show')
+};
 document.getElementById('call-mic-btn').onclick=toggleMic;
 document.getElementById('call-end-btn').onclick=endCall;
 
@@ -1513,7 +1652,7 @@ document.getElementById('vc-color')?.addEventListener('input',e=>{vcColor=e.targ
 document.getElementById('vc-chat-input')?.addEventListener('keypress',e=>{if(e.key==='Enter')sendVcChat()});
 
 // ============================================================
-// منوی اتاق (ویرایش گروه/کانال، اعضا، دعوت)
+// منوی اتاق
 // ============================================================
 window.toggleRoomMenu = () => {
   const menu = document.getElementById('room-menu');
@@ -1522,9 +1661,7 @@ window.toggleRoomMenu = () => {
   const isOwner = curChat.data.owner_email === myEmail;
   let h = `<button class="msg-menu-item" data-ra="members">👥 ${t('viewMembers')}</button>`;
   h += `<button class="msg-menu-item" data-ra="invite">🔗 ${t('inviteLink')}</button>`;
-  if (isOwner) {
-    h += `<button class="msg-menu-item" data-ra="edit">✏️ ${curChat.type === 'group' ? t('editGroup') : t('editChannel')}</button>`;
-  }
+  if (isOwner) { h += `<button class="msg-menu-item" data-ra="edit">✏️ ${curChat.type === 'group' ? t('editGroup') : t('editChannel')}</button>`; }
   menu.innerHTML = h;
   const btn = document.getElementById('room-menu-btn');
   const r = btn.getBoundingClientRect();
@@ -1718,10 +1855,6 @@ async function checkInviteCodeInURL() {
   if (!myEmail) { localStorage.setItem('pending_invite', code); return; }
   await processInviteJoin(code);
 }
-
-// ============================================================
-// Realtime سراسری برای اعلان پیام‌های خارج از چت باز
-// ============================================================
 const globalMsgChannel = sb.channel('global-msg-notif')
   .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, async (payload) => {
     const m = payload.new;
@@ -1731,16 +1864,10 @@ const globalMsgChannel = sb.channel('global-msg-notif')
       if (curChat.type !== 'private' && m.chat_id === curChat.id) return;
     }
     if (!m.chat_id) {
-      if (m.receiver_email === myEmail) {
-        if (!namesCache[m.sender_email]) await getName(m.sender_email);
-        notifyNewMessage(m);
-      }
+      if (m.receiver_email === myEmail) { if (!namesCache[m.sender_email]) await getName(m.sender_email); notifyNewMessage(m); }
     } else {
       const { data: member } = await sb.from('chat_members').select('chat_id').eq('chat_id', m.chat_id).eq('member_email', myEmail).maybeSingle();
-      if (member) {
-        const { data: chat } = await sb.from('chats').select('name').eq('id', m.chat_id).maybeSingle();
-        if (chat) notifyGroupMessage(m, chat.name);
-      }
+      if (member) { const { data: chat } = await sb.from('chats').select('name').eq('id', m.chat_id).maybeSingle(); if (chat) notifyGroupMessage(m, chat.name); }
     }
   })
   .subscribe();
@@ -1749,17 +1876,12 @@ const globalMsgChannel = sb.channel('global-msg-notif')
 // راه‌اندازی اولیه
 // ============================================================
 (async()=>{applyLang();await loadMyProfile();await registerSession();await loadStories();await setOnline();await loadAllStatus();setupStatusRealtime();const homeAv=document.getElementById('home-avatar');if(homeAv&&avatarsCache[myEmail]){homeAv.textContent='';homeAv.style.backgroundImage=`url('${avatarsCache[myEmail]}')`}const greeting=document.getElementById('home-greeting');if(greeting&&namesCache[myEmail]){greeting.textContent=(lang==='fa'?'سلام، ':'Hi, ')+namesCache[myEmail]+'!'}stRt=sb.channel('stories-rt').on('postgres_changes',{event:'*',schema:'public',table:'stories'},()=>loadStories()).subscribe();setInterval(()=>{if(document.getElementById('page-chats')?.classList.contains('active') && !curChat){renderList()}},10000);setTimeout(checkInviteCodeInURL,500);const pendingInvite=localStorage.getItem('pending_invite');if(pendingInvite){localStorage.removeItem('pending_invite');setTimeout(()=>processInviteJoin(pendingInvite),1000)}})();
-
-// درخواست خودکار مجوز اعلان
 setTimeout(() => {
   if ('Notification' in window && Notification.permission === 'default') {
-    if (confirm(lang==='fa'?'می‌خوای اعلان پیام‌ها و تماس‌ها رو دریافت کنی؟':'Do you want to receive message and call notifications?')) {
-      askNotificationPermission();
-    }
+    if (confirm(lang==='fa'?'می‌خوای اعلان پیام‌ها و تماس‌ها رو دریافت کنی؟':'Do you want to receive message and call notifications?')) { askNotificationPermission(); }
   }
 }, 3000);
-
-window.addEventListener('beforeunload',()=>{try{setOffline()}catch(e){}if(rtCh)sb.removeChannel(rtCh);if(stRt)sb.removeChannel(stRt);if(statusChannel)sb.removeChannel(statusChannel);if(vcChannel)sb.removeChannel(vcChannel);if(globalMsgChannel)sb.removeChannel(globalMsgChannel);if(lkRoom){try{lkRoom.disconnect()}catch(e){}}if(vcRoom){try{vcRoom.disconnect()}catch(e){}}});
+window.addEventListener('beforeunload',()=>{try{setOffline()}catch(e){}stopRingtone();if(rtCh)sb.removeChannel(rtCh);if(stRt)sb.removeChannel(stRt);if(statusChannel)sb.removeChannel(statusChannel);if(vcChannel)sb.removeChannel(vcChannel);if(globalMsgChannel)sb.removeChannel(globalMsgChannel);if(lkRoom){try{lkRoom.disconnect()}catch(e){}}if(vcRoom){try{vcRoom.disconnect()}catch(e){}}});
 </script>
 </body>
 </html>
